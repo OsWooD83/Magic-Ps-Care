@@ -200,6 +200,29 @@
             msg.textContent = 'Erreur serveur (connexion impossible).';
             msg.style.color = 'red';
         }
+    });
+    // Déconnexion automatique après 5 minutes d'inactivité
+    let inactivityTime = 300000; // 5 minutes en millisecondes
+    let timeoutHandle;
+    function resetTimer() {
+        clearTimeout(timeoutHandle);
+        timeoutHandle = setTimeout(autoLogout, inactivityTime);
+    }
+    function autoLogout() {
+        fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('avatarTW').style.display = 'none';
+                    alert('Vous avez été déconnecté en raison d\'une inactivité prolongée.');
+                    window.location.href = 'login.html';
+                }
+            })
+            .catch(err => console.error('Erreur lors de la déconnexion automatique:', err));
+    }
+    document.addEventListener('mousemove', resetTimer);
+    document.addEventListener('keypress', resetTimer);
+    resetTimer(); // Initialiser le timer à l'ouverture de la page
     </script>
 </body>
 </html>
