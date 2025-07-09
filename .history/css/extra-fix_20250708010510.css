@@ -1,0 +1,70 @@
+/* Boutons Devis */
+.btn-devis-fix {
+  border: 2px solid #28a745;
+  color: #28a745;
+  font-weight: bold;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.5rem 1.5rem;
+}
+
+/* Table Devis */
+.table-fixed {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Bandes rouges */
+.bande-rouge-fix {
+  height: 4px;
+  background: #000000;
+  border-radius: 2px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  position: relative;
+}
+#bande-rouge-1 { top: -289px; }
+#bande-rouge-2 { top: -257px; }
+#bande-rouge-3 { top: -225px; }
+#bande-rouge-4 { top: -192px; }
+#bande-rouge-5 { top: -118px; }
+
+/* Section membres */
+.membres-list {
+  max-width: 300px;
+  margin: -20px;
+}
+
+/* Tarifs container */
+.tarifs-container-fix {
+  position: relative;
+  top: -120px;
+}
+
+/* Tarifs card title color */
+.card-title-red {
+  color: #ff2d2d;
+}
+.card-title-green {
+  color: #00ff40;
+}
+.card-title-km {
+  color: #ff0000;
+}
+
+/* Footer fix */
+.footer-fix {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: #181c2b;
+  color: #fff;
+  z-index: 9999;
+}
+
+/* Texte rouge */
+.texte-rouge {
+  color: #ff2d2d;
+}

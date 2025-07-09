@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>PS Care – Association de Magie</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lib/bootstrap.min.css">
+    <link rel="stylesheet" href="css/site.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/inline-fix.css">
+    <style>
+    /* Agrandir les boutons Devis dans la section Tarifs */
+    .btn-devis-mailto.btn-devis-fix {
+        font-size: 1.1rem !important;
+        padding: 0.5rem 1.2rem !important;
+        border-radius: 1rem !important;
+        min-width: 100px;
+        min-height: 38px;
+    }
+    /* Taille fixe réduite pour les images du carousel */
+    .carousel-img {
+        max-height: 600px !important;
+        height: 600px !important;
+        width: 1000px !important;
+        object-fit: cover;
+        display: inline-block;
+    }
+    /* Table responsive fix */
+    .table-responsive { overflow-x: auto; }
+    .table { min-width: 600px; }
+    </style>
+</head>
+<body>
+    <div class="avatar-tw" id="avatarTW">TW</div>
+    <div class="avatar-menu" id="avatarMenu">
+        <button id="btnLogout">Déconnexion</button>
+        <button id="btnStats">Stats</button>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-magic fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#accueil">Association Magic Ps Care</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#accueil">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#prestations">Prestations</a></li>
+                    <li class="nav-item"><a class="nav-link" href="photographie.html">Photographie</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#tarifs" id="navDevisLink">Devis</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="navLoginBtn">login</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header id="accueil" class="hero-section hero-section-fix d-flex align-items-center justify-content-center text-center">
+        <div class="container">
+            <h1 class="display-3 display-3-fix mb-3"><span class="magic-title">Association Magic PS Care</span></h1>
+            <p class="lead mb-4 lead-magic-fix">
+                L’association qui fait vivre la magie à travers spectacles, ateliers et solidarité.
+            </p>
+            <a href="#prestations" class="btn btn-magic btn-lg btn-zoom-anim btn-magic-fix" id="btnScrollPrestations">Découvrir nos Prestations</a>
+        </div>
+    </header>
+ <div id="carouselPrestations" class="mt-5 carousel-prestations-fix">
+    <div id="carousel-track" class="carousel-inner carousel-track-fix">
+        <img src="https://i.pinimg.com/736x/a6/1b/52/a61b52c07066d079cdb260a90a1fbfbf.jpg" class="carousel-img rounded-3" alt="Prestation 1">
+        <img src="https://i.pinimg.com/736x/76/9d/97/769d97d4113cff2d401105a0736e5e13.jpg" class="carousel-img rounded-3" alt="Prestation 2">
+        <img src="https://i.pinimg.com/736x/f5/d5/28/f5d528d47b221fab98883d8b8fdc2d58.jpg" class="carousel-img rounded-3" alt="Prestation 3">
+        <img src="https://i.pinimg.com/736x/a3/28/5d/a3285d950deecdfc0cd47553de684af0.jpg" class="carousel-img rounded-3" alt="Prestation 4">
+        <img src="https://i.pinimg.com/736x/73/31/c0/7331c0cd6276934dac322ae1a60f67e6.jpg" class="carousel-img rounded-3" alt="Prestation 4">
+    </div>
+</div>
+<script>
+// Carrousel horizontal fluide et infini façon "vidéo"
+(function() {
+    const track = document.getElementById('carousel-track');
+    const images = Array.from(track.querySelectorAll('img'));
+    const imgCount = images.length;
+    // On duplique toutes les images pour la boucle infinie
+    images.forEach(img => {
+        track.appendChild(img.cloneNode(true));
+    });
+
+    // Calcul de la largeur totale des images originales + gap
+    function getTotalWidth() {
+        let total = 0;
+        images.forEach(img => {
+            total += img.offsetWidth;
+        });
+        // Ajouter les gaps (gap * (imgCount - 1))
+        const gap = 16;
+        total += gap * (imgCount - 1);
+        return total;
+    }
+
+    let position = 0;
+    const speed = 1.2; // pixels par frame
+
+    function animate() {
+        position += speed;
+        track.style.transform = `translateX(-${position}px)`;
+        const totalWidth = getTotalWidth();
+        if (position >= totalWidth) {
+            track.style.transition = 'none';
+            position = 0;
+            track.style.transform = `translateX(0)`;
+            // Forcer le reflow pour réactiver la transition
+            void track.offsetWidth;
+            track.style.transition = 'none';
+        }
+        requestAnimationFrame(animate);
+    }
+
+    // Désactive la transition CSS pour un effet vidéo parfaitement fluide
+    track.style.transition = 'none';
+    // Attendre que les images soient chargées pour avoir la bonne largeur
+    window.addEventListener('load', animate);
+})();
+</script>
+    <section id="projets" class="section py-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Qui Sommes Nous ? </h2>
+            <p class="lead mb-4">
+                L’Association Magic PS Care est bien plus qu’un collectif artistique ; c’est une aventure humaine dédiée à l’éveil et à la stimulation des sens et des esprits. Ancrée dans la tradition associative loi 1901 et basée au Pradet, notre dynamique repose sur une conviction profonde : la magie a le pouvoir de transformer des vies. Notre initiative, baptisée "Magic Effects On Spirit", s’adresse autant aux enfants hospitalisés, aux jeunes évoluant dans les maisons de l’enfance, qu’aux personnes âgées en domicile ou en EHPAD. Nous utilisons le langage universel de la magie pour insuffler sourire, curiosité et vitalité là où le quotidien exige une dose supplémentaire d’espoir et de réconfort.
+            </p>
+            <p>
+                À travers des interventions diversifiées – des ateliers close up intimistes aux spectacles narratifs et immersifs – nous œuvrons à éveiller, maintenir et développer les capacités cognitives et créatives de nos publics. Chaque rencontre est conçue pour favoriser la mémoire, la concentration, la réflexion et l’émerveillement, tout en créant un espace d’échanges et de convivialité. Que ce soit lors d’un atelier d’apprentissage personnalisé ou d’un spectacle grand public tel que “Crépuscule Magique 2025”, nous plaçons l’émotion et le partage au cœur de notre approche.
+            </p>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card bg-dark bg-opacity-75 border-0 h-100">
+                        <div class="card-body">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prestations" class="section py-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Nos Prestations Magiques</h2>
+            <!-- Ajout de la modale personnalisée -->
+            <!-- Modale Devis actualisée -->
+<div id="devisModal">
+    <div id="devisModalContent">
+        <div class="devisModal-inner">
+            <button id="closeDevisModal">&times;</button>
+            <div class="devis-prestation-label">Choisissez votre prestation :</div>
+            <label for="prestationSelect" class="visually-hidden">Choisissez votre prestation</label>
+            <select id="prestationSelect" title="Choisissez votre prestation">
+                <option value="Atelier Close-Up et Apprentissage">Atelier Close-Up et Apprentissage (groupe 10 pers, 45min-1h, apprentissage tours, cadeau, spectacle fin d'année)</option>
+                <option value="Atelier close up dans les chambres/services">Atelier close up dans les chambres/services (15-30min, apprentissage, plaisir, petits patients)</option>
+                <option value="Spectacle de Magie CREPUSCULE MAGIQUE 2025">Spectacle de Magie CREPUSCULE MAGIQUE 2025 (10-15 pers, 1h-1h15, histoire, musique, univers magique)</option>
+                <option value="Spectacle magie EHPAD et +">Spectacle magie EHPAD et + (270€)</option>
+                <option value="Club magie EHPAD">Club magie EHPAD (150€)</option>
+                <option value="Spectacle magie Privé adulte/enfant">Spectacle magie Privé adulte/enfant (200€ minimum)</option>
+                <option value="Mariage et événements spéciaux">Mariage et événements spéciaux (prix sur devis)</option>
+            </select>
+            <div class="devis-send-label">Envoyer votre demande via :</div>
+            <a id="gmailDevisBtn" href="#" target="_blank" class="devis-btn-gmail">Gmail</a>
+            <a id="outlookDevisBtn" href="#" target="_blank" class="devis-btn-outlook">Outlook</a>
+        </div>
+    </div>
+    <div class="devisModal-bg"></div>
+</div>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center bg-dark bg-opacity-75 text-light table-fixed">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="vertical-top-fix">
+                                <br><span class="highlight-bg"><span class="arrow-red">⮕</span> Atelier Close-Up et Apprentissage</span>
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Groupe maximum de 10 personnes
+                                <br>
+                                <br><span class="arrow-red">⮕</span> 45 minutes à 1h00 
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Histoire de la magie / comment susciter l’intérêt d’un public
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Close-up par le magicien Ted Winter pour éveiller l’intérêt
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Apprentissage d’1 ou 2 tours
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Plusieurs modules de tours en fonction du public
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Suivi de l’apprentissage / répétition / club de magie
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Petit cadeau du tour à chaque participant
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Spectacle en fin d’année des participants
+                                <br>
+                            </td>
+                            <td class="vertical-top-fix">
+                                <br><span class="highlight-bg"><span class="arrow-red">⮕</span> Atelier close up dans les chambres/services</span>
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Chambres des petits patients ou dans les services
+                                <br>
+                                <br><span class="arrow-red">⮕</span> 15 à 30 minutes
+                                <br>
+                                <br><span class="arrow-red">⮕</span> close up par le magicien Ted Winter pour éveiller l’intérêt et apporter du plaisir
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Apprentissage d’1 ou 2 tours
+                                <br>
+                            </td>
+                            <td class="vertical-top-fix">
+                                <br><span class="highlight-bg"><span class="arrow-red">⮕</span> Spectacle de Magie CREPUSCULE MAGIQUE 2025</span>
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Groupe 10-15 personnes
+                                <br>
+                                <br><span class="arrow-red">⮕</span> 1h00 à 1h15
+                                <br>
+                                <br>Spectacle de magie par le magicien Ted Winter
+                                <br>
+                                <br><span class="arrow-red">⮕</span> histoire en préambule au tour / 2-3 tours sur la même histoire
+                                <br>
+                                <br><span class="arrow-red">⮕</span> fond musical pour éveiller l’intérêt du public !
+                                <br>
+                                <br><span class="arrow-red">⮕</span> rôle d’acteur et de conteur
+                                <br>
+                                <br><span class="arrow-red">⮕</span> le tour de magie devient un prétexte pour créer un univers magique
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Plusieurs styles de spectacles en fonction du public (enfants/adultes)
+                                <br>
+                            </td>
+                        </tr>
+                        <!-- Nouvelle ligne pour les boutons Devis alignés -->
+                        <tr>
+                            <td>
+                                <div class="devis-btn-container">
+                                    <!-- Le bouton "Devis" ne change pas de page, il ouvre seulement la modale d’email -->
+                                    <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(1, '', event)">Devis</a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="devis-btn-container">
+                                    <!-- Le bouton "Devis" ne change pas de page, il ouvre seulement la modale d’email -->
+                                    <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(2, '', event)">Devis</a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="devis-btn-container">
+                                    <!-- Le bouton "Devis" ne change pas de page, il ouvre seulement la modale d’email -->
+                                    <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(3, '', event)">Devis</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <link rel="stylesheet" href="css/devis-fix.css">
+    <style>
+      /* Modale avis professionnelle */
+      #avisModal {
+        display: none;
+        position: fixed;
+        z-index: 3000;
+        left: 0; top: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(24,20,44,0.92);
+        align-items: center;
+        justify-content: center;
+        animation: avis-fadein 0.3s;
+      }
+      @keyframes avis-fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .avis-modal-content {
+        background: linear-gradient(135deg, #fff 0%, #f7e7ff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px #7c4dff55, 0 2px 8px #0002;
+        max-width: 410px;
+        width: 96%;
+        margin: auto;
+        padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+        position: relative;
+        animation: avis-popin 0.4s cubic-bezier(.4,2,.6,1);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      @keyframes avis-popin {
+        0% { transform: scale(0.85); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .avis-modal-header {
+        text-align: center;
+        margin-bottom: 1.2rem;
+      }
+      .avis-modal-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 0.3rem;
+        filter: drop-shadow(0 2px 8px #ffd70088);
+      }
+      .avis-modal-header h2 {
+        font-size: 1.6rem;
+        color: #7c4dff;
+        font-family: 'Cinzel Decorative', serif;
+        margin-bottom: 0.2rem;
+        letter-spacing: 1px;
+      }
+      .avis-modal-subtitle {
+        font-size: 1.05rem;
+        color: #381a5a;
+        margin-bottom: 0.2rem;
+        font-weight: 500;
+      }
+      .avis-close-btn {
+        position: absolute;
+        top: 14px; right: 18px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #7c4dff;
+        cursor: pointer;
+        transition: color 0.2s;
+        z-index: 10;
+      }
+      .avis-close-btn:hover {
+        color: #ff2d2d;
+      }
+      .avis-form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        margin-bottom: 0.7rem;
+      }
+      .avis-label {
+        font-weight: bold;
+        color: #2d1a3a;
+        font-size: 1.08rem;
+        margin-bottom: 0.1rem;
+      }
+      .avis-input, .avis-textarea {
+        background: #f3eaff;
+        border: 1.5px solid #7c4dff;
+        color: #2d1a3a;
+        border-radius: 0.7rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 1.05rem;
+        margin-bottom: 0.1rem;
+        transition: border 0.2s, box-shadow 0.2s;
+        /* Ajout pour forcer la couleur du texte lors de la saisie */
+        caret-color: #181c2b;
+      }
+      .avis-input:focus, .avis-textarea:focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 0 2px #ffd70044;
+        outline: none;
+        background: #fff;
+        color: #181c2b; /* Texte noir lors de la saisie */
+      }
+      .avis-textarea {
+        min-height: 60px;
+        resize: vertical;
+      }
+      .avis-btn {
+        margin-top: 0.5rem;
+        width: 100%;
+        font-size: 1.15rem !important;
+        border-radius: 1.2rem;
+        box-shadow: 0 2px 12px #ffd70033;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .star-rating {
+        font-size: 2rem;
+        color: #ffd700;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        margin-bottom: 0.1rem;
+      }
+      .star-rating .star {
+        transition: color 0.2s, transform 0.15s;
+        display: inline-block;
+        margin-right: 2px;
+      }
+      .star-rating .star.inactive {
+        color: #e0dcdc;
+      }
+      .star-rating .star:hover,
+      .star-rating .star:focus {
+        color: #ff2d2d;
+        transform: scale(1.18);
+      }
+      #moyenneStars {
+        font-size: 1.3rem;
+        color: #ff9800;
+        font-weight: bold;
+        background: #fffbe7;
+        border-radius: 0.7rem;
+        padding: 0.7rem 0.5rem 0.5rem 0.5rem;
+        margin-top: 0.7rem;
+        box-shadow: 0 2px 8px #ffd70022;
+      }
+      @media (max-width: 575px) {
+        .avis-modal-content {
+          padding: 1.2rem 0.5rem 1rem 0.5rem;
+        }
+        .avis-modal-header h2 {
+          font-size: 1.15rem;
+        }
+        .avis-modal-icon {
+          width: 36px; height: 36px;
+        }
+      }
+    </style>
+    <div class="container my-5" id="tarifs">
+        <h2 class="section-title mb-4 text-center">Tarifs des prestations de l'association année 2025</h2>
+        <div class="tarifs-border-fix">
+            <div class="row g-4">
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                Tarifs spectacle magie EHPAD et + <span class="card-title-red">270€</span>
+                                <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
+                                    type="button"
+                                    data-mail-subject="Demande de devis pour spectacle magie EHPAD et +"
+                                    onclick="openMailChoice(3, this.getAttribute('data-mail-subject'), event)">
+                                    Devis
+                                </button>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                Tarifs club magie EHPAD <span class="card-title-red">150€</span>
+                                <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
+                                    type="button"
+                                    data-mail-subject="Demande de devis pour club magie EHPAD"
+                                    onclick="openMailChoice(3, this.getAttribute('data-mail-subject'), event)">
+                                    Devis
+                                </button>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                Tarifs spectacle magie Privé adulte/enfant Minimum <span class="card-title-red">200€</span>
+                                <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
+                                    type="button"
+                                    data-mail-subject="Demande de devis pour spectacle magie Privé adulte/enfant"
+                                    onclick="openMailChoice(3, this.getAttribute('data-mail-subject'), event)">
+                                    Devis
+                                </button>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <span class="card-title-red">Devis pour mariage et événements spéciaux (prix variée)</span>
+                            <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
+                                type="button"
+                                data-mail-subject="Demande de devis pour mariage et événements spéciaux"
+                                onclick="openMailChoice(3, this.getAttribute('data-mail-subject'), event)">
+                                Devis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                        PS : * Déclaration SACEM faite/payée par l’association<span class="card-title-green"> 70€</span>
+                            </h3>
+                    </div>
+                    <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                        Il est nécessaire de prévoir une indemnité kilométrique pour les trajets dépassant les <span class="card-title-km">15 kilomètres</span> autour de Toulon
+                            </h3>
+                    </div>
+            <!-- Trois bandes horizontales rouges modifiables, même épaisseur -->
+            <div id="bande-rouge-1" class="bande-rouge-fix"></div>
+            <div id="bande-rouge-2" class="bande-rouge-fix"></div>
+            <div id="bande-rouge-3" class="bande-rouge-fix"></div>
+            <div id="bande-rouge-4" class="bande-rouge-fix"></div>
+            <div id="bande-rouge-5" class="bande-rouge-fix"></div>
+        </div>
+    </div>
+    <div class="container my-5 tarifs-container-fix">
+        <h2 class="section-title mb-3 text-center">Membres de l'association</h2>
+        <ul class="list-group list-group-flush text-start membres-list">
+            <li class="list-group-item bg-transparent">Président: Pascal SIBOUR <span class="membre-alias">(ted Winter)</span></li>
+            <li class="list-group-item bg-transparent">Secrétaire: Marion FROGER</li>
+            <li class="list-group-item bg-transparent">Trésorier: Franck VERCELLOTTI</li>
+        </ul>
+    </div>
+
+    <!-- Modale Avis -->
+    <div id="avisModal" class="avis-modal-bg-fix">
+      <div class="avis-modal-content">
+        <button id="closeAvisModal" class="avis-close-btn" aria-label="Fermer">&times;</button>
+        <div class="avis-modal-header">
+          <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="Avis" class="avis-modal-icon">
+          <h2 class="mb-2">Donnez votre avis</h2>
+          <div class="avis-modal-subtitle">Votre retour nous aide à progresser&nbsp;!</div>
+        </div>
+        <form id="avisForm">
+          <div class="mb-2 avis-form-row">
+            <input type="text" id="avisNom" name="avisNom" class="form-control avis-input" placeholder="Votre nom" required>
+            <input type="email" id="avisMail" name="avisMail" class="form-control avis-input" placeholder="Votre e-mail" required>
+          </div>
+          <div class="mb-2 avis-form-row">
+            <div class="avis-label">Qualité du spectacle</div>
+            <div class="star-rating" data-note="note1"></div>
+          </div>
+          <div class="mb-2 avis-form-row">
+            <div class="avis-label">Professionnalisme</div>
+            <div class="star-rating" data-note="note2"></div>
+          </div>
+          <div class="mb-2 avis-form-row">
+            <div class="avis-label">Réactivité</div>
+            <div class="star-rating" data-note="note3"></div>
+          </div>
+          <div class="mb-2 avis-form-row">
+            <textarea id="avisCommentaire" name="avisCommentaire" class="form-control avis-textarea" placeholder="Votre commentaire (optionnel)" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-magic btn-lg avis-btn">Envoyer</button>
+        </form>
+        <div class="moyenne text-center mt-3 moyenne-hidden" id="moyenneStars"></div>
+      </div>
+    </div>
+    <link rel="stylesheet" href="css/avis-fix.css">
+    <style>
+      /* Modale avis professionnelle */
+      #avisModal {
+        display: none;
+        position: fixed;
+        z-index: 3000;
+        left: 0; top: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(24,20,44,0.92);
+        align-items: center;
+        justify-content: center;
+        animation: avis-fadein 0.3s;
+      }
+      @keyframes avis-fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .avis-modal-content {
+        background: linear-gradient(135deg, #fff 0%, #f7e7ff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px #7c4dff55, 0 2px 8px #0002;
+        max-width: 410px;
+        width: 96%;
+        margin: auto;
+        padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+        position: relative;
+        animation: avis-popin 0.4s cubic-bezier(.4,2,.6,1);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      @keyframes avis-popin {
+        0% { transform: scale(0.85); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .avis-modal-header {
+        text-align: center;
+        margin-bottom: 1.2rem;
+      }
+      .avis-modal-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 0.3rem;
+        filter: drop-shadow(0 2px 8px #ffd70088);
+      }
+      .avis-modal-header h2 {
+        font-size: 1.6rem;
+        color: #7c4dff;
+        font-family: 'Cinzel Decorative', serif;
+        margin-bottom: 0.2rem;
+        letter-spacing: 1px;
+      }
+      .avis-modal-subtitle {
+        font-size: 1.05rem;
+        color: #381a5a;
+        margin-bottom: 0.2rem;
+        font-weight: 500;
+      }
+      .avis-close-btn {
+        position: absolute;
+        top: 14px; right: 18px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #7c4dff;
+        cursor: pointer;
+        transition: color 0.2s;
+        z-index: 10;
+      }
+      .avis-close-btn:hover {
+        color: #ff2d2d;
+      }
+      .avis-form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        margin-bottom: 0.7rem;
+      }
+      .avis-label {
+        font-weight: bold;
+        color: #2d1a3a;
+        font-size: 1.08rem;
+        margin-bottom: 0.1rem;
+      }
+      .avis-input, .avis-textarea {
+        background: #f3eaff;
+        border: 1.5px solid #7c4dff;
+        color: #2d1a3a;
+        border-radius: 0.7rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 1.05rem;
+        margin-bottom: 0.1rem;
+        transition: border 0.2s, box-shadow 0.2s;
+        /* Ajout pour forcer la couleur du texte lors de la saisie */
+        caret-color: #181c2b;
+      }
+      .avis-input:focus, .avis-textarea:focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 0 2px #ffd70044;
+        outline: none;
+        background: #fff;
+        color: #181c2b; /* Texte noir lors de la saisie */
+      }
+      .avis-textarea {
+        min-height: 60px;
+        resize: vertical;
+      }
+      .avis-btn {
+        margin-top: 0.5rem;
+        width: 100%;
+        font-size: 1.15rem !important;
+        border-radius: 1.2rem;
+        box-shadow: 0 2px 12px #ffd70033;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .star-rating {
+        font-size: 2rem;
+        color: #ffd700;
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+        margin-bottom: 0.1rem;
+      }
+      .star-rating .star {
+        transition: color 0.2s, transform 0.15s;
+        display: inline-block;
+        margin-right: 2px;
+      }
+      .star-rating .star.inactive {
+        color: #e0dcdc;
+      }
+      .star-rating .star:hover,
+      .star-rating .star:focus {
+        color: #ff2d2d;
+        transform: scale(1.18);
+      }
+      #moyenneStars {
+        font-size: 1.3rem;
+        color: #ff9800;
+        font-weight: bold;
+        background: #fffbe7;
+        border-radius: 0.7rem;
+        padding: 0.7rem 0.5rem 0.5rem 0.5rem;
+        margin-top: 0.7rem;
+        box-shadow: 0 2px 8px #ffd70022;
+      }
+      @media (max-width: 575px) {
+        .avis-modal-content {
+          padding: 1.2rem 0.5rem 1rem 0.5rem;
+        }
+        .avis-modal-header h2 {
+          font-size: 1.15rem;
+        }
+        .avis-modal-icon {
+          width: 36px; height: 36px;
+        }
+      }
+    </style>
+    <script>
+    // Simule l'état de connexion (true = connecté, false = déconnecté)
+let isLoggedIn = true;
+
+// Met à jour la navbar selon l'état de connexion
+function updateNavbarLogin() {
+    const navLoginBtn = document.getElementById('navLoginBtn');
+    if (isLoggedIn) {
+        navLoginBtn.textContent = 'Déconnexion';
+        navLoginBtn.href = '#';
+        navLoginBtn.onclick = function(e) {
+            e.preventDefault();
+            // Déconnexion via la navbar
+            isLoggedIn = false;
+            avatarTW.style.display = 'none';
+            avatarMenu.style.display = 'none';
+            updateNavbarLogin();
+        };
+    } else {
+        navLoginBtn.textContent = 'login';
+        navLoginBtn.href = 'login.html';
+        navLoginBtn.onclick = null;
+    }
+}
+
+// Affichage du menu au survol du rond
+const avatarTW = document.getElementById('avatarTW');
+const avatarMenu = document.getElementById('avatarMenu');
+let avatarMenuTimeout = null;
+
+avatarTW.addEventListener('mouseenter', () => {
+    avatarMenu.style.display = 'flex';
+});
+avatarTW.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+        if (!avatarMenu.matches(':hover')) avatarMenu.style.display = 'none';
+    }, 100);
+});
+avatarMenu.addEventListener('mouseleave', () => {
+    avatarMenu.style.display = 'none';
+});
+avatarMenu.addEventListener('mouseenter', () => {
+    avatarMenu.style.display = 'flex';
+});
+
+// Affichage du menu pendant 5 secondes au clic sur le rond
+avatarTW.addEventListener('click', () => {
+    avatarMenu.style.display = 'flex';
+    if (avatarMenuTimeout) clearTimeout(avatarMenuTimeout);
+    avatarMenuTimeout = setTimeout(() => {
+        avatarMenu.style.display = 'none';
+    }, 5000);
+});
+
+// Déconnexion : supprime le rond et le menu, met à jour la navbar
+document.getElementById('btnLogout').addEventListener('click', function() {
+    isLoggedIn = false;
+    avatarTW.style.display = 'none';
+    avatarMenu.style.display = 'none';
+    updateNavbarLogin();
+});
+
+// Initialisation au chargement
+window.addEventListener('DOMContentLoaded', function() {
+    // Affiche ou masque le rond selon l'état de connexion
+    avatarTW.style.display = isLoggedIn ? 'block' : 'none';
+    avatarMenu.style.display = 'none';
+    updateNavbarLogin();
+});
+
+// Gestion modale Devis pour tous les boutons "Devis"
+function openDevisModal(event) {
+    event.preventDefault();
+    document.getElementById('devisModal').style.display = 'block';
+    updateDevisLinks();
+}
+function closeDevisModal() {
+    document.getElementById('devisModal').style.display = 'none';
+}
+document.getElementById('closeDevisModal').onclick = closeDevisModal;
+
+function updateDevisLinks() {
+    const prestation = document.getElementById('prestationSelect').options[document.getElementById('prestationSelect').selectedIndex].text;
+    const subject = encodeURIComponent('Demande de devis : ' + prestation);
+    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=contact@magicpscare.fr&su=${subject}`;
+    const outlookLink = `https://outlook.live.com/mail/0/deeplink/compose?to=contact@magicpscare.fr&subject=${subject}`;
+    document.getElementById('gmailDevisBtn').href = gmailLink;
+    document.getElementById('outlookDevisBtn').href = outlookLink;
+}
+document.getElementById('prestationSelect').addEventListener('change', updateDevisLinks);
+
+document.querySelectorAll('.btn-devis, .btn-devis-mailto').forEach(btn => {
+    btn.addEventListener('click', openDevisModal);
+});
+
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('devisModal');
+    const modalContent = document.getElementById('devisModalContent');
+    if (modal.style.display === 'block' && !modalContent.contains(e.target) && e.target.className.indexOf('btn-devis') === -1 && e.target.className.indexOf('btn-devis-mailto') === -1) {
+        modal.style.display = 'none';
+    }
+});
+    </script>
+    <footer class="footer text-center py-4 footer-fix">
+        <div class="container">
+            <small>&copy; 2024 PS Care – Association de Magie. Tous droits réservés.</small>
+        </div>
+    </footer>
+</body>
+</html>

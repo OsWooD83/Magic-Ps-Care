@@ -1,0 +1,284 @@
+/* Bouton œil pour afficher/masquer le mot de passe sur la page de login */
+.eye-icon {
+    pointer-events: none;
+}
+
+/* Correction accessibilité et compatibilité pour le bouton togglePwd */
+#togglePwd {
+    border-radius: 0 1rem 1rem 0 !important;
+}
+body {
+    font-family: 'Cinzel Decorative', serif;
+    background: url('../images/magic-bg.jpg') no-repeat center center fixed, linear-gradient(135deg, #181c2b 0%, #2d1a3a 100%);
+    background-size: cover;
+    color: #f3eaff;
+    min-height: 100vh;
+    position: relative;
+}
+
+.bg-magic {
+    background: rgba(24, 20, 44, 0.92) !important;
+    box-shadow: 0 2px 16px #7c4dff44;
+    border-bottom: 1px solid #7c4dff44;
+}
+
+.navbar {
+    font-family: 'Cinzel Decorative', serif;
+    letter-spacing: 1px;
+}
+
+.navbar-brand {
+    font-size: 2.2rem;
+    color: #ffd700 !important;
+    text-shadow: 0 0 12px #7c4dff88, 0 0 32px #fff17644;
+}
+
+.nav-link {
+    color: #ffd700 !important;
+    transition: color 0.2s, text-shadow 0.2s;
+    font-size: 1.1rem;
+    text-shadow: 0 0 4px #7c4dff44;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #fff176 !important;
+    text-shadow: 0 0 12px #fff17688, 0 0 32px #7c4dff44;
+}
+
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    padding-top: 80px;
+    padding-bottom: 40px;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 60% 40%, #7c4dff33 0%, #18142c 100%);
+    opacity: 0.7;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.magic-title {
+    color: #ffd700;
+    text-shadow: 0 0 24px #7c4dff, 0 0 48px #fff17644;
+    letter-spacing: 2px;
+}
+
+.section {
+    background: rgba(24, 20, 44, 0.88);
+    border-radius: 1.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 4px 32px #7c4dff22;
+}
+
+.section-title {
+    font-family: 'Cinzel Decorative', serif;
+    color: #ffd700;
+    text-shadow: 0 0 16px #7c4dff88, 0 0 32px #fff17644;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+}
+
+.text-magic {
+    color: #7c4dff;
+    text-shadow: 0 0 8px #fff17688, 0 0 16px #7c4dff44;
+}
+
+.btn-magic {
+    background: linear-gradient(90deg, #7c4dff 0%, #ffd700 100%);
+    color: #18142c;
+    border: none;
+    font-weight: bold;
+    box-shadow: 0 2px 12px #7c4dff44;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    border-radius: 2rem;
+    letter-spacing: 1px;
+}
+
+.btn-magic:hover, .btn-magic:focus {
+    background: linear-gradient(90deg, #ffd700 0%, #7c4dff 100%);
+    color: #fff;
+    transform: scale(1.04);
+}
+
+.card, .project-card, .bg-dark.bg-opacity-75 {
+    background: rgba(44, 24, 64, 0.88) !important;
+    color: #f3eaff;
+    border-radius: 1.5rem;
+    border: none;
+}
+
+.project-card {
+    border: 2px solid #7c4dff44;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.project-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 8px 32px #7c4dff55;
+}
+
+.form-control, .form-label {
+    background: transparent;
+    color: #fff;
+    border-color: #7c4dff;
+}
+
+.form-control:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem #ffd70044;
+    background: rgba(44, 24, 64, 0.5);
+    color: #fff;
+}
+
+.btn:focus, .form-control:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem #7c4dff44;
+}
+
+.footer {
+    background: rgba(24, 20, 44, 0.97);
+    color: #b39ddb;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    border-top: 1px solid #7c4dff44;
+    box-shadow: 0 -2px 16px #7c4dff22;
+}
+
+/* Effet magique animé pour le fond du tableau des prestations */
+.table.bg-dark.bg-opacity-75 {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+.table.bg-dark.bg-opacity-75::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.33;
+    background:
+        radial-gradient(circle at 30% 40%, #ffd70088 0%, transparent 60%),
+        radial-gradient(circle at 70% 60%, #7c4dff66 0%, transparent 70%),
+        radial-gradient(circle at 50% 80%, #fff17644 0%, transparent 80%);
+    background-size: 200% 200%, 180% 180%, 220% 220%;
+    background-repeat: no-repeat;
+    animation: magic-bg-move 8s linear infinite alternate;
+    transition: opacity 0.3s;
+}
+
+@keyframes magic-bg-move {
+    0% {
+        background-position:
+            30% 40%,
+            70% 60%,
+            50% 80%;
+        opacity: 0.22;
+    }
+    25% {
+        background-position:
+            40% 50%,
+            60% 70%,
+            60% 70%;
+        opacity: 0.30;
+    }
+    50% {
+        background-position:
+            60% 30%,
+            40% 80%,
+            80% 40%;
+        opacity: 0.38;
+    }
+    75% {
+        background-position:
+            50% 60%,
+            80% 30%,
+            30% 60%;
+        opacity: 0.30;
+    }
+    100% {
+        background-position:
+            30% 40%,
+            70% 60%,
+            50% 80%;
+        opacity: 0.22;
+    }
+}
+
+.table.bg-dark.bg-opacity-75 > * {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 991px) {
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+    .section-title {
+        font-size: 1.5rem;
+    }
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    .project-card {
+        margin-bottom: 1.5rem;
+    }
+    .hero-section {
+        padding-top: 100px;
+        padding-bottom: 30px;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-section {
+        min-height: 60vh;
+        padding-top: 110px;
+        padding-bottom: 20px;
+    }
+    .display-2, .display-3 {
+        font-size: 2rem !important;
+    }
+    .section {
+        padding: 1.2rem 0.5rem;
+        border-radius: 1rem;
+    }
+    .section-title {
+        font-size: 1.2rem;
+    }
+    .btn-magic, .btn-lg {
+        font-size: 1rem !important;
+        padding: 0.7rem 1.2rem !important;
+    }
+    .project-card {
+        border-radius: 1rem;
+        font-size: 1rem;
+    }
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    form {
+        padding: 1.2rem !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .container, .container-fluid {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+    .hero-section {
+        padding-top: 120px;
+        padding-bottom: 10px;
+    }
+    .footer {
+        font-size: 0.95rem;
+    }
+}

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Galerie Photographie</title>
+    <style>
+        body {
+            background: #0d47a1;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            padding: 16px;
+        }
+        .gallery img {
+            width: 100%;
+            height: 450px;
+            object-fit: contain;
+            background: #0d47a1;
+            display: block;
+            /* border-radius: 8px; */ /* Décommente cette ligne si tu veux des coins carrés */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.4s cubic-bezier(.4,2,.6,1), box-shadow 0.4s;
+        }
+        .gallery img.zoomed,
+        .gallery img:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            z-index: 2;
+        }
+        .gallery-item {
+            flex: 1 1 calc(33.333% - 16px);
+            max-width: calc(33.333% - 16px);
+        }
+        @media (max-width: 900px) {
+            .gallery-item {
+                flex: 1 1 calc(50% - 16px);
+                max-width: calc(50% - 16px);
+            }
+        }
+        @media (max-width: 600px) {
+            .gallery-item {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+        }
+        /* Modale pour l'image en grand */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .modal.open {
+            display: flex;
+        }
+        .modal img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            background: #0d47a1;
+            border-radius: 8px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+            cursor: grab;
+            transition: box-shadow 0.4s;
+        }
+        .modal img:active {
+            cursor: grabbing;
+        }
+        .modal-close {
+            position: absolute;
+            top: 32px;
+            right: 48px;
+            font-size: 2.5rem;
+            color: #fff;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            z-index: 1001;
+            user-select: none;
+        }
+        .modal-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            color: #fff;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            z-index: 1002;
+        }
+        .modal-arrow-left {
+            left: 32px;
+        }
+        .modal-arrow-right {
+            right: 32px;
+        }
+        .modal-arrow:hover {
+            background: rgba(33,150,243,0.8);
+        }
+        .modal-zoom-controls {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            z-index: 1003;
+        }
+        .zoom-btn {
+            font-size: 2rem;
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(33,150,243,0.9);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: background 0.2s;
+        }
+        .zoom-btn:hover {
+            background: #1976d2;
+        }
+        /* Style pour le bouton + en haut à droite */
+        #addPhotoContainer {
+            display: none;
+            position: fixed;
+            top: 18px;
+            right: 24px;
+            z-index: 2000;
+            padding: 0;
+        }
+        #addPhotoBtn {
+            font-size: 2rem;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: background 0.2s;
+        }
+        #addPhotoBtn:hover {
+            background: #1565c0;
+        }
+        body {
+            position: relative;
+        }
+        /* Effet magique professionnel pour le titre */
+        .magic-title {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 2.7rem;
+            letter-spacing: 2.5px;
+            margin: 0;
+            background: linear-gradient(90deg, #fff 10%, #42a5f5 40%, #ffd700 60%, #fff 90%);
+            background-size: 200% auto;
+            color: #fff;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 24px #1976d2, 0 1px 0 #fff, 0 0 8px #ffd70080;
+            animation: magic-gradient-move 3s linear infinite, magic-shine 2.5s ease-in-out infinite;
+            position: relative;
+        }
+        @keyframes magic-gradient-move {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        /* Animation de brillance */
+        @keyframes magic-shine {
+            0%, 100% { text-shadow: 0 4px 24px #1976d2, 0 1px 0 #fff, 0 0 8px #ffd70080; }
+            50% { text-shadow: 0 6px 32px #42a5f5, 0 2px 0 #fff, 0 0 24px #ffd700cc; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Bouton Accueil en haut à droite -->
+    <div style="position:fixed; top:18px; left:24px; z-index:2100;">
+        <button id="homeBtn" title="Accueil" style="font-size:1.2rem; background:#1976d2; color:#fff; border:none; border-radius:50%; width:48px; height:48px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:background 0.2s;">
+            🏠
+        </button>
+    </div>
+    <script>
+        // Bouton accueil
+        document.getElementById('homeBtn').onclick = function() {
+            window.location.href = 'index.html';
+        };
+    </script>
+    <!-- Bouton + (affiché seulement si connecté) -->
+    <div id="addPhotoContainer">
+        <button id="addPhotoBtn" title="Ajouter une photo">+</button>
+        <!-- Formulaire d'upload amélioré avec aperçu -->
+        <form id="uploadForm" style="display:none; position:absolute; top:70px; right:0; background:#fff; padding:28px 32px 24px 32px; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.18); z-index:2100; min-width:320px;">
+            <label for="photoInput" style="display:block; font-size:1.2rem; color:#1976d2; margin-bottom:18px; font-weight:bold; text-align:center;">
+                Sélectionnez une image ou vidéo à ajouter<br>
+                <span style="font-size:0.95rem; color:#888; font-weight:normal;">
+                    (Pour la vidéo : 1080p 60fps recommandé)
+                </span>
+            </label>
+            <input type="file" id="photoInput" accept="image/*,video/mp4" required
+                style="display:block; width:100%; font-size:1.1rem; margin-bottom:22px; padding:10px 0;">
+            <div id="previewContainer" style="display:none; justify-content:center; margin-bottom:18px;">
+                <img id="previewImg" src="" alt="Aperçu" style="max-width:220px; max-height:180px; border-radius:8px; box-shadow:0 2px 8px #1976d233; display:none;">
+                <video id="previewVideo" controls playsinline preload="metadata" style="max-width:220px; max-height:180px; border-radius:8px; box-shadow:0 2px 8px #1976d233; display:none;"></video>
+            </div>
+            <div style="display:flex; gap:18px; justify-content:center;">
+                <button type="submit" style="font-size:1.15rem; padding:10px 28px; border-radius:8px; background:#1976d2; color:#fff; border:none; cursor:pointer; font-weight:bold; box-shadow:0 2px 8px rgba(33,150,243,0.12); transition:background 0.2s;">
+                    Envoyer
+                </button>
+                <button type="button" id="cancelUpload" style="font-size:1.15rem; padding:10px 28px; border-radius:8px; background:#eee; color:#1976d2; border:none; cursor:pointer; font-weight:bold; box-shadow:0 2px 8px rgba(33,150,243,0.06); transition:background 0.2s;">
+                    Annuler
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- Titre centré en haut -->
+    <div style="text-align:center; margin-top:18px; margin-bottom:12px;">
+        <h1 class="magic-title">
+            Photographie / video
+        </h1>
+        <div id="filterBar" style="margin-top:18px; display:flex; justify-content:center; gap:18px;">
+            <button class="filter-btn filter-anim" data-filter="all">Tout</button>
+            <button class="filter-btn filter-anim" data-filter="photo">Photos</button>
+            <button class="filter-btn filter-anim" data-filter="video">Vidéos</button>
+            <select id="sortSelect" style="margin-left:32px; font-size:1.1rem; border-radius:8px; padding:8px 18px; border:1.5px solid #1976d2; color:#1976d2; font-weight:bold; background:#fff; box-shadow:0 2px 8px #1976d211;">
+                <option value="desc">Dernier ajout</option>
+                <option value="asc">Premier ajout</option>
+            </select>
+        </div>
+    </div>
+    <div class="gallery" id="gallery">
+        <!-- Les images seront chargées dynamiquement -->
+    </div>
+    <!-- Modale pour afficher l'image en grand -->
+    <div class="modal" id="modal">
+        <span class="modal-close" id="modalClose">&times;</span>
+        <span class="modal-arrow modal-arrow-left" id="modalPrev">&#8592;</span>
+        <img id="modalImg" src="" alt="Image en grand" style="display:none;">
+        <video id="modalVideo" controls style="max-width:90vw; max-height:90vh; background:#0d47a1; border-radius:8px; box-shadow:0 4px 32px rgba(0,0,0,0.5); display:none;"></video>
+        <span class="modal-arrow modal-arrow-right" id="modalNext">&#8594;</span>
+        <div class="modal-zoom-controls">
+            <button id="zoomIn" title="Zoomer" class="zoom-btn">+</button>
+            <span id="zoomLevel" style="color:#fff; font-size:1.3rem; min-width:60px; text-align:center; user-select:none;">100%</span>
+            <button id="zoomOut" title="Dézoomer" class="zoom-btn">−</button>
+        </div>
+    </div>
+    <style>
+        /* ...existing code... */
+        .modal {
+            /* ...existing code... */
+            overflow: hidden;
+        }
+        .modal img {
+            /* ...existing code... */
+            cursor: grab;
+            transition: box-shadow 0.4s;
+        }
+        .modal img:active {
+            cursor: grabbing;
+        }
+        .filter-btn {
+            font-size: 1.15rem;
+            padding: 12px 36px;
+            border-radius: 32px;
+            border: none;
+            background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(33,150,243,0.18), 0 1.5px 0 #fff;
+            transition: background 0.3s, transform 0.18s, box-shadow 0.3s, color 0.3s;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            opacity: 0.7;
+            letter-spacing: 1.5px;
+        }
+        .filter-btn:focus {
+            outline: none;
+        }
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: linear-gradient(90deg, #ffd700 0%, #42a5f5 100%);
+            color: #1976d2;
+            transform: scale(1.08) rotate(-2deg);
+            box-shadow: 0 8px 32px #ffd70055, 0 2px 0 #fff;
+            opacity: 1;
+        }
+        .filter-btn .shine {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(120deg, transparent 60%, #fff8 80%, transparent 100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .filter-btn.animating .shine {
+            opacity: 1;
+            animation: shine-move 0.7s linear;
+        }
+        @keyframes shine-move {
+            0% { transform: translateX(-120%) rotate(10deg);}
+            80% { opacity: 1;}
+            100% { transform: translateX(120%) rotate(10deg); opacity: 0;}
+        }
+        .delete-btn {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #e5393533;
+            opacity: 0.85;
+            z-index: 10;
+            transition: background 0.2s, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .delete-btn:hover {
+            background: #b71c1c;
+            opacity: 1;
+        }
+        .gallery-item {
+            position: relative;
+            flex: 1 1 calc(33.333% - 16px);
+            max-width: calc(33.333% - 16px);
+        }
+        @media (max-width: 900px) {
+            .gallery-item {
+                flex: 1 1 calc(50% - 16px);
+                max-width: calc(50% - 16px);
+            }
+        }
+        @media (max-width: 600px) {
+            .gallery-item {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+    <script>
+        // Ajoute la classe "zoomed" au survol via JS (pour montrer l'intégration JS)
+        document.querySelectorAll('.gallery img').forEach(img => {
+            img.addEventListener('mouseenter', () => img.classList.add('zoomed'));
+            img.addEventListener('mouseleave', () => img.classList.remove('zoomed'));
+        });
+        // Modale JS
+        const modal = document.getElementById('modal');
+        const modalImg = document.getElementById('modalImg');
+        const modalClose = document.getElementById('modalClose');
+        // --- Ajout pour upload et affichage dynamique des images ---
+        const addPhotoBtn = document.getElementById('addPhotoBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const photoInput = document.getElementById('photoInput');
+        const cancelUpload = document.getElementById('cancelUpload');
+        const gallery = document.getElementById('gallery');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImg = document.getElementById('previewImg');
+        const previewVideo = document.getElementById('previewVideo');
+        let images = [];
+        let currentIndex = -1;
+        let currentScale = 1;
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let imgX = 0, imgY = 0;
+
+        // Affiche/cacher le formulaire d'upload
+        addPhotoBtn.addEventListener('click', (e) => {
+            uploadForm.style.display = uploadForm.style.display === 'none' ? 'block' : 'none';
+            photoInput.value = '';
+            previewContainer.style.display = 'none';
+            previewImg.src = '';
+        });
+        cancelUpload.addEventListener('click', () => {
+            uploadForm.style.display = 'none';
+            photoInput.value = '';
+            previewContainer.style.display = 'none';
+            previewImg.src = '';
+        });
+
+        // Aperçu de l'image ou vidéo sélectionnée
+        photoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                const url = URL.createObjectURL(file);
+                if (file.type.startsWith('image/')) {
+                    previewImg.src = url;
+                    previewImg.style.display = 'block';
+                    previewVideo.style.display = 'none';
+                    previewContainer.style.display = 'flex';
+                } else if (file.type === 'video/mp4') {
+                    previewVideo.src = url;
+                    previewVideo.style.display = 'block';
+                    previewImg.style.display = 'none';
+                    previewContainer.style.display = 'flex';
+                } else {
+                    previewContainer.style.display = 'none';
+                    previewImg.src = '';
+                    previewVideo.src = '';
+                    previewImg.style.display = 'none';
+                    previewVideo.style.display = 'none';
+                }
+            } else {
+                previewContainer.style.display = 'none';
+                previewImg.src = '';
+                previewVideo.src = '';
+                previewImg.style.display = 'none';
+                previewVideo.style.display = 'none';
+            }
+        });
+
+        // Upload de la photo
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!photoInput.files.length) return;
+            const file = photoInput.files[0];
+            const formData = new FormData();
+            formData.append('photos', file);
+
+            try {
+                const res = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!res.ok) {
+                    let msg = 'Erreur upload';
+                    try {
+                        const errData = await res.json();
+                        if (errData && errData.error) msg = errData.error;
+                    } catch {}
+                    throw new Error(msg);
+                }
+                const data = await res.json();
+                // Ajout uniquement si data.url existe
+                if (data && data.url) {
+                    addImageToGallery(data.url, file.name);
+                }
+                uploadForm.style.display = 'none';
+                photoInput.value = '';
+                previewContainer.style.display = 'none';
+                previewImg.src = '';
+            } catch (err) {
+                alert('Erreur lors de l\'upload : ' + (err.message || err));
+            }
+        });
+
+        // Fonction pour ajouter une image à la galerie et à la liste images[]
+        function addImageToGallery(url, alt, id) {
+            let mediaElem;
+            if (url.match(/\.(mp4)$/i)) {
+                mediaElem = document.createElement('video');
+                mediaElem.src = url;
+                mediaElem.controls = true;
+                mediaElem.playsInline = true;
+                mediaElem.preload = "metadata";
+                mediaElem.style.width = '100%';
+                mediaElem.style.height = '450px';
+                mediaElem.style.objectFit = 'contain';
+                mediaElem.style.background = '#0d47a1';
+                // Forcer la taille d'affichage 1080p si possible
+                mediaElem.width = 1920;
+                mediaElem.height = 1080;
+                // Lecture automatique sans son au survol
+                mediaElem.addEventListener('mouseenter', () => {
+                    mediaElem.muted = true;
+                    mediaElem.currentTime = 0;
+                    mediaElem.play();
+                    mediaElem.playbackRate = 1; // 1x, la vidéo doit être encodée en 60fps pour que ce soit fluide
+                });
+                mediaElem.addEventListener('mouseleave', () => {
+                    mediaElem.pause();
+                    mediaElem.currentTime = 0;
+                });
+                mediaElem.addEventListener('loadedmetadata', () => {
+                    mediaElem.playbackRate = 1;
+                });
+                mediaElem.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    modalImg.style.display = 'none';
+                    modalVideo.src = url;
+                    modalVideo.style.display = 'block';
+                    modalVideo.playsInline = true;
+                    modalVideo.preload = "metadata";
+                    modalVideo.width = 1920;
+                    modalVideo.height = 1080;
+                    modalVideo.currentTime = 0;
+                    modalVideo.playbackRate = 1; // Force 1x (60fps si la vidéo est encodée ainsi)
+                    modalVideo.muted = true; // Optionnel : muet par défaut pour l'autoplay
+                    modalVideo.play().catch(()=>{}); // Démarre la lecture pour la fluidité
+                    modal.classList.add('open');
+                    currentIndex = images.indexOf(mediaElem);
+                    currentScale = 1;
+                    imgX = 0;
+                    imgY = 0;
+                    updateTransform();
+                    document.getElementById('addPhotoContainer').style.display = 'none';
+                });
+            } else {
+                mediaElem = document.createElement('img');
+                mediaElem.src = url;
+                mediaElem.alt = alt || '';
+                mediaElem.addEventListener('mouseenter', () => mediaElem.classList.add('zoomed'));
+                mediaElem.addEventListener('mouseleave', () => mediaElem.classList.remove('zoomed'));
+                mediaElem.addEventListener('click', () => {
+                    modalImg.src = mediaElem.src;
+                    modalImg.alt = mediaElem.alt;
+                    modalImg.style.display = 'block';
+                    modalVideo.style.display = 'none';
+                    modal.classList.add('open');
+                    currentIndex = images.indexOf(mediaElem);
+                    currentScale = 1;
+                    imgX = 0;
+                    imgY = 0;
+                    updateTransform();
+                    document.getElementById('addPhotoContainer').style.display = 'none';
+                });
+            }
+            const wrapper = document.createElement('div');
+            wrapper.className = 'gallery-item';
+            if (id) wrapper.setAttribute('data-photo-id', id);
+            wrapper.appendChild(mediaElem);
+
+            // Ajout du bouton supprimer si connecté
+            if (isUserLoggedIn) {
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-btn';
+                delBtn.title = 'Supprimer ce média';
+                delBtn.innerHTML = '&times;';
+                delBtn.onclick = async (e) => {
+                    e.stopPropagation();
+                    if (!confirm('Supprimer ce média ?')) return;
+                    try {
+                        const photoId = wrapper.getAttribute('data-photo-id');
+                        const res = await fetch('/delete-photo', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: photoId })
+                        });
+                        if (!res.ok) throw new Error('Erreur suppression');
+                        wrapper.remove();
+                        images = images.filter(img => img !== mediaElem);
+                    } catch (err) {
+                        alert('Erreur lors de la suppression');
+                    }
+                };
+                wrapper.appendChild(delBtn);
+            }
+
+            gallery.appendChild(wrapper);
+            images.push(mediaElem);
+        }
+
+        // Charger les images depuis le serveur au chargement de la page
+        async function loadImages() {
+            gallery.innerHTML = '';
+            images = [];
+            try {
+                const res = await fetch('/photos');
+                let data = await res.json();
+                // Tri selon le choix
+                if (sortOrder === 'asc') {
+                    data = data.slice().reverse();
+                }
+                data.forEach(photo => addImageToGallery(photo.url, photo.alt, photo.id));
+            } catch (err) {
+                gallery.innerHTML = '<div style="color:white;text-align:center;">Erreur de chargement des images</div>';
+            }
+        }
+        loadImages();
+
+        // Modale vidéo
+        const modalVideo = document.getElementById('modalVideo');
+
+        // Fermer la modale pour image ET vidéo
+        function closeModal() {
+            modal.classList.remove('open');
+            modalImg.src = '';
+            modalVideo.src = '';
+            modalImg.style.display = 'none';
+            modalVideo.style.display = 'none';
+            currentIndex = -1;
+            currentScale = 1;
+            imgX = 0;
+            imgY = 0;
+            updateTransform();
+            if (isUserLoggedIn) {
+                document.getElementById('addPhotoContainer').style.display = 'block';
+            }
+        }
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Optionnel : navigation clavier
+        document.addEventListener('keydown', (e) => {
+            if (!modal.classList.contains('open')) return;
+            if (e.key === 'ArrowLeft') showImage(currentIndex - 1);
+            if (e.key === 'ArrowRight') showImage(currentIndex + 1);
+            if (e.key === 'Escape') {
+                modal.classList.remove('open');
+                modalImg.src = '';
+                currentIndex = -1;
+                currentScale = 1;
+                imgX = 0;
+                imgY = 0;
+                updateTransform();
+                // Réafficher le bouton + si connecté
+                if (isUserLoggedIn) {
+                    document.getElementById('addPhotoContainer').style.display = 'block';
+                }
+            }
+            if (e.key === '+' || e.key === '=') zoom(0.2);
+            if (e.key === '-' || e.key === '_') zoom(-0.2);
+        });
+
+        // Ajout navigation par clic sur les flèches
+        document.getElementById('modalPrev').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showImage(currentIndex - 1);
+        });
+        document.getElementById('modalNext').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showImage(currentIndex + 1);
+        });
+
+        // Fonction pour afficher l'image précédente/suivante
+        function showImage(index) {
+            if (images.length === 0) return;
+            if (index < 0) index = images.length - 1;
+            if (index >= images.length) index = 0;
+            currentIndex = index;
+            const mediaElem = images[currentIndex];
+            if (mediaElem.tagName === 'IMG') {
+                modalImg.src = mediaElem.src;
+                modalImg.alt = mediaElem.alt;
+                modalImg.style.display = 'block';
+                modalVideo.style.display = 'none';
+            } else if (mediaElem.tagName === 'VIDEO') {
+                modalImg.style.display = 'none';
+                modalVideo.src = mediaElem.src;
+                modalVideo.style.display = 'block';
+                modalVideo.currentTime = 0;
+                modalVideo.play().catch(()=>{});
+            }
+            currentScale = 1;
+            imgX = 0;
+            imgY = 0;
+            updateTransform();
+        }
+
+        // Zoom controls
+        function zoom(delta) {
+            currentScale += delta;
+            if (currentScale < 0.2) currentScale = 0.2;
+            if (currentScale > 5) currentScale = 5;
+            // Reset position if on zoom out to 1
+            if (currentScale === 1) {
+                imgX = 0;
+                imgY = 0;
+            }
+            updateTransform();
+            updateZoomLevel();
+        }
+        document.getElementById('zoomIn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            zoom(0.2);
+        });
+        document.getElementById('zoomOut').addEventListener('click', (e) => {
+            e.stopPropagation();
+            zoom(-0.2);
+        });
+
+        // Affichage du niveau de zoom
+        function updateZoomLevel() {
+            const percent = Math.round(currentScale * 100);
+            document.getElementById('zoomLevel').textContent = percent + '%';
+        }
+        // Initialiser le niveau de zoom à l'ouverture de la modale
+        if (document.getElementById('zoomLevel')) updateZoomLevel();
+
+        // Mettre à jour le niveau de zoom à chaque ouverture d'image dans la modale
+        const oldShowImage = typeof showImage === 'function' ? showImage : null;
+        function showImage(index) {
+            if (images.length === 0) return;
+            if (index < 0) index = images.length - 1;
+            if (index >= images.length) index = 0;
+            currentIndex = index;
+            const mediaElem = images[currentIndex];
+            if (mediaElem.tagName === 'IMG') {
+                modalImg.src = mediaElem.src;
+                modalImg.alt = mediaElem.alt;
+                modalImg.style.display = 'block';
+                modalVideo.style.display = 'none';
+            } else if (mediaElem.tagName === 'VIDEO') {
+                modalImg.style.display = 'none';
+                modalVideo.src = mediaElem.src;
+                modalVideo.style.display = 'block';
+                modalVideo.currentTime = 0;
+                modalVideo.play().catch(()=>{});
+            }
+            currentScale = 1;
+            imgX = 0;
+            imgY = 0;
+            updateTransform();
+            updateZoomLevel();
+        }
+
+        // Drag to move image when zoomed
+        modalImg.addEventListener('mousedown', (e) => {
+            if (currentScale <= 1) return;
+            isDragging = true;
+            startX = e.clientX - imgX;
+            startY = e.clientY - imgY;
+            modalImg.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            imgX = e.clientX - startX;
+            imgY = e.clientY - startY;
+            updateTransform();
+        });
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                modalImg.style.cursor = 'grab';
+            }
+        });
+
+        // Touch events for mobile
+        modalImg.addEventListener('touchstart', (e) => {
+            if (currentScale <= 1) return;
+            isDragging = true;
+            const touch = e.touches[0];
+            startX = touch.clientX - imgX;
+            startY = touch.clientY - imgY;
+            e.preventDefault();
+        }, {passive: false});
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            imgX = touch.clientX - startX;
+            imgY = touch.clientY - startY;
+            updateTransform();
+        }, {passive: false});
+        document.addEventListener('touchend', () => {
+            if (isDragging) {
+                isDragging = false;
+            }
+        });
+        // Simule l'état de connexion utilisateur (à remplacer par votre logique réelle)
+        const isUserLoggedIn = !!localStorage.getItem('userToken'); // true si connecté, false sinon
+
+        // Affiche le bouton + si connecté
+        if (isUserLoggedIn) {
+            document.getElementById('addPhotoContainer').style.display = 'block';
+        } else {
+            document.getElementById('addPhotoContainer').style.display = 'none';
+        }
+
+        // Animation spéciale sur les boutons de filtre
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            // Ajoute le span shine pour l'effet
+            if (!btn.querySelector('.shine')) {
+                const shine = document.createElement('span');
+                shine.className = 'shine';
+                btn.appendChild(shine);
+            }
+            btn.addEventListener('mouseenter', function() {
+                btn.classList.add('animating');
+                setTimeout(() => btn.classList.remove('animating'), 700);
+            });
+        });
+
+        // Ajout du filtrage + gestion active
+        function filterGallery(type) {
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                const img = item.querySelector('img');
+                const video = item.querySelector('video');
+                if (type === 'all') {
+                    item.style.display = '';
+                } else if (type === 'photo') {
+                    item.style.display = img ? '' : 'none';
+                } else if (type === 'video') {
+                    item.style.display = video ? '' : 'none';
+                }
+            });
+        }
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterGallery(this.dataset.filter);
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        // Par défaut, active "Tout"
+        document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+
+        // Ajout du tri par date d'ajout
+        let sortOrder = 'desc';
+        document.getElementById('sortSelect').addEventListener('change', function() {
+            sortOrder = this.value;
+            loadImages();
+        });
+        function updateTransform() {
+        // TODO: Implement image transform logic (zoom, pan, etc.)
+    }
+    </script>
+</body>
+</html>
