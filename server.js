@@ -6,7 +6,14 @@ const multer = require('multer');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
+
 const app = express();
+
+// CORS pour autoriser le frontend Vercel
+app.use(cors({
+  origin: 'https://magicpscare.vercel.app',
+  credentials: true
+}));
 
 // Middleware de session placé AVANT toutes les routes qui utilisent req.session
 app.use(session({
