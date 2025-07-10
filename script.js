@@ -1,10 +1,13 @@
 // ...code existant...
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Vérifier si l'utilisateur est connecté (exemple avec un token)
-  const isConnected = !!localStorage.getItem('token'); // ou autre méthode selon votre logique
+  const isConnected = !!localStorage.getItem('token');
+  if (!isConnected) {
+    // Redirige l'utilisateur non connecté
+    window.location.href = 'login.html'; // ou une autre page
+  }
 
-  if (isConnected && window.location.pathname.endsWith('photographie.html')) {
+  if (window.location.pathname.endsWith('photographie.html')) {
     document.getElementById('photographie-actions').style.display = 'block';
 
     document.getElementById('ajouter-image').addEventListener('click', () => {
@@ -36,6 +39,13 @@ window.addEventListener('DOMContentLoaded', () => {
     .catch(error => {
       console.error('Erreur fetch :', error);
     });
+});
+
+document.getElementById('deconnexion').addEventListener('click', () => {
+  // Suppression du token d'authentification
+  localStorage.removeItem('token');
+  // Redirection vers la page de connexion ou d'accueil
+  window.location.href = 'login.html'; // ou une autre page selon votre logique
 });
 
 // ...code existant...
