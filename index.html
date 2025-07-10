@@ -791,23 +791,27 @@ document.getElementById('btnLogout').addEventListener('click', function() {
 
 // Au chargement de la page, vérifie la session côté serveur pour savoir si l'utilisateur est connecté
 window.addEventListener('DOMContentLoaded', function() {
-    // Appel API pour vérifier la session
-    fetch('/api/session')
-        .then(r => r.json())
-        .then(data => {
-            isLoggedIn = data.authenticated; // Met à jour l'état de connexion
-            const isAdmin = data.user && data.user.is_admin; // Vérifie si l'utilisateur est admin
-            avatarTW.style.display = isLoggedIn ? 'block' : 'none'; // Affiche le rond si connecté
-            avatarMenu.style.display = 'none'; // Cache le menu au départ
-            updateNavbarLogin(); // Met à jour la navbar
-            // Affiche le bouton stats seulement pour les admins
-            const btnStats = document.getElementById('btnStats');
-            if (isAdmin) {
-                if (btnStats) btnStats.style.display = 'inline-block';
-            } else {
-                if (btnStats) btnStats.style.display = 'none';
-            }
-        });
+    // 1. Vérifie d'abord le localStorage pour le rôle utilisateur
+    let isAdmin = false;
+    let isUser = false;
+    if (localStorage.getItem('user_email')) {
+        isUser = true;
+        isAdmin = localStorage.getItem('is_admin') === '1';
+    }
+    isLoggedIn = isUser;
+    avatarTW.style.display = isLoggedIn ? 'block' : 'none';
+    avatarMenu.style.display = 'none';
+    updateNavbarLogin();
+    // Affiche le bouton stats seulement pour les admins
+    const btnStats = document.getElementById('btnStats');
+    if (isAdmin) {
+        if (btnStats) btnStats.style.display = 'inline-block';
+    } else {
+        if (btnStats) btnStats.style.display = 'none';
+    }
+    // Optionnel : afficher une interface différente pour spectateur vs utilisateur
+    // Par exemple, masquer certaines sections si spectateur
+    // if (!isUser) { ... }
 });
 
 // Gestion modale Devis pour tous les boutons "Devis"

@@ -167,13 +167,12 @@
         const msg = document.getElementById('loginMsg');
         msg.textContent = '';
         try {
-            // 4. Le fetch cible bien /api/login en POST
+            // 1. Envoi de la requête de connexion
             const res = await fetch('https://backend-ps-care.onrender.com/api/login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ email, password })
             });
-            // 5. Gestion robuste de la réponse JSON
             let data = {};
             let text = await res.text();
             try {
@@ -190,7 +189,17 @@
                 msg.textContent = 'Connexion réussie !';
                 msg.style.color = 'limegreen';
                 document.getElementById('avatarTW').style.display = 'flex';
-                // Plus de localStorage : tout est géré par la session Node.js
+                // 2. Stocker le rôle utilisateur dans le localStorage
+                if (typeof data.is_admin !== 'undefined') {
+                    localStorage.setItem('is_admin', data.is_admin ? '1' : '0');
+                }
+                if (typeof data.nom !== 'undefined') {
+                    localStorage.setItem('user_nom', data.nom);
+                }
+                if (typeof data.email !== 'undefined') {
+                    localStorage.setItem('user_email', data.email);
+                }
+                // 3. Rediriger vers l'accueil
                 window.location.href = 'index.html';
             } else {
                 msg.textContent = data.message || 'Échec de la connexion.';
