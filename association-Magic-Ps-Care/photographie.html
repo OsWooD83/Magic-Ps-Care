@@ -194,23 +194,35 @@
 </head>
 <body>
     <!-- Bouton Accueil en haut à gauche, bouton Déconnexion en dessous -->
-    <div id="homeLogoutContainer" class="home-logout-container">
+    <div id="homeLogoutContainer" style="position:fixed;top:18px;left:24px;z-index:2100;display:flex;flex-direction:column;align-items:flex-start;">
         <button id="homeBtn" title="Accueil" class="home-btn">🏠</button>
-        <button id="logoutBtn" title="Déconnexion" class="logout-btn logout-btn-below logout-btn-margin">⎋</button>
+        <button id="logoutBtn" title="Déconnexion" class="logout-btn logout-btn-below" style="margin-top:60px;">⎋</button>
     </div>
     <script>
         // Bouton accueil
         document.getElementById('homeBtn').onclick = function() {
             window.location.href = 'index.html';
         };
-        // Bouton déconnexion
-        document.getElementById('logoutBtn').onclick = async function() {
-            try {
-                const res = await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
-                if (!res.ok) throw new Error('Erreur lors de la déconnexion');
-                window.location.reload();
-            } catch (err) {
-                alert('Erreur lors de la déconnexion');
+        // Bouton déconnexion - utilise la fonction centralisée
+        document.getElementById('logoutBtn').onclick = function() {
+            if (typeof performLogout === 'function') {
+                performLogout();
+            } else {
+                // Fallback si la fonction centralisée n'est pas disponible
+                fetch('/api/logout', { method: 'POST', credentials: 'same-origin' })
+                    .then(response => {
+                        if (response.ok) {
+                            localStorage.removeItem('token');
+                            window.location.href = 'index.html';
+                        } else {
+                            throw new Error('Erreur lors de la déconnexion');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Erreur lors de la déconnexion:', err);
+                        localStorage.removeItem('token');
+                        window.location.href = 'index.html';
+                    });
             }
         };
 
@@ -276,7 +288,7 @@
             <button id="zoomReset" title="Réinitialiser le zoom" class="zoom-btn">⟳</button>
         </div>
     </div>
-    <div id="photographie-actions" class="photographie-actions-hidden">
+    <div id="photographie-actions" style="display: none;">
       <button id="ajouter-image">Ajouter une image</button>
       <button id="supprimer-image">Supprimer une image</button>
     </div>
@@ -802,44 +814,20 @@
         // Vérifie l'état de connexion via la session Node.js
         let isUserLoggedIn = false;
         let isAdmin = false;
-        fetch('https://backend-ps-care.onrender.com/api/session', {
-            credentials: 'include'
-        })
-            .then(res => {
-                // Gestion silencieuse des erreurs
-                if (!res.ok) {
-                    throw new Error('Session non disponible');
-                }
-                const contentType = res.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Réponse non JSON');
-                }
-                return res.json();
-            })
+        fetch('/api/session')
+            .then(res => res.json())
             .then(data => {
                 isUserLoggedIn = !!(data && data.authenticated);
                 isAdmin = !!(data && data.user && data.user.is_admin);
                 // Affiche ou masque le bouton déconnexion
-                if (typeof updateLogoutVisibility === 'function') {
-                    updateLogoutVisibility(isUserLoggedIn);
-                }
-                const container = document.getElementById('addPhotoContainer');
-                if (container) {
-                    container.style.display = isUserLoggedIn ? 'block' : 'none';
+                updateLogoutVisibility(isUserLoggedIn);
+                if (isUserLoggedIn) {
+                    document.getElementById('addPhotoContainer').style.display = 'block';
+                } else {
+                    document.getElementById('addPhotoContainer').style.display = 'none';
                 }
                 // Recharge la galerie pour afficher les croix de suppression si besoin
-                if (typeof loadImages === 'function') loadImages();
-            })
-            .catch(err => {
-                // Gestion silencieuse - pas d'affichage d'erreur
-                isUserLoggedIn = false;
-                isAdmin = false;
-                if (typeof updateLogoutVisibility === 'function') {
-                    updateLogoutVisibility(false);
-                }
-                const container = document.getElementById('addPhotoContainer');
-                if (container) container.style.display = 'none';
-                if (typeof loadImages === 'function') loadImages();
+                loadImages();
             });
 
         // On ne montre la croix de suppression que si connecté

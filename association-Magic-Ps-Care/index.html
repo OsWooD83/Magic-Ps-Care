@@ -727,15 +727,26 @@ function updateNavbarLogin() {
         navLoginBtn.href = '#'; // Empêche la navigation
         navLoginBtn.onclick = function(e) {
             e.preventDefault();
-            // Déconnexion via la navbar : envoie une requête au serveur pour déconnecter, puis recharge la page
-            fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
-                .then(() => {
-                    isLoggedIn = false;
-                    avatarTW.style.display = 'none';
-                    avatarMenu.style.display = 'none';
-                    updateNavbarLogin();
-                    window.location.reload();
-                });
+            // Utilise la fonction centralisée de déconnexion
+            if (typeof performLogout === 'function') {
+                performLogout();
+            } else {
+                // Fallback si la fonction centralisée n'est pas disponible
+                fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST', credentials: 'include' })
+                    .then(() => {
+                        isLoggedIn = false;
+                        avatarTW.style.display = 'none';
+                        avatarMenu.style.display = 'none';
+                        updateNavbarLogin();
+                        localStorage.removeItem('token');
+                        window.location.href = 'index.html';
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la déconnexion:', error);
+                        localStorage.removeItem('token');
+                        window.location.href = 'index.html';
+                    });
+            }
         };
     } else {
         navLoginBtn.textContent = 'login'; // Affiche "login" si l'utilisateur n'est pas connecté
@@ -777,16 +788,27 @@ avatarTW.addEventListener('click', () => {
     }, 5000);
 });
 
-// Déconnexion via le bouton du menu utilisateur : envoie une requête au serveur pour déconnecter
+// Déconnexion via le bouton du menu utilisateur : utilise la fonction centralisée
 document.getElementById('btnLogout').addEventListener('click', function() {
-    // Appel API pour déconnexion côté serveur
-    fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
-        .then(() => {
-            isLoggedIn = false;
-            avatarTW.style.display = 'none';
-            avatarMenu.style.display = 'none';
-            updateNavbarLogin();
-        });
+    if (typeof performLogout === 'function') {
+        performLogout();
+    } else {
+        // Fallback si la fonction centralisée n'est pas disponible
+        fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST', credentials: 'include' })
+            .then(() => {
+                isLoggedIn = false;
+                avatarTW.style.display = 'none';
+                avatarMenu.style.display = 'none';
+                updateNavbarLogin();
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            })
+            .catch(error => {
+                console.error('Erreur lors de la déconnexion:', error);
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            });
+    }
 });
 
 // Au chargement de la page, vérifie la session côté serveur pour savoir si l'utilisateur est connecté
@@ -847,6 +869,12 @@ window.addEventListener('click', function(e) {
     }
 });
     </script>
+    <!-- Script principal pour la déconnexion centralisée -->
+    <script src="script.js"></script>
+    <!-- Scripts de configuration API et monitoring -->
+    <script src="js/api-config.js"></script>
+    <script src="js/deployment-monitor.js"></script>
+    
     <footer class="footer text-center py-4 footer-fix">
         <div class="container">
             <small>&copy; 2024 PS Care – Association de Magie. Tous droits réservés.</small>
