@@ -130,18 +130,22 @@ app.post('/api/login', express.json(), (req, res) => {
 
 // Nouvelle route session : renvoie l'état de connexion et le statut admin
 app.get('/api/session', (req, res) => {
-    if (req.session && req.session.user) {
-        res.json({
-            authenticated: true,
-            user: {
-                id: req.session.user.id,
-                nom: req.session.user.nom,
-                email: req.session.user.email,
-                is_admin: req.session.user.is_admin
-            }
-        });
-    } else {
-        res.json({ authenticated: false, user: null });
+    try {
+        if (req.session && req.session.user) {
+            res.json({
+                authenticated: true,
+                user: {
+                    id: req.session.user.id,
+                    nom: req.session.user.nom,
+                    email: req.session.user.email,
+                    is_admin: req.session.user.is_admin
+                }
+            });
+        } else {
+            res.json({ authenticated: false, user: null });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Erreur serveur session', details: err.message });
     }
 });
 
