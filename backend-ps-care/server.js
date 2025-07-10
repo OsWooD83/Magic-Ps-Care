@@ -58,7 +58,7 @@ app.use(cors({
     }
     
     // Autoriser toutes les URLs .vercel.app (solution temporaire)
-    if (origin.includes('.vercel.app')) {
+    if (origin && origin.includes('.vercel.app')) {
       console.log('🚧 Vercel domain authorized:', origin);
       return callback(null, true);
     }
