@@ -22,6 +22,20 @@ app.use(cors({
 // Middleware supplémentaire pour gérer les requêtes OPTIONS explicitement
 app.options('*', cors());
 
+// SOLUTION EMERGENCY : Headers CORS manuels pour forcer la propagation
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  next();
+});
+
 // Middleware supplémentaire pour ajouter des headers CORS de sécurité
 app.use((req, res, next) => {
   // Ajouter les headers CORS explicitement
