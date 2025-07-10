@@ -11,7 +11,10 @@ const app = express();
 
 // CORS pour autoriser le frontend Vercel
 app.use(cors({
-  origin: 'https://magicpscare.vercel.app',
+  origin: [
+    'https://magicpscare.vercel.app',
+    'https://association-magic-ps-care-cogf6ko31.vercel.app'
+  ],
   credentials: true
 }));
 
@@ -162,7 +165,10 @@ app.get('/isLoggedIn', (req, res) => {
 });
 
 app.use(cors({
-  origin: 'https://magicpscare.vercel.app',
+  origin: [
+    'https://magicpscare.vercel.app',
+    'https://association-magic-ps-care-cogf6ko31.vercel.app'
+  ],
   credentials: true // si vous utilisez les cookies/session
 }));
 
