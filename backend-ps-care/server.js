@@ -178,8 +178,8 @@ app.post('/api/login', express.json(), (req, res) => {
                 return res.status(500).json({ success: false, message: 'Erreur serveur.' });
             }
             if (result === true) {
-                // Ajout du statut admin dans la session
-                const isAdmin = row.is_admin === 1 || row.is_admin === true;
+                // Ajout du statut admin dans la session (gestion si colonne is_admin n'existe pas)
+                const isAdmin = row.is_admin !== undefined ? (row.is_admin === 1 || row.is_admin === true) : false;
                 req.session.user = {
                     id: row.id,
                     nom: row.nom,
