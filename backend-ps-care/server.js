@@ -10,6 +10,8 @@ const cors = require('cors');
 const app = express();
 
 // CORS pour autoriser le frontend Vercel
+
+// CORS pour autoriser le frontend Vercel et les autres domaines
 app.use(cors({
   origin: [
     'https://magicpscare.vercel.app',
@@ -172,13 +174,8 @@ app.get('/isLoggedIn', (req, res) => {
     }
 });
 
-app.use(cors({
-  origin: [
-    'https://magicpscare.vercel.app',
-    'https://association-magic-ps-care-cogf6ko31.vercel.app'
-  ],
-  credentials: true // si vous utilisez les cookies/session
-}));
+
+// (Suppression du doublon de configuration CORS)
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
