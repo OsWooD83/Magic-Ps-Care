@@ -203,14 +203,26 @@
         document.getElementById('homeBtn').onclick = function() {
             window.location.href = 'index.html';
         };
-        // Bouton déconnexion
-        document.getElementById('logoutBtn').onclick = async function() {
-            try {
-                const res = await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
-                if (!res.ok) throw new Error('Erreur lors de la déconnexion');
-                window.location.reload();
-            } catch (err) {
-                alert('Erreur lors de la déconnexion');
+        // Bouton déconnexion - utilise la fonction centralisée
+        document.getElementById('logoutBtn').onclick = function() {
+            if (typeof performLogout === 'function') {
+                performLogout();
+            } else {
+                // Fallback si la fonction centralisée n'est pas disponible
+                fetch('/api/logout', { method: 'POST', credentials: 'same-origin' })
+                    .then(response => {
+                        if (response.ok) {
+                            localStorage.removeItem('token');
+                            window.location.href = 'index.html';
+                        } else {
+                            throw new Error('Erreur lors de la déconnexion');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Erreur lors de la déconnexion:', err);
+                        localStorage.removeItem('token');
+                        window.location.href = 'index.html';
+                    });
             }
         };
 

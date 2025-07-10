@@ -13,7 +13,10 @@ const app = express();
 app.use(cors({
   origin: [
     'https://magicpscare.vercel.app',
-    'https://association-magic-ps-care-cogf6ko31.vercel.app'
+    'https://association-magic-ps-care.vercel.app',
+    'https://association-magic-ps-care-cogf6ko31.vercel.app',
+    'http://localhost:4000',
+    'http://localhost:3000'
   ],
   credentials: true
 }));
@@ -103,8 +106,8 @@ app.post('/api/login', express.json(), (req, res) => {
                 return res.status(500).json({ success: false, message: 'Erreur serveur.' });
             }
             if (result === true) {
-                // Ajout du statut admin dans la session
-                const isAdmin = row.is_admin === 1 || row.is_admin === true;
+                // Ajout du statut admin dans la session (avec gestion si colonne is_admin n'existe pas)
+                const isAdmin = row.is_admin !== undefined ? (row.is_admin === 1 || row.is_admin === true) : false;
                 req.session.user = {
                     id: row.id,
                     nom: row.nom,
@@ -143,12 +146,6 @@ app.get('/api/session', (req, res) => {
     }
 });
 
-app.use(session({
-    secret: 'votre_secret',
-    resave: false,
-    saveUninitialized: false
-}));
-
 // Déconnexion : détruit la session
 app.post('/api/logout', (req, res) => {
     req.session.destroy(() => {
@@ -164,24 +161,5 @@ app.get('/isLoggedIn', (req, res) => {
     }
 });
 
-app.use(cors({
-  origin: [
-    'https://magicpscare.vercel.app',
-    'https://association-magic-ps-care-cogf6ko31.vercel.app'
-  ],
-  credentials: true // si vous utilisez les cookies/session
-}));
-
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
-
-// Mise à jour du statut admin pour un utilisateur spécifique (à faire une seule fois)
-// Remplacez 'votre@email.com' par l'email réel de l'utilisateur
-const db = new sqlite3.Database('./sql/users.db');
-db.run("UPDATE users SET is_admin = 1 WHERE email = 'pascal.sibour@sfr.fr'", [], function(err) {
-    if (err) {
-        return console.error(err.message);
-    }
-    console.log(`L'utilisateur avec l'email ${this.changes} a été promu administrateur.`);
-});
-db.close();

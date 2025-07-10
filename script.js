@@ -1,56 +1,88 @@
 // ...code existant...
 
-// Gestion de la déconnexion sur tous les boutons ayant la classe "deconnexion"
-document.addEventListener('DOMContentLoaded', () => {
-  const btnsDeconnexion = document.querySelectorAll('.deconnexion');
-  btnsDeconnexion.forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Utilisation de l'API centralisée pour la déconnexion
-      if (window.API) {
-        window.API.logout()
-          .then(() => {
-            // Supprime le token côté client
-            localStorage.removeItem('token');
-            // Cache les fonctionnalités réservées
-            const actions = document.getElementById('photographie-actions');
-            if (actions) actions.style.display = 'none';
-            // Optionnel : rafraîchir la page ou rediriger
-            // location.reload();
-          })
-          .catch(console.error);
-      } else {
-        // Fallback si API centralisée pas chargée
-        fetch('https://backend-ps-care.onrender.com/api/logout', { 
-            method: 'POST',
-            credentials: 'include'
-        })
-          .then(() => {
-            localStorage.removeItem('token');
-            const actions = document.getElementById('photographie-actions');
-            if (actions) actions.style.display = 'none';
-          })
-          .catch(console.error);
-      }
-    });
-  });
-});
-
-// Déconnexion via le bouton du menu utilisateur : envoie une requête au serveur pour déconnecter
-document.getElementById('btnLogout').addEventListener('click', function() {
-    // Appel API pour déconnexion côté serveur (URL complète Render)
+// Fonction de déconnexion centralisée pour tous les boutons
+function performLogout() {
+    // Appel API pour déconnexion côté serveur
     fetch('https://backend-ps-care.onrender.com/api/logout', { 
         method: 'POST',
         credentials: 'include'
     })
-        .then(() => {
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Erreur lors de la déconnexion');
+    })
+    .then(() => {
+        // Supprime le token côté client
+        localStorage.removeItem('token');
+        
+        // Met à jour l'état de connexion global
+        if (typeof isLoggedIn !== 'undefined') {
             isLoggedIn = false;
-            avatarTW.style.display = 'none';
-            avatarMenu.style.display = 'none';
+        }
+        
+        // Cache l'avatar et le menu utilisateur si ils existent
+        const avatarTW = document.getElementById('avatarTW');
+        const avatarMenu = document.getElementById('avatarMenu');
+        if (avatarTW) avatarTW.style.display = 'none';
+        if (avatarMenu) avatarMenu.style.display = 'none';
+        
+        // Cache les fonctionnalités réservées
+        const actions = document.getElementById('photographie-actions');
+        if (actions) actions.style.display = 'none';
+        
+        // Met à jour la navbar si la fonction existe
+        if (typeof updateNavbarLogin === 'function') {
             updateNavbarLogin();
-            // Optionnel : suppression du token local
-            localStorage.removeItem('token');
-        })
-        .catch(console.error);
+        }
+        
+        // Redirige vers la page d'accueil
+        window.location.href = 'index.html';
+    })
+    .catch(error => {
+        console.error('Erreur lors de la déconnexion:', error);
+        // Même en cas d'erreur, on déconnecte côté client
+        localStorage.removeItem('token');
+        window.location.href = 'index.html';
+    });
+}
+
+// Gestion de la déconnexion pour tous les types de boutons
+document.addEventListener('DOMContentLoaded', () => {
+    // Sélectionne tous les boutons de déconnexion possibles
+    const logoutSelectors = [
+        '#btnLogout',           // Bouton du menu utilisateur
+        '#logoutBtn',           // Bouton de la page photographie
+        '.deconnexion',         // Classe déconnexion
+        '.logout-btn',          // Classe logout-btn
+        '[title="Déconnexion"]' // Tous les éléments avec title Déconnexion
+    ];
+    
+    logoutSelectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            // Évite les doublons en vérifiant si l'événement n'est pas déjà attaché
+            if (!element.hasAttribute('data-logout-attached')) {
+                element.setAttribute('data-logout-attached', 'true');
+                element.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    performLogout();
+                });
+            }
+        });
+    });
+    
+    // Gestion spéciale pour le bouton de la navbar qui peut changer de texte
+    const navLoginBtn = document.getElementById('navLoginBtn');
+    if (navLoginBtn) {
+        navLoginBtn.addEventListener('click', (e) => {
+            if (navLoginBtn.textContent.trim() === 'Déconnexion') {
+                e.preventDefault();
+                performLogout();
+            }
+        });
+    }
 });
 
 // ...code existant...
