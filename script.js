@@ -1,10 +1,24 @@
 // ...code existant...
 
-document.getElementById('deconnexion').addEventListener('click', () => {
-  // Suppression du token d'authentification
-  localStorage.removeItem('token');
-  // Redirection vers la page de connexion ou d'accueil
-  window.location.href = 'login.html'; // ou une autre page selon votre logique
+// Gestion du bouton déconnexion
+const btnDeconnexion = document.getElementById('deconnexion');
+if (btnDeconnexion) {
+  btnDeconnexion.addEventListener('click', () => {
+    // Supprime le token
+    localStorage.removeItem('token');
+    // Cache les fonctionnalités réservées
+    const actions = document.getElementById('photographie-actions');
+    if (actions) actions.style.display = 'none';
+    // Optionnel : message ou rafraîchissement de la page
+    // location.reload();
+  });
+}
+
+// Affichage ou non des fonctionnalités selon l'état de connexion
+window.addEventListener('DOMContentLoaded', () => {
+  const isConnected = !!localStorage.getItem('token');
+  const actions = document.getElementById('photographie-actions');
+  if (actions) actions.style.display = isConnected ? 'block' : 'none';
 });
 
 // ...code existant...
