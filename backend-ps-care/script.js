@@ -23,22 +23,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
 // Déconnexion via le bouton du menu utilisateur : envoie une requête au serveur pour déconnecter
-const btnLogout = document.getElementById('btnLogout');
-if (btnLogout) {
-  btnLogout.addEventListener('click', function() {
-    // Appel API pour déconnexion côté serveur (URL complète Render)
-    fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
-      .then(() => {
-        isLoggedIn = false;
-        avatarTW.style.display = 'none';
-        avatarMenu.style.display = 'none';
-        updateNavbarLogin();
-        // Optionnel : suppression du token local
-        localStorage.removeItem('token');
-      })
-      .catch(console.error);
-  });
-}
+document.addEventListener('DOMContentLoaded', () => {
+  const btnLogout = document.getElementById('btnLogout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', function() {
+      // Appel API pour déconnexion côté serveur (URL complète Render)
+      fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+        .then(() => {
+          isLoggedIn = false;
+          avatarTW.style.display = 'none';
+          avatarMenu.style.display = 'none';
+          updateNavbarLogin();
+          // Optionnel : suppression du token local
+          localStorage.removeItem('token');
+        })
+        .catch(console.error);
+    });
+  }
+});
 
 // ...code existant...
