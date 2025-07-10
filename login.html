@@ -172,8 +172,8 @@
             
             let data;
             try {
-                // Première tentative: proxy Vercel
-                const proxyRes = await fetch('/api/backend/login', {
+                // Première tentative: proxy Vercel simple
+                const proxyRes = await fetch('/api/proxy?endpoint=login', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ email, password })

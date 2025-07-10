@@ -1,7 +1,6 @@
-const fetch = require('node-fetch');
-
+// Proxy simple pour contourner CORS
 export default async function handler(req, res) {
-  // Configuration CORS
+  // Headers CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -11,12 +10,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { path } = req.query;
-    const backendUrl = `https://backend-ps-care.onrender.com/api/${path}`;
+    console.log('🔄 Proxy call:', req.method, req.query);
     
-    console.log(`🔄 Proxy: ${req.method} ${backendUrl}`);
+    const endpoint = req.query.endpoint || 'login';
+    const backendUrl = `https://backend-ps-care.onrender.com/api/${endpoint}`;
+    
+    console.log('� Target:', backendUrl);
     console.log('📝 Body:', req.body);
 
+    // Utiliser fetch global (Node.js 18+)
     const response = await fetch(backendUrl, {
       method: req.method,
       headers: {
@@ -26,6 +28,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.text();
+    console.log('✅ Response:', data);
     
     res.status(response.status);
     res.setHeader('Content-Type', 'application/json');
@@ -35,7 +38,7 @@ export default async function handler(req, res) {
     console.error('❌ Proxy error:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Erreur proxy Vercel', 
+      message: 'Erreur proxy', 
       error: error.message 
     });
   }
