@@ -802,7 +802,9 @@
         // Vérifie l'état de connexion via la session Node.js
         let isUserLoggedIn = false;
         let isAdmin = false;
-        fetch('https://backend-ps-care.onrender.com/api/session')
+        fetch('https://backend-ps-care.onrender.com/api/session', {
+            credentials: 'include'
+        })
             .then(res => {
                 // Gestion silencieuse des erreurs
                 if (!res.ok) {

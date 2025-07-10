@@ -7,7 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn) {
       btn.addEventListener('click', () => {
         // Appel API pour déconnexion côté serveur
-        fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+        fetch('https://backend-ps-care.onrender.com/api/logout', { 
+            method: 'POST',
+            credentials: 'include'
+        })
           .then(() => {
             // Supprime le token côté client
             localStorage.removeItem('token');
@@ -32,7 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnLogout) {
     btnLogout.addEventListener('click', function() {
       // Appel API pour déconnexion côté serveur (URL complète Render)
-      fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+      fetch('https://backend-ps-care.onrender.com/api/logout', { 
+          method: 'POST',
+          credentials: 'include'
+      })
         .then(() => {
           // Vérification d'existence avant manipulation
           if (typeof isLoggedIn !== 'undefined') isLoggedIn = false;

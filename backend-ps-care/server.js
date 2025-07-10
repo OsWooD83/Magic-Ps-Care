@@ -9,12 +9,9 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS pour autoriser le frontend Vercel et les autres domaines
+// CORS middleware - Configuration complète et permissive pour résoudre les problèmes
 app.use(cors({
   origin: function (origin, callback) {
-    // SOLUTION TEMPORAIRE: Autoriser toutes les URLs Vercel en dev
-    const isDevelopment = process.env.NODE_ENV !== 'production';
-    
     // Liste des origins autorisés
     const allowedOrigins = [
       'https://magicpscare.vercel.app',
@@ -26,13 +23,13 @@ app.use(cors({
       'https://backend-ps-care.onrender.com'
     ];
     
-    // Pattern pour toutes les previews Vercel (très permissif)
+    // Pattern pour toutes les previews Vercel
     const vercelPattern = /^https:\/\/association-magic-ps-care-[a-zA-Z0-9\-_]+\.vercel\.app$/;
     
-    // Debug log détaillé
+    // Debug log
     console.log('🔍 CORS Origin check:', origin);
     
-    // Pas d'origin (requêtes directes)
+    // Pas d'origin (requêtes directes) - toujours autoriser
     if (!origin) {
       console.log('✅ No origin - allowed');
       return callback(null, true);
@@ -50,9 +47,9 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // SOLUTION TEMPORAIRE: Autoriser toutes URLs .vercel.app en mode dev
-    if (isDevelopment && origin.includes('.vercel.app')) {
-      console.log('🚧 DEV MODE: Origin Vercel autorisé:', origin);
+    // Autoriser toutes les URLs .vercel.app (solution temporaire)
+    if (origin.includes('.vercel.app')) {
+      console.log('🚧 Vercel domain authorized:', origin);
       return callback(null, true);
     }
     
@@ -62,9 +59,29 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  preflightContinue: false,
   optionsSuccessStatus: 200
 }));
+
+// Middleware supplémentaire pour gérer les requêtes OPTIONS explicitement
+app.options('*', cors());
+
+// Middleware supplémentaire pour ajouter des headers CORS de sécurité
+app.use((req, res, next) => {
+  // Ajouter les headers CORS supplémentaires
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  
+  // Répondre immédiatement aux requêtes OPTIONS
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 
 // Middleware de session placé AVANT toutes les routes qui utilisent req.session
 app.use(session({

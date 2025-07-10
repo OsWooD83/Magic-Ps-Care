@@ -6,7 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
   btnsDeconnexion.forEach(btn => {
     btn.addEventListener('click', () => {
       // Appel API pour déconnexion côté serveur
-      fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+      fetch('https://backend-ps-care.onrender.com/api/logout', { 
+          method: 'POST',
+          credentials: 'include'
+      })
         .then(() => {
           // Supprime le token côté client
           localStorage.removeItem('token');
@@ -24,7 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Déconnexion via le bouton du menu utilisateur : envoie une requête au serveur pour déconnecter
 document.getElementById('btnLogout').addEventListener('click', function() {
     // Appel API pour déconnexion côté serveur (URL complète Render)
-    fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+    fetch('https://backend-ps-care.onrender.com/api/logout', { 
+        method: 'POST',
+        credentials: 'include'
+    })
         .then(() => {
             isLoggedIn = false;
             avatarTW.style.display = 'none';
