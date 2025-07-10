@@ -15,6 +15,7 @@ app.use(cors({
     // Liste des origins autorisés
     const allowedOrigins = [
       'https://magicpscare.vercel.app',
+      'https://tw-pascal-gpcd63weq-association-ps-cares-projects.vercel.app',
       'https://association-magic-ps-care-cogf6ko31.vercel.app',
       'https://association-magic-ps-care-q76uuhra0.vercel.app',
       'https://association-magic-ps-care-qs3sk7o9u.vercel.app',
@@ -25,8 +26,9 @@ app.use(cors({
       'http://localhost:4000'
     ];
     
-    // Pattern pour toutes les previews Vercel
+    // Pattern pour toutes les previews Vercel - Plus permissif
     const vercelPattern = /^https:\/\/[a-zA-Z0-9\-_]+\.vercel\.app$/;
+    const vercelOrgPattern = /^https:\/\/[a-zA-Z0-9\-_]+-[a-zA-Z0-9\-_]+\.vercel\.app$/;
     
     // Debug log
     console.log('🔍 CORS Origin check:', origin);
@@ -43,9 +45,15 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Vérifier pattern Vercel
+    // Vérifier pattern Vercel standard
     if (vercelPattern.test(origin)) {
       console.log('✅ Origin matches Vercel pattern:', origin);
+      return callback(null, true);
+    }
+    
+    // Vérifier pattern Vercel organisation
+    if (vercelOrgPattern.test(origin)) {
+      console.log('✅ Origin matches Vercel org pattern:', origin);
       return callback(null, true);
     }
     
