@@ -15,7 +15,10 @@ app.use(cors({
     'https://magicpscare.vercel.app',
     'https://association-magic-ps-care-cogf6ko31.vercel.app',
     'https://association-magic-ps-care-q76uuhra0.vercel.app',
-    'https://backend-ps-care.onrender.com'
+    'https://association-magic-ps-care-qs3sk7o9u.vercel.app',
+    'https://backend-ps-care.onrender.com',
+    // Pattern pour toutes les previews Vercel du projet
+    /^https:\/\/association-magic-ps-care-.+\.vercel\.app$/
   ],
   credentials: true
 }));
