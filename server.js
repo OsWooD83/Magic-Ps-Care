@@ -5,7 +5,9 @@ const path = require('path');
 const multer = require('multer');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const cors = require('cors');
 const app = express();
+
 // Middleware de session placé AVANT toutes les routes qui utilisent req.session
 app.use(session({
     secret: 'votre_secret',
@@ -151,6 +153,11 @@ app.get('/isLoggedIn', (req, res) => {
         res.json({ loggedIn: false });
     }
 });
+
+app.use(cors({
+  origin: 'https://magicpscare.vercel.app',
+  credentials: true // si vous utilisez les cookies/session
+}));
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
