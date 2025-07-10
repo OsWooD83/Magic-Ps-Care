@@ -2,7 +2,7 @@
 # Surveillance du déploiement backend et des headers CORS
 
 $backendUrl = "https://backend-ps-care.onrender.com"
-$loginUrl = "$backendUrl/api/session/login"
+$loginUrl = "$backendUrl/api/login"
 $counter = 0
 
 Write-Host "=== SURVEILLANCE DEPLOIEMENT BACKEND ===" -ForegroundColor Green
