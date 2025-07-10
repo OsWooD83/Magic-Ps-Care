@@ -9,47 +9,9 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS middleware - Configuration complète et permissive pour résoudre les problèmes
+// CORS middleware - Configuration ultra-permissive pour résoudre immédiatement
 app.use(cors({
-  origin: function (origin, callback) {
-    // Debug log
-    console.log('🔍 CORS Origin check:', origin);
-    
-    // Pas d'origin (requêtes directes) - toujours autoriser
-    if (!origin) {
-      console.log('✅ No origin - allowed');
-      return callback(null, true);
-    }
-    
-    // Autoriser TOUTES les URLs Vercel (solution temporaire)
-    if (origin.includes('.vercel.app')) {
-      console.log('🚧 Vercel domain authorized:', origin);
-      return callback(null, true);
-    }
-    
-    // Autoriser localhost pour développement
-    if (origin.includes('localhost')) {
-      console.log('🏠 Localhost authorized:', origin);
-      return callback(null, true);
-    }
-    
-    // Liste des origins autorisés (backup)
-    const allowedOrigins = [
-      'https://magicpscare.vercel.app',
-      'https://tw-pascal-qhasfqcfn-association-ps-cares-projects.vercel.app',
-      'https://tw-pascal-gpcd63weq-association-ps-cares-projects.vercel.app',
-      'https://backend-ps-care.onrender.com'
-    ];
-    
-    if (allowedOrigins.includes(origin)) {
-      console.log('✅ Origin in allowedOrigins:', origin);
-      return callback(null, true);
-    }
-    
-    // Autoriser temporairement pour debug
-    console.log('🚧 Temporary authorization for:', origin);
-    return callback(null, true);
-  },
+  origin: true, // Autorise toutes les origins
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
