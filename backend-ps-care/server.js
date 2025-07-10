@@ -6,8 +6,45 @@ const multer = require('multer');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
+const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
+
+// Initialisation de la base de données SQLite au démarrage
+const dbPath = path.join(__dirname, 'sql', 'users.db');
+console.log('🔧 Initialisation base de données:', dbPath);
+
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('❌ Erreur de connexion à la base:', err.message);
+    } else {
+        console.log('✅ Connecté à la base SQLite');
+        
+        // Créer la table users avec is_admin si elle n'existe pas
+        db.run(`CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nom TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            is_admin INTEGER DEFAULT 0
+        )`, (err) => {
+            if (err) {
+                console.error('❌ Erreur création table users:', err.message);
+            } else {
+                console.log('✅ Table users initialisée avec colonne is_admin');
+                
+                // Vérifier si il y a des utilisateurs
+                db.get("SELECT COUNT(*) as count FROM users", (err, row) => {
+                    if (err) {
+                        console.error('❌ Erreur comptage users:', err.message);
+                    } else {
+                        console.log(`📊 Utilisateurs en base: ${row.count}`);
+                    }
+                });
+            }
+        });
+    }
+});
 
 // CORS middleware - Configuration ultra-permissive pour résoudre immédiatement
 app.use(cors({
@@ -121,7 +158,6 @@ app.post('/api/stats/reset', (req, res) => {
 });
 
 const bcrypt = require('bcrypt');
-const sqlite3 = require('sqlite3').verbose();
 
 // === ROUTE /api/login pour la connexion utilisateur ===
 app.post('/api/login', express.json(), (req, res) => {
