@@ -168,3 +168,14 @@ app.use(cors({
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
+
+// Mise à jour du statut admin pour un utilisateur spécifique (à faire une seule fois)
+// Remplacez 'votre@email.com' par l'email réel de l'utilisateur
+const db = new sqlite3.Database('./sql/users.db');
+db.run("UPDATE users SET is_admin = 1 WHERE email = 'pascal.sibour@sfr.fr'", [], function(err) {
+    if (err) {
+        return console.error(err.message);
+    }
+    console.log(`L'utilisateur avec l'email ${this.changes} a été promu administrateur.`);
+});
+db.close();
