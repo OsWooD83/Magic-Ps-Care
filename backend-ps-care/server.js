@@ -13,7 +13,9 @@ const app = express();
 app.use(cors({
   origin: [
     'https://magicpscare.vercel.app',
-    'https://association-magic-ps-care-cogf6ko31.vercel.app'
+    'https://association-magic-ps-care-cogf6ko31.vercel.app',
+    'https://association-magic-ps-care-q76uuhra0.vercel.app'
+    'https://backend-ps-care.onrender.com'
   ],
   credentials: true
 }));
