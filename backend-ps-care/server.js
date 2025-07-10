@@ -9,8 +9,6 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS pour autoriser le frontend Vercel
-
 // CORS pour autoriser le frontend Vercel et les autres domaines
 app.use(cors({
   origin: [
