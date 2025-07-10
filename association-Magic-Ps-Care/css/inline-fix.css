@@ -1,0 +1,29 @@
+/* Styles extraits de index.html pour remplacer les styles inline */
+.hero-section-fix {
+  min-height: 45vh;
+  padding-top: 60px;
+}
+.display-3-fix {
+  margin-top: -1px;
+  font-size: 4rem;
+}
+.lead-magic-fix {
+  font-size: 2rem;
+  color: #ffd700;
+  font-family: 'Cinzel Decorative', cursive, serif;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px #000;
+}
+.btn-magic-fix {
+  font-size: 1.1rem;
+  padding: 0.7rem 2rem;
+}
+.carousel-prestations-fix {
+  overflow: hidden;
+  width: 100%;
+}
+.carousel-track-fix {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+}
