@@ -6,7 +6,7 @@ Write-Host "🔧 Configuration des dépôts séparés..." -ForegroundColor Green
 Write-Host "📁 Configuration du dépôt backend..." -ForegroundColor Yellow
 
 # Naviguer vers le dossier backend
-cd "D:\TW Pascal\backend-ps-care"
+Set-Location "D:\TW Pascal\backend-ps-care"
 
 # Initialiser un nouveau dépôt Git pour le backend
 if (-not (Test-Path ".git")) {
@@ -57,6 +57,6 @@ Write-Host "   git branch -M main" -ForegroundColor White
 Write-Host "   git push -u origin main" -ForegroundColor White
 
 # Retourner au dossier principal
-cd "D:\TW Pascal"
+Set-Location "D:\TW Pascal"
 
 Write-Host "🎯 Configuration terminée!" -ForegroundColor Green
