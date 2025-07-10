@@ -20,7 +20,10 @@ app.use(cors({
     // Pattern pour toutes les previews Vercel du projet
     /^https:\/\/association-magic-ps-care-.+\.vercel\.app$/
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
 }));
 
 // Middleware de session placé AVANT toutes les routes qui utilisent req.session
