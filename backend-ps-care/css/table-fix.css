@@ -1,0 +1,7 @@
+.table-fixed {
+  table-layout: fixed;
+  width: 100%;
+}
+.vertical-top-fix {
+  vertical-align: top;
+}
