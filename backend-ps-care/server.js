@@ -15,6 +15,7 @@ app.use(cors({
     // Liste des origins autorisés
     const allowedOrigins = [
       'https://magicpscare.vercel.app',
+      'https://tw-pascal-qhasfqcfn-association-ps-cares-projects.vercel.app',
       'https://tw-pascal-gpcd63weq-association-ps-cares-projects.vercel.app',
       'https://association-magic-ps-care-cogf6ko31.vercel.app',
       'https://association-magic-ps-care-q76uuhra0.vercel.app',
