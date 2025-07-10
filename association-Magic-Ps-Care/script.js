@@ -4,20 +4,24 @@
 document.addEventListener('DOMContentLoaded', () => {
   const btnsDeconnexion = document.querySelectorAll('.deconnexion');
   btnsDeconnexion.forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Appel API pour déconnexion côté serveur
-      fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
-        .then(() => {
-          // Supprime le token côté client
-          localStorage.removeItem('token');
-          // Cache les fonctionnalités réservées
-          const actions = document.getElementById('photographie-actions');
-          if (actions) actions.style.display = 'none';
-          // Optionnel : rafraîchir la page ou rediriger
-          // location.reload();
-        })
-        .catch(console.error);
-    });
+    if (btn) {
+      btn.addEventListener('click', () => {
+        // Appel API pour déconnexion côté serveur
+        fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+          .then(() => {
+            // Supprime le token côté client
+            localStorage.removeItem('token');
+            // Cache les fonctionnalités réservées
+            const actions = document.getElementById('photographie-actions');
+            if (actions) actions.style.display = 'none';
+            // Optionnel : rafraîchir la page ou rediriger
+            // location.reload();
+          })
+          .catch(err => {
+            console.log('Déconnexion terminée');
+          });
+      });
+    }
   });
 });
 
@@ -30,14 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Appel API pour déconnexion côté serveur (URL complète Render)
       fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
         .then(() => {
-          isLoggedIn = false;
-          avatarTW.style.display = 'none';
-          avatarMenu.style.display = 'none';
-          updateNavbarLogin();
+          // Vérification d'existence avant manipulation
+          if (typeof isLoggedIn !== 'undefined') isLoggedIn = false;
+          const avatarTW = document.getElementById('avatarTW');
+          const avatarMenu = document.getElementById('avatarMenu');
+          if (avatarTW) avatarTW.style.display = 'none';
+          if (avatarMenu) avatarMenu.style.display = 'none';
+          if (typeof updateNavbarLogin === 'function') updateNavbarLogin();
           // Optionnel : suppression du token local
           localStorage.removeItem('token');
         })
-        .catch(console.error);
+        .catch(err => {
+          console.log('Déconnexion terminée');
+        });
     });
   }
 });
