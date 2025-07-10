@@ -167,28 +167,46 @@
         const msg = document.getElementById('loginMsg');
         msg.textContent = '';
         try {
-            // 1. Envoi de la requête de connexion avec API fallback
-            console.log('🔍 Tentative de connexion...');
+            // 1. Tentative via proxy Vercel d'abord
+            console.log('🔍 Tentative de connexion via proxy...');
             
-            // Utiliser l'API fallback si disponible
             let data;
-            if (window.API_CONFIG) {
-                data = await window.API_CONFIG.login({ email, password });
-            } else {
-                // Fallback direct si script pas chargé
-                const res = await fetch('https://backend-ps-care.onrender.com/api/login', {
+            try {
+                // Première tentative: proxy Vercel
+                const proxyRes = await fetch('/api/backend/login', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    credentials: 'include',
-                    mode: 'cors',
                     body: JSON.stringify({ email, password })
                 });
                 
-                if (!res.ok) {
-                    throw new Error(`Erreur HTTP: ${res.status}`);
+                if (proxyRes.ok) {
+                    data = await proxyRes.json();
+                    console.log('✅ Succès via proxy Vercel');
+                } else {
+                    throw new Error(`Proxy failed: ${proxyRes.status}`);
                 }
+            } catch (proxyError) {
+                console.log('⚠️ Proxy échoué, tentative API fallback:', proxyError);
                 
-                data = await res.json();
+                // Fallback: API_CONFIG
+                if (window.API_CONFIG) {
+                    data = await window.API_CONFIG.login({ email, password });
+                } else {
+                    // Dernier recours: direct
+                    const res = await fetch('https://backend-ps-care.onrender.com/api/login', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        credentials: 'include',
+                        mode: 'cors',
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    if (!res.ok) {
+                        throw new Error(`Erreur HTTP: ${res.status}`);
+                    }
+                    
+                    data = await res.json();
+                }
             }
             
             console.log('✅ Réponse reçue:', data);

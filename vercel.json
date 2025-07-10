@@ -4,11 +4,21 @@
     {
       "src": "**/*",
       "use": "@vercel/static"
+    },
+    {
+      "src": "api/proxy.js",
+      "use": "@vercel/node"
     }
   ],
   "env": {
     "NEXT_PUBLIC_API_URL": "https://backend-ps-care.onrender.com"
   },
+  "rewrites": [
+    {
+      "source": "/api/backend/(.*)",
+      "destination": "/api/proxy?path=/$1"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
