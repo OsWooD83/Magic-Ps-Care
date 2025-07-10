@@ -728,7 +728,7 @@ function updateNavbarLogin() {
         navLoginBtn.onclick = function(e) {
             e.preventDefault();
             // Déconnexion via la navbar : envoie une requête au serveur pour déconnecter, puis recharge la page
-            fetch('/api/logout', { method: 'POST' })
+            fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
                 .then(() => {
                     isLoggedIn = false;
                     avatarTW.style.display = 'none';
@@ -780,7 +780,7 @@ avatarTW.addEventListener('click', () => {
 // Déconnexion via le bouton du menu utilisateur : envoie une requête au serveur pour déconnecter
 document.getElementById('btnLogout').addEventListener('click', function() {
     // Appel API pour déconnexion côté serveur
-    fetch('/api/logout', { method: 'POST' })
+    fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
         .then(() => {
             isLoggedIn = false;
             avatarTW.style.display = 'none';
