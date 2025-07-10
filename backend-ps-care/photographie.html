@@ -802,8 +802,13 @@
         // Vérifie l'état de connexion via la session Node.js
         let isUserLoggedIn = false;
         let isAdmin = false;
-        fetch('/api/session')
-            .then(res => res.json())
+        fetch('https://backend-ps-care.onrender.com/api/session')
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => { throw new Error(text); });
+                }
+                return res.json();
+            })
             .then(data => {
                 isUserLoggedIn = !!(data && data.authenticated);
                 isAdmin = !!(data && data.user && data.user.is_admin);
@@ -815,6 +820,12 @@
                     document.getElementById('addPhotoContainer').style.display = 'none';
                 }
                 // Recharge la galerie pour afficher les croix de suppression si besoin
+                loadImages();
+            })
+            .catch(err => {
+                console.error('Erreur lors de la récupération de la session:', err.message);
+                updateLogoutVisibility(false);
+                document.getElementById('addPhotoContainer').style.display = 'none';
                 loadImages();
             });
 
