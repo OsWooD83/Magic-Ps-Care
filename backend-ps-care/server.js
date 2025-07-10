@@ -6,94 +6,20 @@ const multer = require('multer');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
 
-// Initialisation de la base de données SQLite au démarrage
-const dbPath = path.join(__dirname, 'sql', 'users.db');
-console.log('🔧 Initialisation base de données:', dbPath);
-
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('❌ Erreur de connexion à la base:', err.message);
-    } else {
-        console.log('✅ Connecté à la base SQLite');
-        
-        // Créer la table users avec is_admin si elle n'existe pas
-        db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nom TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            is_admin INTEGER DEFAULT 0
-        )`, (err) => {
-            if (err) {
-                console.error('❌ Erreur création table users:', err.message);
-            } else {
-                console.log('✅ Table users initialisée avec colonne is_admin');
-                
-                // Vérifier si il y a des utilisateurs
-                db.get("SELECT COUNT(*) as count FROM users", (err, row) => {
-                    if (err) {
-                        console.error('❌ Erreur comptage users:', err.message);
-                    } else {
-                        console.log(`📊 Utilisateurs en base: ${row.count}`);
-                    }
-                });
-            }
-        });
-    }
-});
-
-// CORS middleware - Configuration ultra-permissive pour résoudre immédiatement
+// CORS pour autoriser le frontend Vercel
 app.use(cors({
-  origin: true, // Autorise toutes les origins
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  preflightContinue: false,
-  optionsSuccessStatus: 200
+  origin: [
+    'https://magicpscare.vercel.app',
+    'https://association-magic-ps-care.vercel.app',
+    'https://association-magic-ps-care-cogf6ko31.vercel.app',
+    'http://localhost:4000',
+    'http://localhost:3000'
+  ],
+  credentials: true
 }));
-
-// Middleware supplémentaire pour gérer les requêtes OPTIONS explicitement
-app.options('*', cors());
-
-// SOLUTION EMERGENCY : Headers CORS manuels pour forcer la propagation
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin) {
-    res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    res.header('Access-Control-Allow-Origin', '*');
-  }
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-  
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-  next();
-});
-
-// Middleware supplémentaire pour ajouter des headers CORS de sécurité
-app.use((req, res, next) => {
-  // Ajouter les headers CORS explicitement
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-  
-  // Répondre immédiatement aux requêtes OPTIONS
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-  
-  next();
-});
 
 // Middleware de session placé AVANT toutes les routes qui utilisent req.session
 app.use(session({
@@ -158,6 +84,7 @@ app.post('/api/stats/reset', (req, res) => {
 });
 
 const bcrypt = require('bcrypt');
+const sqlite3 = require('sqlite3').verbose();
 
 // === ROUTE /api/login pour la connexion utilisateur ===
 app.post('/api/login', express.json(), (req, res) => {
@@ -179,7 +106,7 @@ app.post('/api/login', express.json(), (req, res) => {
                 return res.status(500).json({ success: false, message: 'Erreur serveur.' });
             }
             if (result === true) {
-                // Ajout du statut admin dans la session (gestion si colonne is_admin n'existe pas)
+                // Ajout du statut admin dans la session (avec gestion si colonne is_admin n'existe pas)
                 const isAdmin = row.is_admin !== undefined ? (row.is_admin === 1 || row.is_admin === true) : false;
                 req.session.user = {
                     id: row.id,
@@ -204,27 +131,17 @@ app.post('/api/login', express.json(), (req, res) => {
 
 // Nouvelle route session : renvoie l'état de connexion et le statut admin
 app.get('/api/session', (req, res) => {
-    try {
-        // Initialiser la session si elle n'existe pas
-        if (!req.session) {
-            req.session = {};
-        }
-        
-        if (req.session && req.session.user) {
-            res.json({
-                authenticated: true,
-                user: {
-                    id: req.session.user.id || 0,
-                    nom: req.session.user.nom || '',
-                    email: req.session.user.email || '',
-                    is_admin: req.session.user.is_admin || false
-                }
-            });
-        } else {
-            res.json({ authenticated: false, user: null });
-        }
-    } catch (err) {
-        console.log('Session gérée par défaut');
+    if (req.session && req.session.user) {
+        res.json({
+            authenticated: true,
+            user: {
+                id: req.session.user.id,
+                nom: req.session.user.nom,
+                email: req.session.user.email,
+                is_admin: req.session.user.is_admin
+            }
+        });
+    } else {
         res.json({ authenticated: false, user: null });
     }
 });
