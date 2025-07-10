@@ -11,15 +11,31 @@ const app = express();
 
 // CORS pour autoriser le frontend Vercel et les autres domaines
 app.use(cors({
-  origin: [
-    'https://magicpscare.vercel.app',
-    'https://association-magic-ps-care-cogf6ko31.vercel.app',
-    'https://association-magic-ps-care-q76uuhra0.vercel.app',
-    'https://association-magic-ps-care-qs3sk7o9u.vercel.app',
-    'https://backend-ps-care.onrender.com',
-    // Pattern pour toutes les previews Vercel du projet
-    /^https:\/\/association-magic-ps-care-.+\.vercel\.app$/
-  ],
+  origin: function (origin, callback) {
+    // Liste des origins autorisés
+    const allowedOrigins = [
+      'https://magicpscare.vercel.app',
+      'https://association-magic-ps-care-cogf6ko31.vercel.app',
+      'https://association-magic-ps-care-q76uuhra0.vercel.app',
+      'https://association-magic-ps-care-qs3sk7o9u.vercel.app',
+      'https://backend-ps-care.onrender.com'
+    ];
+    
+    // Pattern pour toutes les previews Vercel
+    const vercelPattern = /^https:\/\/association-magic-ps-care-.+\.vercel\.app$/;
+    
+    // Debug log
+    console.log('CORS Origin check:', origin);
+    
+    // Vérifier si l'origin est autorisé
+    if (!origin || allowedOrigins.includes(origin) || vercelPattern.test(origin)) {
+      console.log('✅ Origin autorisé:', origin);
+      callback(null, true);
+    } else {
+      console.log('❌ Origin refusé:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
