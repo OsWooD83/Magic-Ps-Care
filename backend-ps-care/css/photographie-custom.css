@@ -1,3 +1,23 @@
+/* Container Accueil + Déconnexion (fixe, colonne) */
+.home-logout-container {
+    position: fixed;
+    top: 18px;
+    left: 24px;
+    z-index: 2100;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Marge spécifique pour le bouton déconnexion */
+.logout-btn-margin {
+    margin-top: 60px;
+}
+
+/* Masquer par défaut les actions photo */
+.photographie-actions-hidden {
+    display: none;
+}
 /* Styles extraits de photographie.html pour remplacer les styles inline */
 
 /* Accueil bouton en haut à gauche */
