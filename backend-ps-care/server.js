@@ -12,25 +12,6 @@ const app = express();
 // CORS middleware - Configuration complète et permissive pour résoudre les problèmes
 app.use(cors({
   origin: function (origin, callback) {
-    // Liste des origins autorisés
-    const allowedOrigins = [
-      'https://magicpscare.vercel.app',
-      'https://tw-pascal-qhasfqcfn-association-ps-cares-projects.vercel.app',
-      'https://tw-pascal-gpcd63weq-association-ps-cares-projects.vercel.app',
-      'https://association-magic-ps-care-cogf6ko31.vercel.app',
-      'https://association-magic-ps-care-q76uuhra0.vercel.app',
-      'https://association-magic-ps-care-qs3sk7o9u.vercel.app',
-      'https://association-magic-ps-care-8voe29b1o.vercel.app',
-      'https://association-magic-ps-care-5c57wkfhn.vercel.app',
-      'https://backend-ps-care.onrender.com',
-      'http://localhost:3000',
-      'http://localhost:4000'
-    ];
-    
-    // Pattern pour toutes les previews Vercel - Plus permissif
-    const vercelPattern = /^https:\/\/[a-zA-Z0-9\-_]+\.vercel\.app$/;
-    const vercelOrgPattern = /^https:\/\/[a-zA-Z0-9\-_]+-[a-zA-Z0-9\-_]+\.vercel\.app$/;
-    
     // Debug log
     console.log('🔍 CORS Origin check:', origin);
     
@@ -40,33 +21,34 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Vérifier liste explicite
+    // Autoriser TOUTES les URLs Vercel (solution temporaire)
+    if (origin.includes('.vercel.app')) {
+      console.log('🚧 Vercel domain authorized:', origin);
+      return callback(null, true);
+    }
+    
+    // Autoriser localhost pour développement
+    if (origin.includes('localhost')) {
+      console.log('🏠 Localhost authorized:', origin);
+      return callback(null, true);
+    }
+    
+    // Liste des origins autorisés (backup)
+    const allowedOrigins = [
+      'https://magicpscare.vercel.app',
+      'https://tw-pascal-qhasfqcfn-association-ps-cares-projects.vercel.app',
+      'https://tw-pascal-gpcd63weq-association-ps-cares-projects.vercel.app',
+      'https://backend-ps-care.onrender.com'
+    ];
+    
     if (allowedOrigins.includes(origin)) {
       console.log('✅ Origin in allowedOrigins:', origin);
       return callback(null, true);
     }
     
-    // Vérifier pattern Vercel standard
-    if (vercelPattern.test(origin)) {
-      console.log('✅ Origin matches Vercel pattern:', origin);
-      return callback(null, true);
-    }
-    
-    // Vérifier pattern Vercel organisation
-    if (vercelOrgPattern.test(origin)) {
-      console.log('✅ Origin matches Vercel org pattern:', origin);
-      return callback(null, true);
-    }
-    
-    // Autoriser toutes les URLs .vercel.app (solution temporaire)
-    if (origin && origin.includes('.vercel.app')) {
-      console.log('🚧 Vercel domain authorized:', origin);
-      return callback(null, true);
-    }
-    
-    // Origine non autorisée
-    console.log('❌ Origin denied:', origin);
-    callback(new Error('Not allowed by CORS'));
+    // Autoriser temporairement pour debug
+    console.log('🚧 Temporary authorization for:', origin);
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
