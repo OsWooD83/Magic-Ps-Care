@@ -2,16 +2,10 @@
 
 // Gestion de la déconnexion sur tous les boutons ayant la classe "deconnexion"
 document.addEventListener('DOMContentLoaded', () => {
-  // Affichage ou non des fonctionnalités selon l'état de connexion
-  const isConnected = !!localStorage.getItem('token');
-  const actions = document.getElementById('photographie-actions');
-  if (actions) actions.style.display = isConnected ? 'block' : 'none';
-
-  // Sélectionne tous les boutons de déconnexion du site
   const btnsDeconnexion = document.querySelectorAll('.deconnexion');
   btnsDeconnexion.forEach(btn => {
     btn.addEventListener('click', () => {
-      // Appel à l'API de déconnexion
+      // Appel API pour déconnexion côté serveur
       fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
         .then(() => {
           // Supprime le token côté client
@@ -19,12 +13,27 @@ document.addEventListener('DOMContentLoaded', () => {
           // Cache les fonctionnalités réservées
           const actions = document.getElementById('photographie-actions');
           if (actions) actions.style.display = 'none';
-          // Optionnel : rafraîchir la page ou rediriger
+          // Optionnel : rafraîchir la page ou rediriger
           // location.reload();
         })
         .catch(console.error);
     });
   });
+});
+
+// Déconnexion via le bouton du menu utilisateur : envoie une requête au serveur pour déconnecter
+document.getElementById('btnLogout').addEventListener('click', function() {
+    // Appel API pour déconnexion côté serveur (URL complète Render)
+    fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+        .then(() => {
+            isLoggedIn = false;
+            avatarTW.style.display = 'none';
+            avatarMenu.style.display = 'none';
+            updateNavbarLogin();
+            // Optionnel : suppression du token local
+            localStorage.removeItem('token');
+        })
+        .catch(console.error);
 });
 
 // ...code existant...
