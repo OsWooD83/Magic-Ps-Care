@@ -12,6 +12,9 @@ const app = express();
 // CORS pour autoriser le frontend Vercel et les autres domaines
 app.use(cors({
   origin: function (origin, callback) {
+    // SOLUTION TEMPORAIRE: Autoriser toutes les URLs Vercel en dev
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    
     // Liste des origins autorisés
     const allowedOrigins = [
       'https://magicpscare.vercel.app',
@@ -19,23 +22,43 @@ app.use(cors({
       'https://association-magic-ps-care-q76uuhra0.vercel.app',
       'https://association-magic-ps-care-qs3sk7o9u.vercel.app',
       'https://association-magic-ps-care-8voe29b1o.vercel.app',
+      'https://association-magic-ps-care-5c57wkfhn.vercel.app',
       'https://backend-ps-care.onrender.com'
     ];
     
-    // Pattern pour toutes les previews Vercel (plus permissif)
-    const vercelPattern = /^https:\/\/association-magic-ps-care-[a-zA-Z0-9]+\.vercel\.app$/;
+    // Pattern pour toutes les previews Vercel (très permissif)
+    const vercelPattern = /^https:\/\/association-magic-ps-care-[a-zA-Z0-9\-_]+\.vercel\.app$/;
     
-    // Debug log
-    console.log('CORS Origin check:', origin);
+    // Debug log détaillé
+    console.log('🔍 CORS Origin check:', origin);
     
-    // Vérifier si l'origin est autorisé
-    if (!origin || allowedOrigins.includes(origin) || vercelPattern.test(origin)) {
-      console.log('✅ Origin autorisé:', origin);
-      callback(null, true);
-    } else {
-      console.log('❌ Origin refusé:', origin);
-      callback(new Error('Not allowed by CORS'));
+    // Pas d'origin (requêtes directes)
+    if (!origin) {
+      console.log('✅ No origin - allowed');
+      return callback(null, true);
     }
+    
+    // Vérifier liste explicite
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ Origin in allowedOrigins:', origin);
+      return callback(null, true);
+    }
+    
+    // Vérifier pattern Vercel
+    if (vercelPattern.test(origin)) {
+      console.log('✅ Origin matches Vercel pattern:', origin);
+      return callback(null, true);
+    }
+    
+    // SOLUTION TEMPORAIRE: Autoriser toutes URLs .vercel.app en mode dev
+    if (isDevelopment && origin.includes('.vercel.app')) {
+      console.log('🚧 DEV MODE: Origin Vercel autorisé:', origin);
+      return callback(null, true);
+    }
+    
+    // Origine non autorisée
+    console.log('❌ Origin denied:', origin);
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
