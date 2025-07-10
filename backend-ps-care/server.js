@@ -24,7 +24,8 @@ app.options('*', cors());
 
 // Middleware supplémentaire pour ajouter des headers CORS de sécurité
 app.use((req, res, next) => {
-  // Ajouter les headers CORS supplémentaires
+  // Ajouter les headers CORS explicitement
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
