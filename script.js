@@ -5,21 +5,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnsDeconnexion = document.querySelectorAll('.deconnexion');
   btnsDeconnexion.forEach(btn => {
     btn.addEventListener('click', () => {
-      // Appel API pour déconnexion côté serveur
-      fetch('https://backend-ps-care.onrender.com/api/logout', { 
-          method: 'POST',
-          credentials: 'include'
-      })
-        .then(() => {
-          // Supprime le token côté client
-          localStorage.removeItem('token');
-          // Cache les fonctionnalités réservées
-          const actions = document.getElementById('photographie-actions');
-          if (actions) actions.style.display = 'none';
-          // Optionnel : rafraîchir la page ou rediriger
-          // location.reload();
+      // Utilisation de l'API centralisée pour la déconnexion
+      if (window.API) {
+        window.API.logout()
+          .then(() => {
+            // Supprime le token côté client
+            localStorage.removeItem('token');
+            // Cache les fonctionnalités réservées
+            const actions = document.getElementById('photographie-actions');
+            if (actions) actions.style.display = 'none';
+            // Optionnel : rafraîchir la page ou rediriger
+            // location.reload();
+          })
+          .catch(console.error);
+      } else {
+        // Fallback si API centralisée pas chargée
+        fetch('https://backend-ps-care.onrender.com/api/logout', { 
+            method: 'POST',
+            credentials: 'include'
         })
-        .catch(console.error);
+          .then(() => {
+            localStorage.removeItem('token');
+            const actions = document.getElementById('photographie-actions');
+            if (actions) actions.style.display = 'none';
+          })
+          .catch(console.error);
+      }
     });
   });
 });

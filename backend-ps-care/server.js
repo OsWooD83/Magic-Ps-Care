@@ -20,11 +20,13 @@ app.use(cors({
       'https://association-magic-ps-care-qs3sk7o9u.vercel.app',
       'https://association-magic-ps-care-8voe29b1o.vercel.app',
       'https://association-magic-ps-care-5c57wkfhn.vercel.app',
-      'https://backend-ps-care.onrender.com'
+      'https://backend-ps-care.onrender.com',
+      'http://localhost:3000',
+      'http://localhost:4000'
     ];
     
     // Pattern pour toutes les previews Vercel
-    const vercelPattern = /^https:\/\/association-magic-ps-care-[a-zA-Z0-9\-_]+\.vercel\.app$/;
+    const vercelPattern = /^https:\/\/[a-zA-Z0-9\-_]+\.vercel\.app$/;
     
     // Debug log
     console.log('🔍 CORS Origin check:', origin);
