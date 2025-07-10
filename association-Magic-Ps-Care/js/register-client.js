@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const msg = document.getElementById('registerMsg');
         msg.textContent = '';
         try {
-            const res = await fetch('http://localhost:3000/api/register', {
+            const res = await fetch('https://backend-ps-care.onrender.com/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nom, email, password })
