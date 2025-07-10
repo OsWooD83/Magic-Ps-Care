@@ -11,12 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnsDeconnexion = document.querySelectorAll('.deconnexion');
   btnsDeconnexion.forEach(btn => {
     btn.addEventListener('click', () => {
-      // Supprime le token
-      localStorage.removeItem('token');
-      // Cache les fonctionnalités réservées
-      if (actions) actions.style.display = 'none';
-      // Optionnel : message ou rafraîchissement de la page
-      // location.reload();
+      // Appel à l'API de déconnexion
+      fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST' })
+        .then(() => {
+          // Supprime le token côté client
+          localStorage.removeItem('token');
+          // Cache les fonctionnalités réservées
+          const actions = document.getElementById('photographie-actions');
+          if (actions) actions.style.display = 'none';
+          // Optionnel : rafraîchir la page ou rediriger
+          // location.reload();
+        })
+        .catch(console.error);
     });
   });
 });
