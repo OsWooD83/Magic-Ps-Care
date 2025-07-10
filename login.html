@@ -167,26 +167,33 @@
         const msg = document.getElementById('loginMsg');
         msg.textContent = '';
         try {
-            // 1. Envoi de la requête de connexion
-            const res = await fetch('https://backend-ps-care.onrender.com/api/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                credentials: 'include', // Important pour les sessions et CORS
-                body: JSON.stringify({ email, password })
-            });
-            let data = {};
-            let text = await res.text();
-            try {
-                data = JSON.parse(text);
-            } catch (jsonErr) {
-                msg.textContent = 'Erreur serveur (réponse invalide): ' + text;
-                msg.style.color = 'red';
-                if (text.includes('Cannot POST /api/login')) {
-                    msg.textContent += "\nVérifiez que le serveur Node.js fonctionne et que l'API /api/login existe.";
+            // 1. Envoi de la requête de connexion avec API fallback
+            console.log('🔍 Tentative de connexion...');
+            
+            // Utiliser l'API fallback si disponible
+            let data;
+            if (window.API_CONFIG) {
+                data = await window.API_CONFIG.login({ email, password });
+            } else {
+                // Fallback direct si script pas chargé
+                const res = await fetch('https://backend-ps-care.onrender.com/api/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    mode: 'cors',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`Erreur HTTP: ${res.status}`);
                 }
-                return;
+                
+                data = await res.json();
             }
-            if (res.ok && data.success) {
+            
+            console.log('✅ Réponse reçue:', data);
+            
+            if (data.success) {
                 msg.textContent = 'Connexion réussie !';
                 msg.style.color = 'limegreen';
                 document.getElementById('avatarTW').style.display = 'flex';
@@ -207,8 +214,14 @@
                 msg.style.color = 'red';
             }
         } catch (err) {
-            msg.textContent = 'Erreur serveur (connexion impossible).';
+            console.error('❌ Erreur de connexion:', err);
+            msg.textContent = `Erreur serveur: ${err.message}`;
             msg.style.color = 'red';
+            
+            // Message d'aide pour l'utilisateur
+            if (err.message.includes('CORS') || err.message.includes('fetch')) {
+                msg.textContent += '\n\nProblème de connexion détecté. Le serveur redémarre...';
+            }
         }
     });
     // Déconnexion automatique après 5 minutes d'inactivité
