@@ -630,13 +630,23 @@
             gallery.innerHTML = '';
             images = [];
             try {
-                const res = await fetch('/photos');
-                let data = await res.json();
-                // Tri selon le choix
-                if (sortOrder === 'asc') {
-                    data = data.slice().reverse();
+                const res = await fetch('/api/photos');
+                const response = await res.json();
+                
+                if (response.success && response.photos) {
+                    let data = response.photos;
+                    // Tri selon le choix
+                    if (sortOrder === 'asc') {
+                        data = data.slice().reverse();
+                    }
+                    data.forEach(photo => {
+                        // Adapter le format pour addImageToGallery
+                        const imageUrl = `images/${photo.filename}`;
+                        addImageToGallery(imageUrl, photo.title, photo.id);
+                    });
+                } else {
+                    gallery.innerHTML = '<div style="color:white;text-align:center;">Aucune photo disponible</div>';
                 }
-                data.forEach(photo => addImageToGallery(photo.url, photo.alt, photo.id));
             } catch (err) {
                 gallery.innerHTML = '<div style="color:white;text-align:center;">Erreur de chargement des images</div>';
             }
