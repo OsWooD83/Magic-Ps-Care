@@ -410,18 +410,38 @@
             loadingDiv.style.color = '#666';
             gallery.appendChild(loadingDiv);
             
+            let imagesLoaded = 0;
+            let imagesFailed = 0;
+            
             // Charger les images une par une
             for (const photo of realPhotos) {
                 try {
                     const element = await createImageElement(photo);
                     gallery.insertBefore(element, loadingDiv);
+                    imagesLoaded++;
                 } catch (error) {
                     console.error('Erreur lors du chargement de', photo.filename, error);
+                    imagesFailed++;
                 }
             }
             
             // Retirer le message de chargement
             gallery.removeChild(loadingDiv);
+            
+            // Si toutes les images ont échoué, proposer le mode démo
+            if (imagesFailed === realPhotos.length && imagesLoaded === 0) {
+                const demoDiv = document.createElement('div');
+                demoDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px; background: #f5f5f5; border-radius: 12px; margin: 20px 0;">
+                        <h3>🎭 Images non disponibles</h3>
+                        <p>Les images originales ne sont pas encore déployées sur Vercel.</p>
+                        <button onclick="loadDemoImages()" style="background: #4caf50; color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 10px;">
+                            🎭 Charger les images de démonstration
+                        </button>
+                    </div>
+                `;
+                gallery.appendChild(demoDiv);
+            }
         }
 
         // Supprimer une photo
