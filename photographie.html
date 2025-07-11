@@ -144,6 +144,16 @@
         <div class="container">
             <h1>🎭 Galerie de Photographies</h1>
             
+            <!-- Bouton de test admin (temporaire pour debug) -->
+            <div style="margin-bottom: 20px;">
+                <button onclick="forceAdminMode()" style="background: #ff9800; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                    🔧 Test Mode Admin
+                </button>
+                <button onclick="checkAdminStatus()" style="background: #2196f3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                    🔍 Vérifier Session
+                </button>
+            </div>
+            
             <!-- Panneau d'administration (visible uniquement pour les admins) -->
             <div id="admin-panel" class="admin-panel hidden">
                 <h2>🔧 Panneau d'Administration</h2>
@@ -190,6 +200,13 @@
                 const isAdmin = localStorage.getItem('is_admin') === 'true';
                 const userNom = localStorage.getItem('user_nom') || 'Administrateur';
                 
+                // Debug - afficher les valeurs du localStorage
+                console.log('🔍 Debug localStorage:');
+                console.log('- isLoggedIn:', localStorage.getItem('isLoggedIn'));
+                console.log('- is_admin:', localStorage.getItem('is_admin'));
+                console.log('- user_nom:', localStorage.getItem('user_nom'));
+                console.log('- sessionToken:', localStorage.getItem('sessionToken'));
+                
                 if (isLoggedIn && isAdmin) {
                     // Utilisateur admin connecté - afficher le panneau d'administration
                     document.getElementById('admin-panel').classList.remove('hidden');
@@ -203,11 +220,18 @@
                     };
                     
                     return;
+                } else {
+                    console.log('❌ Conditions admin non remplies:');
+                    console.log('- isLoggedIn:', isLoggedIn);
+                    console.log('- isAdmin:', isAdmin);
                 }
                 
                 // Fallback: vérifier via API session
+                console.log('🔄 Tentative fallback via API session...');
                 const response = await fetch('/api/session');
                 const sessionData = await response.json();
+                
+                console.log('📡 Réponse API session:', sessionData);
                 
                 currentUser = sessionData.user;
                 
@@ -221,9 +245,26 @@
                     console.log('👤 Mode spectateur');
                 }
             } catch (error) {
+                console.log('❌ Erreur lors de la vérification:', error);
                 console.log('Session non vérifiée, mode spectateur par défaut');
                 document.getElementById('admin-panel').classList.add('hidden');
             }
+        }
+
+        // Fonction de test pour forcer le mode admin
+        function forceAdminMode() {
+            console.log('🔧 FORCE MODE ADMIN - TEST');
+            
+            // Simuler une session admin
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('is_admin', 'true');
+            localStorage.setItem('user_nom', 'Admin Test');
+            localStorage.setItem('sessionToken', 'test_admin_' + Date.now());
+            
+            // Afficher le panneau immédiatement
+            document.getElementById('admin-panel').classList.remove('hidden');
+            
+            alert('🎯 Mode administrateur forcé pour test!\nLe panneau d\'administration devrait maintenant être visible.');
         }
 
         // Créer une image dans la galerie
