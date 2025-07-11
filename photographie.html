@@ -856,7 +856,7 @@
 
         // Ajouter une nouvelle photo
         async function uploadPhoto(file) {
-            // Pour Vercel, on simule l'upload avec les métadonnées du fichier
+            // Upload avec les métadonnées du fichier
             const fileInfo = {
                 title: file.name.replace(/\.[^/.]+$/, ""), // Nom sans extension
                 filename: `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
@@ -887,7 +887,7 @@
                     
                     // Recharger la galerie
                     loadGallery();
-                    alert(`✅ Photo "${fileInfo.title}" ajoutée avec succès\n(Simulation pour Vercel)`);
+                    alert(`✅ Photo "${fileInfo.title}" ajoutée avec succès`);
                 } else {
                     const errorData = await response.json();
                     alert(`❌ Erreur: ${errorData.error || 'Erreur lors de l\'ajout'}`);

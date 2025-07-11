@@ -1,16 +1,12 @@
 node_modules/
 package-lock.json
 .history/
-.vercel
 
 # Variables d'environnement
 .env
 .env.local
 .env.production
-.env.nouveau-serveur
-.env.local.nouveau
 *.env
-vercel-env-config.txt
 
 # Logs
 logs

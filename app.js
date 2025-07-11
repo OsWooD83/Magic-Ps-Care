@@ -2,8 +2,7 @@
 const cors = require('cors');
 app.use(cors({
   origin: [
-    'https://magicpscare.vercel.app',
-    'https://association-magic-ps-care-cogf6ko31.vercel.app'
+    'https://oswood83.github.io'
   ],
   credentials: true // si tu utilises les cookies
 }));

@@ -51,9 +51,9 @@ const serverContent = fs.readFileSync(`${backendPath}/server.js`, 'utf8');
 
 const checks = [
     {
-        name: 'CORS Vercel configuré',
-        test: serverContent.includes('magicpscare.vercel.app'),
-        fix: 'Ajouter le domaine Vercel dans la config CORS'
+        name: 'CORS GitHub Pages configuré',
+        test: serverContent.includes('oswood83.github.io'),
+        fix: 'Ajouter le domaine GitHub Pages dans la config CORS'
     },
     {
         name: 'Session middleware configuré',
@@ -122,7 +122,7 @@ if (allFilesExist) {
 }
 
 console.log('📋 Checklist Projet:');
-console.log('✅ Configuration CORS Vercel + Render');
+console.log('✅ Configuration CORS GitHub Pages + Render');
 console.log('✅ Gestion sessions Express sécurisée');
 console.log('✅ JavaScript robuste (addEventListener)');
 console.log('✅ CSS externalisé (plus de styles inline)');
@@ -131,5 +131,5 @@ console.log('✅ Base SQLite avec colonne is_admin');
 console.log('✅ Git synchronisé sur 2 dépôts');
 
 console.log('\n🚀 PROJET PRÊT POUR PRODUCTION !');
-console.log('Frontend: https://magicpscare.vercel.app');
+console.log('Frontend: https://oswood83.github.io/association-Magic-Ps-Care/');
 console.log('Backend: https://backend-ps-care.onrender.com');

@@ -18,13 +18,10 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
-// CORS pour autoriser le frontend Vercel
+// CORS pour autoriser GitHub Pages
 app.use(cors({
   origin: [
-    'https://tw-pascal-nouveau-pdp5l9lf2-association-ps-cares-projects.vercel.app',
-    'https://magicpscare.vercel.app',
-    'https://association-magic-ps-care.vercel.app',
-    'https://association-magic-ps-care-cogf6ko31.vercel.app',
+    'https://oswood83.github.io',
     'http://localhost:4000',
     'http://localhost:3000'
   ],
@@ -107,9 +104,9 @@ app.post('/api/login', express.json(), (req, res) => {
         });
     }
     
-    // Fallback pour Vercel: authentification hardcodée
-    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
-        console.log('🌐 Mode production Vercel - authentification directe');
+    // Authentification GitHub Pages - mode production
+    if (process.env.NODE_ENV === 'production') {
+        console.log('🌐 Mode production GitHub Pages - authentification directe');
         
         if (email === 'admin@magicpscare.com' && password === 'admin123') {
             req.session.user = {
@@ -305,10 +302,10 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 4000;
 
-// Pour Vercel, on exporte l'app au lieu d'écouter sur un port
+// Configuration pour développement local
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
 }
 
-// Export pour Vercel
-export default app;
+// Export pour compatibilité
+module.exports = app;
