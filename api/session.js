@@ -1,4 +1,4 @@
-// API Session simple pour Vercel
+// API Session pour Vercel
 export default function handler(req, res) {
   // Headers CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,12 +10,31 @@ export default function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    // Session basique
-    return res.json({ 
-      authenticated: false, 
-      user: null,
-      message: 'Session API fonctionne sur Vercel'
-    });
+    // Vérifier s'il y a un token de session
+    const authHeader = req.headers.authorization;
+    const token = req.headers.cookie?.includes('session') || authHeader;
+    
+    if (token) {
+      // Utilisateur connecté = Administrateur
+      return res.json({
+        authenticated: true,
+        user: {
+          id: 1,
+          nom: 'Administrateur',
+          email: 'admin@magicpscare.com',
+          is_admin: true
+        },
+        message: 'Session admin active'
+      });
+    } else {
+      // Utilisateur non connecté = Spectateur
+      return res.json({ 
+        authenticated: false, 
+        user: null,
+        role: 'spectateur',
+        message: 'Mode spectateur'
+      });
+    }
   }
 
   res.status(405).json({ error: 'Method not allowed' });

@@ -716,14 +716,15 @@
       }
     </style>
     <script>
-// Variable qui indique si l'utilisateur est connecté (true = connecté, false = déconnecté)
-let isLoggedIn = true;
+// Variable qui indique si l'utilisateur est connecté (true = admin, false = spectateur)
+let isLoggedIn = false;
+let isAdmin = false;
 
 // Met à jour le bouton de connexion/déconnexion dans la navbar selon l'état de connexion
 function updateNavbarLogin() {
     const navLoginBtn = document.getElementById('navLoginBtn');
-    if (isLoggedIn) {
-        navLoginBtn.textContent = 'Déconnexion'; // Change le texte du bouton
+    if (isLoggedIn && isAdmin) {
+        navLoginBtn.textContent = 'Admin - Déconnexion'; // Change le texte du bouton
         navLoginBtn.href = '#'; // Empêche la navigation
         navLoginBtn.onclick = function(e) {
             e.preventDefault();
@@ -752,7 +753,7 @@ function updateNavbarLogin() {
             }
         };
     } else {
-        navLoginBtn.textContent = 'login'; // Affiche "login" si l'utilisateur n'est pas connecté
+        navLoginBtn.textContent = 'Spectateur - Se connecter'; // Affiche "Spectateur" si non connecté
         navLoginBtn.href = 'login.html'; // Redirige vers la page de connexion
         navLoginBtn.onclick = null;
     }
@@ -816,29 +817,46 @@ document.getElementById('btnLogout').addEventListener('click', function() {
     }
 });
 
-// Au chargement de la page, vérifie la session côté serveur pour savoir si l'utilisateur est connecté
+// Au chargement de la page, vérifie la session pour déterminer le rôle (admin/spectateur)
 window.addEventListener('DOMContentLoaded', function() {
-    // 1. Vérifie d'abord le localStorage pour le rôle utilisateur
-    let isAdmin = false;
-    let isUser = false;
-    if (localStorage.getItem('user_email')) {
-        isUser = true;
-        isAdmin = localStorage.getItem('is_admin') === '1';
-    }
-    isLoggedIn = isUser;
-    avatarTW.style.display = isLoggedIn ? 'block' : 'none';
-    avatarMenu.style.display = 'none';
-    updateNavbarLogin();
-    // Affiche le bouton stats seulement pour les admins
-    const btnStats = document.getElementById('btnStats');
-    if (isAdmin) {
-        if (btnStats) btnStats.style.display = 'inline-block';
+    console.log('🔍 Vérification du statut utilisateur...');
+    
+    // 1. Vérifie le localStorage pour la session
+    const sessionToken = localStorage.getItem('sessionToken');
+    const storedIsAdmin = localStorage.getItem('is_admin');
+    const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
+    
+    if (sessionToken && storedIsLoggedIn === 'true') {
+        // Utilisateur connecté = Administrateur
+        isLoggedIn = true;
+        isAdmin = storedIsAdmin === 'true';
+        console.log('✅ Session administrateur détectée');
+        
+        // Affiche l'interface admin
+        avatarTW.style.display = 'block';
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+        
+        // Met à jour le nom d'utilisateur si disponible
+        const userName = localStorage.getItem('user_nom');
+        if (userName) {
+            console.log(`👤 Connecté en tant que: ${userName}`);
+        }
     } else {
-        if (btnStats) btnStats.style.display = 'none';
+        // Utilisateur non connecté = Spectateur
+        isLoggedIn = false;
+        isAdmin = false;
+        console.log('👁️ Mode spectateur activé');
+        
+        // Cache l'interface admin
+        avatarTW.style.display = 'none';
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
     }
-    // Optionnel : afficher une interface différente pour spectateur vs utilisateur
-    // Par exemple, masquer certaines sections si spectateur
-    // if (!isUser) { ... }
+    
+    // Met à jour l'interface
+    updateNavbarLogin();
+    avatarMenu.style.display = 'none';
+    
+    console.log(`📊 État final: isLoggedIn=${isLoggedIn}, isAdmin=${isAdmin}`);
 });
 
 // Gestion modale Devis pour tous les boutons "Devis"

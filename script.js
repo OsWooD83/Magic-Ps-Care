@@ -37,11 +37,20 @@ function performClientLogout() {
     
     // Supprime toutes les données de session
     localStorage.removeItem('token');
+    localStorage.removeItem('sessionToken');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('is_admin');
+    localStorage.removeItem('user_nom');
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('user_id');
     sessionStorage.clear();
     
     // Met à jour l'état de connexion global
     if (typeof isLoggedIn !== 'undefined') {
         isLoggedIn = false;
+    }
+    if (typeof isAdmin !== 'undefined') {
+        isAdmin = false;
     }
     
     // Cache l'avatar et le menu utilisateur si ils existent
@@ -56,21 +65,20 @@ function performClientLogout() {
         console.log('📋 Menu caché');
     }
     
-    // Cache les fonctionnalités réservées
-    const actions = document.getElementById('photographie-actions');
-    if (actions) {
-        actions.style.display = 'none';
-        console.log('📸 Actions cachées');
-    }
+    // Cache toutes les fonctionnalités admin
+    document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = 'none';
+        console.log('� Élément admin caché:', el);
+    });
     
     // Met à jour la navbar si la fonction existe
     if (typeof updateNavbarLogin === 'function') {
         updateNavbarLogin();
-        console.log('🔄 Navbar mise à jour');
+        console.log('🔄 Navbar mise à jour en mode spectateur');
     }
     
     // Force le rechargement de la page pour nettoyer l'état
-    console.log('🔄 Redirection vers accueil...');
+    console.log('🔄 Redirection vers accueil en mode spectateur...');
     window.location.href = 'index.html';
 }
 

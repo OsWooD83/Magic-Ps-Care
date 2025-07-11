@@ -212,21 +212,28 @@
             console.log('✅ Réponse reçue:', data);
             
             if (data.success) {
-                msg.textContent = 'Connexion réussie !';
+                msg.textContent = 'Connexion réussie ! Accès administrateur activé.';
                 msg.style.color = 'limegreen';
                 document.getElementById('avatarTW').style.display = 'flex';
-                // 2. Stocker le rôle utilisateur dans le localStorage
-                if (typeof data.is_admin !== 'undefined') {
-                    localStorage.setItem('is_admin', data.is_admin ? '1' : '0');
+                
+                // Stocker la session administrateur
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('sessionToken', 'admin_' + Date.now());
+                localStorage.setItem('is_admin', 'true');
+                
+                // Stocker les infos utilisateur
+                if (data.user) {
+                    localStorage.setItem('user_nom', data.user.nom || 'Administrateur');
+                    localStorage.setItem('user_email', data.user.email || email);
+                    localStorage.setItem('user_id', data.user.id || '1');
                 }
-                if (typeof data.nom !== 'undefined') {
-                    localStorage.setItem('user_nom', data.nom);
-                }
-                if (typeof data.email !== 'undefined') {
-                    localStorage.setItem('user_email', data.email);
-                }
-                // 3. Rediriger vers l'accueil
-                window.location.href = 'index.html';
+                
+                console.log('✅ Session administrateur créée');
+                
+                // Rediriger vers l'accueil
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
             } else {
                 msg.textContent = data.message || 'Échec de la connexion.';
                 msg.style.color = 'red';
