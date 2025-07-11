@@ -1,7 +1,7 @@
 // Configuration API centralisée
 const API_CONFIG = {
   // URL de base pour les API - utilise l'URL directe car process.env n'existe pas côté client
-  baseURL: 'https://backend-ps-care.onrender.com',
+  baseURL: '',
   
   // Endpoints principaux
   endpoints: {

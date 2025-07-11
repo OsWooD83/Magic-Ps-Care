@@ -3,7 +3,7 @@
 // Fonction de déconnexion centralisée pour tous les boutons
 function performLogout() {
     // Appel API pour déconnexion côté serveur
-    fetch('https://backend-ps-care.onrender.com/api/logout', { 
+    fetch('/api/logout', { 
         method: 'POST',
         credentials: 'include'
     })

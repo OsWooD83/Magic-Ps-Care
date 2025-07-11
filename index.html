@@ -732,7 +732,7 @@ function updateNavbarLogin() {
                 performLogout();
             } else {
                 // Fallback si la fonction centralisée n'est pas disponible
-                fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST', credentials: 'include' })
+                fetch('/api/logout', { method: 'POST', credentials: 'include' })
                     .then(() => {
                         isLoggedIn = false;
                         avatarTW.style.display = 'none';
@@ -794,7 +794,7 @@ document.getElementById('btnLogout').addEventListener('click', function() {
         performLogout();
     } else {
         // Fallback si la fonction centralisée n'est pas disponible
-        fetch('https://backend-ps-care.onrender.com/api/logout', { method: 'POST', credentials: 'include' })
+        fetch('/api/logout', { method: 'POST', credentials: 'include' })
             .then(() => {
                 isLoggedIn = false;
                 avatarTW.style.display = 'none';
