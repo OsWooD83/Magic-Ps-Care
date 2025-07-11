@@ -41,6 +41,8 @@ async function testAll() {
   await testVercelAPI('session');
   await testVercelAPI('avis');
   await testVercelAPI('devis-stats');
+  await testVercelAPI('login');
+  await testVercelAPI('logout');
   
   console.log('\n🎉 Tests terminés !');
   console.log('Si les APIs répondent, votre backend Vercel fonctionne !');

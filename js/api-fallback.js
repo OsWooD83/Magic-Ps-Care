@@ -2,7 +2,7 @@
 window.API_CONFIG = {
     // URLs de backend (avec fallback)
     backends: [
-        'https://backend-ps-care.onrender.com',
+        '', // Backend maintenant local sur Vercel
         // Ajout possible d'autres backends si nécessaire
     ],
     

@@ -2,12 +2,14 @@
 
 class DeploymentMonitor {
   constructor() {
-    this.frontendUrl = 'https://magicpscare.vercel.app';
-    this.backendUrl = 'https://backend-ps-care.onrender.com';
+    this.frontendUrl = 'https://association-magic-ps-care.vercel.app';
+    this.backendUrl = '';  // Backend maintenant local sur Vercel
     this.endpoints = [
       '/api/session',
       '/api/avis',
-      '/api/devis-stats'
+      '/api/devis-stats',
+      '/api/login',
+      '/api/logout'
     ];
   }
 
@@ -47,7 +49,8 @@ class DeploymentMonitor {
     
     for (const endpoint of this.endpoints) {
       try {
-        const response = await fetch(`${this.backendUrl}${endpoint}`);
+        // APIs maintenant locales sur Vercel (même domaine)
+        const response = await fetch(endpoint);
         results[endpoint] = {
           status: response.ok ? 'OK' : 'ERREUR',
           code: response.status
@@ -65,7 +68,8 @@ class DeploymentMonitor {
 
   async checkCORS() {
     try {
-      const response = await fetch(`${this.backendUrl}/api/session`, {
+      // Plus de problème CORS - même domaine Vercel
+      const response = await fetch('/api/session', {
         method: 'GET',
         mode: 'cors',
         credentials: 'include'
