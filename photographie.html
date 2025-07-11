@@ -149,21 +149,22 @@
         <div class="container">
             <h1>🎭 Galerie de Photographies</h1>
             
-            <!-- Bouton de test admin (temporaire pour debug) -->
-            <div style="margin-bottom: 20px;">
-                <button onclick="forceAdminMode()" style="background: #ff9800; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                    🔧 Test Mode Admin
-                </button>
-                <button onclick="checkAdminStatus()" style="background: #2196f3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
-                    🔍 Vérifier Session
-                </button>
-                <button onclick="loadDemoImages()" style="background: #4caf50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
-                    🎭 Images Démo
-                </button>
-            </div>
-            
             <!-- Panneau d'administration (visible uniquement pour les admins) -->
             <div id="admin-panel" class="admin-panel hidden">
+                <h2>🔧 Panneau d'Administration</h2>
+                <div class="admin-actions">
+                    <button id="add-photo-btn" class="btn btn-primary">
+                        ➕ Ajouter une photo
+                    </button>
+                    <button id="toggle-delete-mode" class="btn btn-danger">
+                        🗑️ Mode suppression
+                    </button>
+                    <button id="logout-btn" class="btn btn-secondary">
+                        🚪 Déconnexion
+                    </button>
+                </div>
+                <input type="file" id="photo-upload" accept="image/*" class="hidden">
+            </div>
                 <h2>🔧 Panneau d'Administration</h2>
                 <div class="admin-actions">
                     <button id="add-photo-btn" class="btn btn-primary">
@@ -218,13 +219,6 @@
                 const isAdmin = localStorage.getItem('is_admin') === 'true';
                 const userNom = localStorage.getItem('user_nom') || 'Administrateur';
                 
-                // Debug - afficher les valeurs du localStorage
-                console.log('🔍 Debug localStorage:');
-                console.log('- isLoggedIn:', localStorage.getItem('isLoggedIn'));
-                console.log('- is_admin:', localStorage.getItem('is_admin'));
-                console.log('- user_nom:', localStorage.getItem('user_nom'));
-                console.log('- sessionToken:', localStorage.getItem('sessionToken'));
-                
                 if (isLoggedIn && isAdmin) {
                     // Utilisateur admin connecté - afficher le panneau d'administration
                     document.getElementById('admin-panel').classList.remove('hidden');
@@ -238,18 +232,11 @@
                     };
                     
                     return;
-                } else {
-                    console.log('❌ Conditions admin non remplies:');
-                    console.log('- isLoggedIn:', isLoggedIn);
-                    console.log('- isAdmin:', isAdmin);
                 }
                 
                 // Fallback: vérifier via API session
-                console.log('🔄 Tentative fallback via API session...');
                 const response = await fetch('/api/session');
                 const sessionData = await response.json();
-                
-                console.log('📡 Réponse API session:', sessionData);
                 
                 currentUser = sessionData.user;
                 
@@ -264,100 +251,8 @@
                 }
             } catch (error) {
                 console.log('❌ Erreur lors de la vérification:', error);
-                console.log('Session non vérifiée, mode spectateur par défaut');
                 document.getElementById('admin-panel').classList.add('hidden');
             }
-        }
-
-        // Fonction de test pour forcer le mode admin
-        function forceAdminMode() {
-            console.log('🔧 FORCE MODE ADMIN - TEST');
-            
-            // Simuler une session admin
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('is_admin', 'true');
-            localStorage.setItem('user_nom', 'Admin Test');
-            localStorage.setItem('sessionToken', 'test_admin_' + Date.now());
-            
-            // Afficher le panneau immédiatement
-            document.getElementById('admin-panel').classList.remove('hidden');
-            
-            alert('🎯 Mode administrateur forcé pour test!\nLe panneau d\'administration devrait maintenant être visible.');
-        }
-
-        // Fonction pour charger des images de démonstration
-        function loadDemoImages() {
-            console.log('🎭 Chargement des images de démonstration');
-            
-            // Remplacer temporairement avec des images de démonstration
-            const demoPhotos = [
-                { 
-                    filename: 'https://picsum.photos/400/300?random=1', 
-                    title: 'Spectacle de Magie 1 (Démo)', 
-                    id: 1 
-                },
-                { 
-                    filename: 'https://picsum.photos/400/300?random=2', 
-                    title: 'Spectacle de Magie 2 (Démo)', 
-                    id: 2 
-                },
-                { 
-                    filename: 'https://picsum.photos/400/300?random=3', 
-                    title: 'Table de Magie (Démo)', 
-                    id: 3 
-                },
-                { 
-                    filename: 'https://picsum.photos/400/300?random=4', 
-                    title: 'Tour du Parapluie (Démo)', 
-                    id: 4 
-                },
-                { 
-                    filename: 'https://picsum.photos/400/300?random=5', 
-                    title: 'Table de Magie 3 (Démo)', 
-                    id: 5 
-                },
-                { 
-                    filename: 'https://picsum.photos/400/300?random=6', 
-                    title: 'Photo NNNN (Démo)', 
-                    id: 6 
-                }
-            ];
-            
-            // Remplacer temporairement les photos
-            realPhotos.length = 0;
-            realPhotos.push(...demoPhotos);
-            
-            // Recharger la galerie
-            loadDemoGallery();
-            
-            alert('🎭 Images de démonstration chargées!\nCeci permet de tester les fonctionnalités en attendant que les vraies images soient déployées sur Vercel.');
-        }
-
-        // Charger la galerie avec images de démonstration (synchrone)
-        function loadDemoGallery() {
-            gallery.innerHTML = '';
-            realPhotos.forEach(photo => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'gallery-item-v2';
-                wrapper.setAttribute('data-id', photo.id);
-                
-                const img = document.createElement('img');
-                img.src = photo.filename;
-                img.alt = photo.title;
-                img.loading = 'lazy';
-                
-                // Bouton de suppression
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'delete-btn';
-                deleteBtn.innerHTML = '✕';
-                deleteBtn.onclick = () => deletePhoto(photo.id, photo.title);
-                
-                wrapper.appendChild(img);
-                wrapper.appendChild(deleteBtn);
-                gallery.appendChild(wrapper);
-                
-                console.log('✅ Image démo chargée:', photo.title);
-            });
         }
 
         // Créer une image dans la galerie
@@ -381,8 +276,6 @@
                 // Image de fallback ou placeholder
                 img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vbiBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
                 console.error('❌ Image non trouvée:', photo.filename);
-                
-                // Ajouter une classe pour le style d'erreur
                 img.classList.add('image-error');
             }
             
@@ -427,21 +320,6 @@
             
             // Retirer le message de chargement
             gallery.removeChild(loadingDiv);
-            
-            // Si toutes les images ont échoué, proposer le mode démo
-            if (imagesFailed === realPhotos.length && imagesLoaded === 0) {
-                const demoDiv = document.createElement('div');
-                demoDiv.innerHTML = `
-                    <div style="text-align: center; padding: 40px; background: #f5f5f5; border-radius: 12px; margin: 20px 0;">
-                        <h3>🎭 Images non disponibles</h3>
-                        <p>Les images originales ne sont pas encore déployées sur Vercel.</p>
-                        <button onclick="loadDemoImages()" style="background: #4caf50; color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 10px;">
-                            🎭 Charger les images de démonstration
-                        </button>
-                    </div>
-                `;
-                gallery.appendChild(demoDiv);
-            }
         }
 
         // Supprimer une photo
