@@ -1,4 +1,5 @@
 {
+  "buildCommand": "echo 'Force rebuild - Galerie Magique'",
   "rewrites": [
     {
       "source": "/api/(.*)",
