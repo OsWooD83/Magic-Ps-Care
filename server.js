@@ -9,7 +9,7 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS pour autoriser le frontend Vercel - Mise à jour 11 juillet 2025
+// CORS pour autoriser le frontend Vercel
 app.use(cors({
   origin: [
     'https://magicpscare.vercel.app',
@@ -18,10 +18,7 @@ app.use(cors({
     'http://localhost:4000',
     'http://localhost:3000'
   ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-  optionsSuccessStatus: 200
+  credentials: true
 }));
 
 // Middleware de session placé AVANT toutes les routes qui utilisent req.session

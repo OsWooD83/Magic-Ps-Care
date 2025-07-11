@@ -1,4 +1,4 @@
-// Proxy simple pour contourner CORS
+// Proxy simple p    console.log('🎯 Target (local):', backendUrl);ur contourner CORS
 export default async function handler(req, res) {
   // Headers CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,13 +13,20 @@ export default async function handler(req, res) {
     console.log('🔄 Proxy call:', req.method, req.query);
     
     const endpoint = req.query.endpoint || 'login';
-    const backendUrl = `https://backend-ps-care.onrender.com/api/${endpoint}`;
+    const backendUrl = `/api/${endpoint}`;
     
     console.log('� Target:', backendUrl);
     console.log('📝 Body:', req.body);
 
+    // Redirection interne vers les API Vercel
+    const baseUrl = req.headers.host?.includes('localhost') 
+      ? 'http://localhost:3000'
+      : `https://${req.headers.host}`;
+    
+    const fullUrl = `${baseUrl}${backendUrl}`;
+
     // Utiliser fetch global (Node.js 18+)
-    const response = await fetch(backendUrl, {
+    const response = await fetch(fullUrl, {
       method: req.method,
       headers: {
         'Content-Type': 'application/json',
