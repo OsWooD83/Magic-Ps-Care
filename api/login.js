@@ -1,18 +1,5 @@
-// API Login pour Vercel - Compatible Express/Serverless
-const bcrypt = require('bcrypt');
-
-// Données utilisateur simulées (remplacer par une vraie DB)
-const users = [
-  {
-    id: 1,
-    email: 'admin@magicpscare.com',
-    password: '$2b$10$example.hash.here', // Hash du mot de passe 'admin123'
-    nom: 'Administrateur',
-    is_admin: true
-  }
-];
-
-function handler(req, res) {
+// API Login pour Vercel - Format ES Module propre
+export default function handler(req, res) {
   // Headers CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -26,8 +13,11 @@ function handler(req, res) {
     try {
       const { email, password } = req.body;
       
+      console.log('🔐 Tentative de connexion:', { email, password: '***' });
+      
       // Validation des entrées
       if (!email || !password) {
+        console.log('❌ Email ou mot de passe manquant');
         return res.status(400).json({ 
           success: false, 
           message: 'Email et mot de passe requis'
@@ -36,7 +26,8 @@ function handler(req, res) {
 
       // Authentification simplifiée pour le test
       if (email === 'admin@magicpscare.com' && password === 'admin123') {
-        return res.json({ 
+        console.log('✅ Connexion réussie pour:', email);
+        return res.status(200).json({ 
           success: true, 
           user: { 
             id: 1, 
@@ -47,23 +38,24 @@ function handler(req, res) {
           message: 'Connexion réussie'
         });
       } else {
+        console.log('❌ Identifiants incorrects');
         return res.status(401).json({ 
           success: false, 
           message: 'Email ou mot de passe incorrect'
         });
       }
     } catch (error) {
-      console.error('Erreur login:', error);
+      console.error('💥 Erreur login:', error);
       return res.status(500).json({ 
         success: false, 
-        message: 'Erreur serveur'
+        message: 'Erreur serveur: ' + error.message
       });
     }
   }
 
-  res.status(405).json({ error: 'Method not allowed' });
+  return res.status(405).json({ 
+    success: false,
+    error: 'Method not allowed',
+    method: req.method
+  });
 }
-
-// Export pour Vercel et Express
-module.exports = handler;
-export default handler;
