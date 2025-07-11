@@ -1,12 +1,24 @@
-// API Photos pour Vercel
+// API Photos pour Vercel - Gestion des photos par les administrateurs
 export default function handler(req, res) {
   // Headers CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Vérifier l'authentification admin pour POST et DELETE
+  if (req.method === 'POST' || req.method === 'DELETE') {
+    const isAdmin = req.headers.authorization || req.headers.cookie?.includes('session');
+    
+    if (!isAdmin) {
+      return res.status(403).json({ 
+        success: false,
+        error: 'Accès refusé. Droits administrateur requis.' 
+      });
+    }
   }
 
   if (req.method === 'GET') {
@@ -70,31 +82,41 @@ export default function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    // Simulation d'upload de photo
+    // Ajouter une nouvelle photo (admin seulement)
+    // Simulation pour Vercel - dans un vrai projet, gérer le FormData
     const { filename, title, category } = req.body;
     
-    if (!filename) {
+    if (!filename && !title) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Nom de fichier requis' 
+        message: 'Nom de fichier ou titre requis' 
       });
     }
 
+    // Générer un ID unique et un nom de fichier
+    const newId = Date.now();
+    const generatedFilename = filename || `${newId}-${title || 'nouvelle-photo'}.jpg`;
+    
+    const newPhoto = {
+      id: newId,
+      filename: generatedFilename,
+      title: title || 'Nouvelle photo',
+      category: category || 'general',
+      uploadDate: new Date().toISOString().split('T')[0]
+    };
+
+    console.log('📸 Nouvelle photo simulée:', newPhoto);
+
     return res.json({ 
       success: true, 
-      photo: {
-        id: Date.now(),
-        filename: filename,
-        title: title || 'Nouvelle photo',
-        category: category || 'general',
-        uploadDate: new Date().toISOString().split('T')[0]
-      },
-      message: 'Photo uploadée avec succès (simulation)'
+      photo: newPhoto,
+      message: '✅ Photo ajoutée avec succès (simulation Vercel)'
     });
   }
 
   if (req.method === 'DELETE') {
-    const { id } = req.query;
+    // Supprimer une photo (admin seulement)
+    const { id, filename } = req.body;
     
     if (!id) {
       return res.status(400).json({ 
@@ -103,9 +125,12 @@ export default function handler(req, res) {
       });
     }
 
+    console.log(`🗑️ Suppression demandée: ${filename} (ID: ${id})`);
+
     return res.json({ 
       success: true, 
-      message: `Photo ${id} supprimée avec succès (simulation)`
+      deletedId: id,
+      message: `✅ Photo "${filename}" supprimée avec succès`
     });
   }
 

@@ -234,6 +234,14 @@
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 1000);
+                
+                // Ou rediriger directement vers la galerie si demandé
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('redirect') === 'gallery') {
+                    setTimeout(() => {
+                        window.location.href = 'photographie.html';
+                    }, 1000);
+                }
             } else {
                 msg.textContent = data.message || 'Échec de la connexion.';
                 msg.style.color = 'red';
