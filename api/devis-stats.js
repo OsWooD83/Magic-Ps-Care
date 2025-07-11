@@ -1,4 +1,4 @@
-// API Avis simple pour Vercel
+// API Stats Devis pour Vercel
 export default function handler(req, res) {
   // Headers CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,15 +12,19 @@ export default function handler(req, res) {
   if (req.method === 'GET') {
     return res.json({ 
       success: true, 
-      avis: [],
-      message: 'API Avis fonctionne sur Vercel'
+      stats: { 
+        total: 0,
+        pending: 0,
+        completed: 0
+      },
+      message: 'API Devis Stats fonctionne sur Vercel'
     });
   }
 
   if (req.method === 'POST') {
     return res.json({ 
       success: true, 
-      message: 'Avis reçu sur Vercel'
+      message: 'Stat ajoutée sur Vercel'
     });
   }
 
