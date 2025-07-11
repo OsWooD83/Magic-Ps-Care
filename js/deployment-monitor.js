@@ -7,9 +7,7 @@ class DeploymentMonitor {
     this.endpoints = [
       '/api/session',
       '/api/avis',
-      '/api/devis-stats',
-      '/api/login',
-      '/api/logout'
+      '/api/devis-stats'
     ];
   }
 
