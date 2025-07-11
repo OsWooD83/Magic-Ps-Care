@@ -157,6 +157,9 @@
                 <button onclick="checkAdminStatus()" style="background: #2196f3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
                     🔍 Vérifier Session
                 </button>
+                <button onclick="loadDemoImages()" style="background: #4caf50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                    🎭 Images Démo
+                </button>
             </div>
             
             <!-- Panneau d'administration (visible uniquement pour les admins) -->
@@ -280,6 +283,81 @@
             document.getElementById('admin-panel').classList.remove('hidden');
             
             alert('🎯 Mode administrateur forcé pour test!\nLe panneau d\'administration devrait maintenant être visible.');
+        }
+
+        // Fonction pour charger des images de démonstration
+        function loadDemoImages() {
+            console.log('🎭 Chargement des images de démonstration');
+            
+            // Remplacer temporairement avec des images de démonstration
+            const demoPhotos = [
+                { 
+                    filename: 'https://picsum.photos/400/300?random=1', 
+                    title: 'Spectacle de Magie 1 (Démo)', 
+                    id: 1 
+                },
+                { 
+                    filename: 'https://picsum.photos/400/300?random=2', 
+                    title: 'Spectacle de Magie 2 (Démo)', 
+                    id: 2 
+                },
+                { 
+                    filename: 'https://picsum.photos/400/300?random=3', 
+                    title: 'Table de Magie (Démo)', 
+                    id: 3 
+                },
+                { 
+                    filename: 'https://picsum.photos/400/300?random=4', 
+                    title: 'Tour du Parapluie (Démo)', 
+                    id: 4 
+                },
+                { 
+                    filename: 'https://picsum.photos/400/300?random=5', 
+                    title: 'Table de Magie 3 (Démo)', 
+                    id: 5 
+                },
+                { 
+                    filename: 'https://picsum.photos/400/300?random=6', 
+                    title: 'Photo NNNN (Démo)', 
+                    id: 6 
+                }
+            ];
+            
+            // Remplacer temporairement les photos
+            realPhotos.length = 0;
+            realPhotos.push(...demoPhotos);
+            
+            // Recharger la galerie
+            loadDemoGallery();
+            
+            alert('🎭 Images de démonstration chargées!\nCeci permet de tester les fonctionnalités en attendant que les vraies images soient déployées sur Vercel.');
+        }
+
+        // Charger la galerie avec images de démonstration (synchrone)
+        function loadDemoGallery() {
+            gallery.innerHTML = '';
+            realPhotos.forEach(photo => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'gallery-item-v2';
+                wrapper.setAttribute('data-id', photo.id);
+                
+                const img = document.createElement('img');
+                img.src = photo.filename;
+                img.alt = photo.title;
+                img.loading = 'lazy';
+                
+                // Bouton de suppression
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = '✕';
+                deleteBtn.onclick = () => deletePhoto(photo.id, photo.title);
+                
+                wrapper.appendChild(img);
+                wrapper.appendChild(deleteBtn);
+                gallery.appendChild(wrapper);
+                
+                console.log('✅ Image démo chargée:', photo.title);
+            });
         }
 
         // Créer une image dans la galerie
