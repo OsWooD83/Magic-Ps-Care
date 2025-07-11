@@ -65,7 +65,7 @@ export default function handler(req, res) {
         }
       ],
       total: 7,
-      message: 'Photos API fonctionne sur Vercel'
+      message: 'Photos API fonctionne sur Vercel - Version 2'
     });
   }
 
