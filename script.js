@@ -2,50 +2,76 @@
 
 // Fonction de déconnexion centralisée pour tous les boutons
 function performLogout() {
+    console.log('🚪 Déconnexion en cours...');
+    
     // Appel API pour déconnexion côté serveur
     fetch('/api/logout', { 
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
     .then(response => {
-        if (response.ok) {
+        console.log('📡 Réponse logout:', response.status);
+        if (response.ok || response.status === 200) {
             return response.json();
         }
         throw new Error('Erreur lors de la déconnexion');
     })
-    .then(() => {
-        // Supprime le token côté client
-        localStorage.removeItem('token');
-        
-        // Met à jour l'état de connexion global
-        if (typeof isLoggedIn !== 'undefined') {
-            isLoggedIn = false;
-        }
-        
-        // Cache l'avatar et le menu utilisateur si ils existent
-        const avatarTW = document.getElementById('avatarTW');
-        const avatarMenu = document.getElementById('avatarMenu');
-        if (avatarTW) avatarTW.style.display = 'none';
-        if (avatarMenu) avatarMenu.style.display = 'none';
-        
-        // Cache les fonctionnalités réservées
-        const actions = document.getElementById('photographie-actions');
-        if (actions) actions.style.display = 'none';
-        
-        // Met à jour la navbar si la fonction existe
-        if (typeof updateNavbarLogin === 'function') {
-            updateNavbarLogin();
-        }
-        
-        // Redirige vers la page d'accueil
-        window.location.href = 'index.html';
+    .then((data) => {
+        console.log('✅ Logout API success:', data);
+        // Déconnexion réussie
+        performClientLogout();
     })
     .catch(error => {
-        console.error('Erreur lors de la déconnexion:', error);
-        // Même en cas d'erreur, on déconnecte côté client
-        localStorage.removeItem('token');
-        window.location.href = 'index.html';
+        console.error('❌ Erreur logout API:', error);
+        // Même en cas d'erreur API, on déconnecte côté client
+        performClientLogout();
     });
+}
+
+// Fonction pour la déconnexion côté client
+function performClientLogout() {
+    console.log('🔄 Nettoyage côté client...');
+    
+    // Supprime toutes les données de session
+    localStorage.removeItem('token');
+    sessionStorage.clear();
+    
+    // Met à jour l'état de connexion global
+    if (typeof isLoggedIn !== 'undefined') {
+        isLoggedIn = false;
+    }
+    
+    // Cache l'avatar et le menu utilisateur si ils existent
+    const avatarTW = document.getElementById('avatarTW');
+    const avatarMenu = document.getElementById('avatarMenu');
+    if (avatarTW) {
+        avatarTW.style.display = 'none';
+        console.log('👤 Avatar caché');
+    }
+    if (avatarMenu) {
+        avatarMenu.style.display = 'none';
+        console.log('📋 Menu caché');
+    }
+    
+    // Cache les fonctionnalités réservées
+    const actions = document.getElementById('photographie-actions');
+    if (actions) {
+        actions.style.display = 'none';
+        console.log('📸 Actions cachées');
+    }
+    
+    // Met à jour la navbar si la fonction existe
+    if (typeof updateNavbarLogin === 'function') {
+        updateNavbarLogin();
+        console.log('🔄 Navbar mise à jour');
+    }
+    
+    // Force le rechargement de la page pour nettoyer l'état
+    console.log('🔄 Redirection vers accueil...');
+    window.location.href = 'index.html';
 }
 
 // Gestion de la déconnexion pour tous les types de boutons

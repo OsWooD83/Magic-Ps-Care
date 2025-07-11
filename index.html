@@ -731,18 +731,25 @@ function updateNavbarLogin() {
             if (typeof performLogout === 'function') {
                 performLogout();
             } else {
-                // Fallback si la fonction centralisée n'est pas disponible
+                // Fallback amélioré
+                console.log('⚠️ performLogout not found, using fallback');
                 fetch('/api/logout', { method: 'POST', credentials: 'include' })
                     .then(() => {
+                        localStorage.removeItem('token');
+                        sessionStorage.clear();
                         isLoggedIn = false;
                         avatarTW.style.display = 'none';
                         avatarMenu.style.display = 'none';
                         updateNavbarLogin();
-                        localStorage.removeItem('token');
                         window.location.href = 'index.html';
                     })
                     .catch(error => {
                         console.error('Erreur lors de la déconnexion:', error);
+                        // Force la déconnexion même en cas d'erreur
+                        localStorage.removeItem('token');
+                        window.location.href = 'index.html';
+                    });
+            }
                         localStorage.removeItem('token');
                         window.location.href = 'index.html';
                     });
@@ -793,14 +800,16 @@ document.getElementById('btnLogout').addEventListener('click', function() {
     if (typeof performLogout === 'function') {
         performLogout();
     } else {
-        // Fallback si la fonction centralisée n'est pas disponible
+        // Fallback amélioré
+        console.log('⚠️ performLogout not found, using fallback');
         fetch('/api/logout', { method: 'POST', credentials: 'include' })
             .then(() => {
+                localStorage.removeItem('token');
+                sessionStorage.clear();
                 isLoggedIn = false;
                 avatarTW.style.display = 'none';
                 avatarMenu.style.display = 'none';
                 updateNavbarLogin();
-                localStorage.removeItem('token');
                 window.location.href = 'index.html';
             })
             .catch(error => {
