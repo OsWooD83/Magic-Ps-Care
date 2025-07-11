@@ -1,21 +1,24 @@
 {
   "version": 2,
-  "name": "tw-pascal-public-0712-0114",
+  "name": "tw-pascal-new",
   "functions": {
-    "api/*.js": {
+    "api/index.js": {
       "maxDuration": 30
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/((?!api).*)",
-      "destination": "/$1"
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ],
+  "env": {
+    "NODE_ENV": "production"
+  },
   "headers": [
     {
       "source": "/api/(.*)",

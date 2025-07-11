@@ -1,31 +1,65 @@
-# Script de vérification du statut du backend
-Write-Host "🔍 Vérification du statut du backend..." -ForegroundColor Yellow
+# Script de vérification rapide de l'état du projet PS Care
 
-$backendUrl = "https://backend-ps-care.onrender.com"
-$frontendUrl = "https://tw-pascal-gpcd63weq-association-ps-cares-projects.vercel.app"
+Write-Host "🔍 Vérification Rapide - PS Care Magic Show" -ForegroundColor Cyan
+Write-Host "==========================================" -ForegroundColor Cyan
 
-# Test de connectivité backend
-try {
-    $response = Invoke-WebRequest -Uri "$backendUrl/api/session" -Method GET -TimeoutSec 10
-    Write-Host "✅ Backend accessible (Status: $($response.StatusCode))" -ForegroundColor Green
-} catch {
-    Write-Host "❌ Backend non accessible: $($_.Exception.Message)" -ForegroundColor Red
+# 1. Vérifier les fichiers essentiels
+Write-Host "`n📋 1. Fichiers essentiels:" -ForegroundColor Yellow
+$files = @{
+    "api/index.js" = "API Vercel principale"
+    "vercel.json" = "Configuration Vercel"
+    "server-local.js" = "Serveur local de test"
+    "test-all-apis.js" = "Script de tests"
+    "package.json" = "Dépendances Node.js"
+    "index.html" = "Page d'accueil"
 }
 
-# Test CORS avec curl si disponible
-if (Get-Command curl -ErrorAction SilentlyContinue) {
-    Write-Host "🔍 Test CORS..." -ForegroundColor Yellow
-    
-    $corsTest = curl -s -o NUL -w "%{http_code}" -H "Origin: $frontendUrl" -H "Access-Control-Request-Method: POST" -X OPTIONS "$backendUrl/api/login"
-    
-    if ($corsTest -eq "200") {
-        Write-Host "✅ CORS configuré correctement" -ForegroundColor Green
+foreach ($file in $files.Keys) {
+    if (Test-Path $file) {
+        Write-Host "✅ $file - $($files[$file])" -ForegroundColor Green
     } else {
-        Write-Host "❌ CORS non configuré (Code: $corsTest)" -ForegroundColor Red
-        Write-Host "🔄 Attendez quelques minutes pour le redéploiement Render" -ForegroundColor Yellow
+        Write-Host "❌ $file - MANQUANT!" -ForegroundColor Red
     }
 }
 
-Write-Host "🌐 URLs:" -ForegroundColor Cyan
-Write-Host "  Frontend: $frontendUrl" -ForegroundColor White
+# 2. Vérifier la dernière URL de déploiement
+Write-Host "`n🌐 2. Dernière URL de déploiement:" -ForegroundColor Yellow
+if (Test-Path "DEPLOYMENT_URL.txt") {
+    $lastUrl = Get-Content "DEPLOYMENT_URL.txt" -Raw
+    Write-Host "📍 URL sauvegardée: $($lastUrl.Trim())" -ForegroundColor Cyan
+    
+    # Test rapide de l'URL
+    try {
+        Write-Host "🧪 Test rapide de l'URL..." -ForegroundColor Yellow
+        $response = Invoke-WebRequest -Uri $lastUrl.Trim() -Method Head -TimeoutSec 10 -ErrorAction Stop
+        Write-Host "✅ Site accessible (HTTP $($response.StatusCode))" -ForegroundColor Green
+    } catch {
+        Write-Host "⚠️  Site non accessible ou lent: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "❌ Aucune URL de déploiement trouvée" -ForegroundColor Red
+}
+
+# 3. Vérifier le statut Vercel
+Write-Host "`n⚙️  3. Statut Vercel CLI:" -ForegroundColor Yellow
+try {
+    $vercelWho = vercel whoami 2>$null
+    if ($vercelWho) {
+        Write-Host "✅ Connecté à Vercel: $vercelWho" -ForegroundColor Green
+    } else {
+        Write-Host "❌ Non connecté à Vercel" -ForegroundColor Red
+    }
+} catch {
+    Write-Host "❌ Vercel CLI non disponible" -ForegroundColor Red
+}
+
+# 4. Tester la limite de déploiement Vercel
+Write-Host "`n🚀 4. Test de limite Vercel:" -ForegroundColor Yellow
+
+Write-Host "💡 Commandes utiles:" -ForegroundColor Cyan
+Write-Host "   • .\redeploy-after-limit.ps1  - Redéploiement automatique après limite" -ForegroundColor White
+Write-Host "   • node test-all-apis.js       - Tester toutes les APIs localement" -ForegroundColor White
+Write-Host "   • vercel --prod --yes         - Déploiement manuel (si limite levée)" -ForegroundColor White
+
+Write-Host "`n✨ Vérification terminée!" -ForegroundColor Green
 Write-Host "  Backend:  $backendUrl" -ForegroundColor White

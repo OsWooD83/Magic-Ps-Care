@@ -1,19 +1,27 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-// const { MongoClient, ObjectId } = require('mongodb'); // MongoDB supprimé
-const multer = require('multer');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-const sqlite3 = require('sqlite3').verbose();
+import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+// import { MongoClient, ObjectId } from 'mongodb'; // MongoDB supprimé
+import multer from 'multer';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import cors from 'cors';
+import bcrypt from 'bcrypt';
+import sqlite3 from 'sqlite3';
+const db = sqlite3.verbose();
+
+// Recreate __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
 // CORS pour autoriser le frontend Vercel
 app.use(cors({
   origin: [
+    'https://tw-pascal-nouveau-pdp5l9lf2-association-ps-cares-projects.vercel.app',
     'https://magicpscare.vercel.app',
     'https://association-magic-ps-care.vercel.app',
     'https://association-magic-ps-care-cogf6ko31.vercel.app',
@@ -53,10 +61,9 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage });
-// Route / désactivée : la galerie doit être affichée uniquement côté client (photographie.html)
-// app.get('/', ... ) supprimée pour éviter le doublon d'affichage
+// Route principale pour servir index.html
 app.get('/', (req, res) => {
-    res.redirect('/photographie.html');
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Route /photos désactivée (MongoDB supprimé)
@@ -75,7 +82,7 @@ app.get('/', (req, res) => {
 // app.post('/upload', ...)
 
 // Pour servir l'API stats devis
-const statsDevisApi = require('./api/statsDevis');
+import statsDevisApi from './api/statsDevis.js';
 app.use('/api/stats/devis', bodyParser.json(), statsDevisApi);
 
 // Ajoute ce proxy pour compatibilité avec /api/stats/reset
@@ -304,4 +311,4 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Export pour Vercel
-module.exports = app;
+export default app;

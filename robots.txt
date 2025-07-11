@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+
+# Autoriser l'accès à toutes les APIs
+Allow: /api/
+Allow: /api/*

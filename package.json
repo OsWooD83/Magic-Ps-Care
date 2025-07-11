@@ -16,7 +16,8 @@
   },
   "name": "tw-pascal",
   "version": "1.0.0",
-  "main": "effet.js",
+  "type": "module",
+  "main": "server.js",
   "directories": {
     "lib": "lib"
   },

@@ -194,17 +194,39 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
-// Servir les fichiers statiques
+// Servir les fichiers statiques HTML
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.resolve(__dirname, 'index.html'));
+});
+
+app.get('/index.html', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
 app.get('/photographie.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'photographie.html'));
+  res.sendFile(path.resolve(__dirname, 'photographie.html'));
 });
 
 app.get('/login.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
+  res.sendFile(path.resolve(__dirname, 'login.html'));
+});
+
+app.get('/avis.html', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'avis.html'));
+});
+
+app.get('/gallery-test.html', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'gallery-test.html'));
+});
+
+// Route pour servir tous les fichiers HTML automatiquement
+app.get('/:filename.html', (req, res) => {
+  const fileName = req.params.filename + '.html';
+  res.sendFile(path.resolve(__dirname, fileName), (err) => {
+    if (err) {
+      res.status(404).send(`Page ${fileName} non trouvée`);
+    }
+  });
 });
 
 // Démarrage du serveur
