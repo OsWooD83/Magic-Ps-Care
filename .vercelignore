@@ -1,0 +1,14 @@
+# Ne pas ignorer les images
+!images/
+!images/*.jpg
+!images/*.png
+!images/*.jpeg
+!images/*.gif
+!images/*.webp
+
+# Ignorer les fichiers temporaires
+.DS_Store
+*.log
+node_modules/
+.env
+.env.local

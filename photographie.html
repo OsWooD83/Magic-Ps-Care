@@ -30,6 +30,11 @@
             transition: transform 0.4s cubic-bezier(.4,2,.6,1), box-shadow 0.4s;
         }
         
+        .gallery-v2 img.image-error {
+            background: #f5f5f5;
+            border: 2px dashed #ccc;
+        }
+        
         /* Styles pour le panneau d'administration */
         .admin-panel {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -192,6 +197,16 @@
         let deleteMode = false;
         let currentUser = null;
 
+        // Fonction pour vérifier si une image existe
+        function checkImageExists(imageSrc) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = imageSrc;
+            });
+        }
+
         // Vérifier le statut de session et d'administration
         async function checkAdminStatus() {
             try {
@@ -268,15 +283,30 @@
         }
 
         // Créer une image dans la galerie
-        function createImageElement(photo) {
+        async function createImageElement(photo) {
             const wrapper = document.createElement('div');
             wrapper.className = 'gallery-item-v2';
             wrapper.setAttribute('data-id', photo.id);
             
             const img = document.createElement('img');
-            img.src = `images/${photo.filename}`;
             img.alt = photo.title;
             img.loading = 'lazy';
+            
+            // Vérifier si l'image existe avant de l'assigner
+            const imagePath = `images/${photo.filename}`;
+            const imageExists = await checkImageExists(imagePath);
+            
+            if (imageExists) {
+                img.src = imagePath;
+                console.log('✅ Chargée:', photo.filename);
+            } else {
+                // Image de fallback ou placeholder
+                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vbiBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+                console.error('❌ Image non trouvée:', photo.filename);
+                
+                // Ajouter une classe pour le style d'erreur
+                img.classList.add('image-error');
+            }
             
             // Bouton de suppression (visible uniquement en mode admin et mode suppression)
             const deleteBtn = document.createElement('button');
@@ -286,20 +316,34 @@
             
             wrapper.appendChild(img);
             wrapper.appendChild(deleteBtn);
-
-            // Debug dans la console
-            img.onload = () => console.log('✅ Chargée:', photo.filename);
-            img.onerror = () => console.error('❌ Erreur:', photo.filename);
             
             return wrapper;
         }
 
         // Charger les images dans la galerie
-        function loadGallery() {
+        async function loadGallery() {
             gallery.innerHTML = '';
-            realPhotos.forEach(photo => {
-                gallery.appendChild(createImageElement(photo));
-            });
+            
+            // Afficher un message de chargement
+            const loadingDiv = document.createElement('div');
+            loadingDiv.innerHTML = '🔄 Chargement des images...';
+            loadingDiv.style.textAlign = 'center';
+            loadingDiv.style.padding = '20px';
+            loadingDiv.style.color = '#666';
+            gallery.appendChild(loadingDiv);
+            
+            // Charger les images une par une
+            for (const photo of realPhotos) {
+                try {
+                    const element = await createImageElement(photo);
+                    gallery.insertBefore(element, loadingDiv);
+                } catch (error) {
+                    console.error('Erreur lors du chargement de', photo.filename, error);
+                }
+            }
+            
+            // Retirer le message de chargement
+            gallery.removeChild(loadingDiv);
         }
 
         // Supprimer une photo
