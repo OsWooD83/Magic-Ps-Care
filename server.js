@@ -162,4 +162,11 @@ app.get('/isLoggedIn', (req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
+
+// Pour Vercel, on exporte l'app au lieu d'écouter sur un port
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
+}
+
+// Export pour Vercel
+module.exports = app;

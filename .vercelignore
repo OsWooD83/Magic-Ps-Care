@@ -12,3 +12,16 @@
 node_modules/
 .env
 .env.local
+
+# Ignorer les fichiers de développement
+*.db
+*.sqlite
+*.sql
+uploads/
+association-Magic-Ps-Care/
+backend-ps-care/
+*.md
+*.ps1
+*.sh
+playground-*.mongodb.js
+BUILD_INFO
