@@ -2,7 +2,35 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.js",
+      "src": "api/login.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/session.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/logout.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/photos.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/videos.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/avis.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/statsDevis.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/proxy.js",
       "use": "@vercel/node"
     },
     {
@@ -12,6 +40,38 @@
   ],
   "routes": [
     {
+      "src": "/api/login",
+      "dest": "/api/login.js"
+    },
+    {
+      "src": "/api/session",
+      "dest": "/api/session.js"
+    },
+    {
+      "src": "/api/logout",
+      "dest": "/api/logout.js"
+    },
+    {
+      "src": "/api/photos",
+      "dest": "/api/photos.js"
+    },
+    {
+      "src": "/api/videos",
+      "dest": "/api/videos.js"
+    },
+    {
+      "src": "/api/avis",
+      "dest": "/api/avis.js"
+    },
+    {
+      "src": "/api/statsDevis",
+      "dest": "/api/statsDevis.js"
+    },
+    {
+      "src": "/api/proxy",
+      "dest": "/api/proxy.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/server.js"
     },
@@ -19,5 +79,8 @@
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

@@ -1,5 +1,5 @@
 // API Proxy pour Vercel - Format ES Module propre
-export default function handler(req, res) {
+export default async function handler(req, res) {
   // Headers CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -10,26 +10,28 @@ export default function handler(req, res) {
   }
 
   try {
-    console.log('🔄 Proxy call:', req.method, req.query);
+    console.log('🔄 Proxy call:', req.method, req.query, req.body);
     
     const endpoint = req.query.endpoint;
     
     if (endpoint === 'login') {
       // Redirection simple vers login
-      const { email, password } = req.body;
+      const { email, password } = req.body || {};
       
-      console.log('🔐 Proxy vers login:', { email, password: '***' });
+      console.log('🔐 Proxy vers login:', { email, password: password ? '***' : 'missing' });
       
       // Validation
       if (!email || !password) {
+        console.log('❌ Paramètres manquants dans proxy');
         return res.status(400).json({ 
           success: false, 
           message: 'Email et mot de passe requis'
         });
       }
 
-      // Auth directe
+      // Auth directe pour Vercel
       if (email === 'admin@magicpscare.com' && password === 'admin123') {
+        console.log('✅ Authentification proxy réussie');
         return res.status(200).json({ 
           success: true, 
           user: { 
@@ -38,9 +40,12 @@ export default function handler(req, res) {
             nom: 'Administrateur Magic PS Care',
             is_admin: true
           },
+          is_admin: true,
+          nom: 'Administrateur Magic PS Care',
           message: 'Connexion réussie via proxy'
         });
       } else {
+        console.log('❌ Identifiants incorrects dans proxy');
         return res.status(401).json({ 
           success: false, 
           message: 'Email ou mot de passe incorrect'
@@ -48,18 +53,18 @@ export default function handler(req, res) {
       }
     }
     
-    return res.status(404).json({ 
-      success: false, 
-      message: 'Endpoint non trouvé',
-      available: ['login'],
-      requested: endpoint
+    // Autres endpoints
+    console.log('❌ Endpoint non supporté:', endpoint);
+    return res.status(404).json({
+      success: false,
+      message: `Endpoint '${endpoint}' non supporté`
     });
     
   } catch (error) {
-    console.error('❌ Proxy error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Erreur proxy: ' + error.message
+    console.error('❌ Erreur proxy:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur serveur proxy: ' + error.message
     });
   }
 }
