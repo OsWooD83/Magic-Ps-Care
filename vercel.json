@@ -3,30 +3,10 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "functions": {
-    "api/login.js": {
-      "runtime": "@vercel/node@18"
-    },
-    "api/session.js": {
-      "runtime": "@vercel/node@18"
-    },
-    "api/logout.js": {
-      "runtime": "@vercel/node@18"
-    },
-    "api/photos.js": {
-      "runtime": "@vercel/node@18"
-    },
-    "api/videos.js": {
-      "runtime": "@vercel/node@18"
-    },
-    "api/avis.js": {
-      "runtime": "@vercel/node@18"
-    },
-    "api/statsDevis.js": {
-      "runtime": "@vercel/node@18"
-    },
-    "api/proxy.js": {
-      "runtime": "@vercel/node@18"
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
     }
-  }
+  ]
 }
