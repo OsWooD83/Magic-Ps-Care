@@ -1,5 +1,25 @@
 // Dépendances : express, body-parser, sqlite3 (ou mysql2 selon votre choix)
-const express = require('express');
+// API Stats Devis simple pour Vercel
+export default function handler(req, res) {
+  // Headers CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method === 'GET') {
+    return res.json({ 
+      success: true, 
+      stats: { total: 0 },
+      message: 'API Stats fonctionne sur Vercel'
+    });
+  }
+
+  res.status(405).json({ error: 'Method not allowed' });
+}
 const router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
 // Remplacez le chemin par celui de votre base SQLite
