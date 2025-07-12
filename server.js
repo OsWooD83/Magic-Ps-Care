@@ -307,5 +307,5 @@ if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
 }
 
-// Export pour compatibilité
-module.exports = app;
+// Export pour compatibilité ES modules
+export default app;
