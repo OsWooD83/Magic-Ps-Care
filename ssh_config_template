@@ -1,0 +1,28 @@
+# Configuration SSH pour VPS Hostinger
+# Copiez ce contenu dans C:\Users\enzov\.ssh\config
+
+# VPS Hostinger - Magic PS Care
+Host hostinger-vps
+    HostName votre-domaine.com
+    User votre-username
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    StrictHostKeyChecking accept-new
+
+# Alternative si vous avez plusieurs VPS
+Host magic-ps-care
+    HostName votre-domaine.com
+    User votre-username
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    StrictHostKeyChecking accept-new
+
+# Configuration générale
+Host *
+    AddKeysToAgent yes
+    UseKeychain yes
+    IdentitiesOnly yes
