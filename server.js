@@ -60,8 +60,17 @@ function initPhotoDatabase() {
     });
     
     photoDb.serialize(() => {
-        // Créer la table photos si elle n'existe pas
-        photoDb.run(`CREATE TABLE IF NOT EXISTS photos (
+        // Supprimer l'ancienne table si elle existe
+        photoDb.run(`DROP TABLE IF EXISTS photos`, (err) => {
+            if (err) {
+                console.error('❌ Erreur suppression ancienne table:', err);
+            } else {
+                console.log('🗑️ Ancienne table photos supprimée');
+            }
+        });
+        
+        // Créer la nouvelle table avec la bonne structure
+        photoDb.run(`CREATE TABLE photos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             filename TEXT NOT NULL,
             title TEXT NOT NULL,
@@ -72,7 +81,7 @@ function initPhotoDatabase() {
             if (err) {
                 console.error('❌ Erreur création table photos:', err);
             } else {
-                console.log('✅ Table photos créée/vérifiée');
+                console.log('✅ Nouvelle table photos créée avec succès');
             }
         });
     });
