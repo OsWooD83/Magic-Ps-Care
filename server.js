@@ -48,6 +48,47 @@ if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir);
 }
 
+// Fonction d'initialisation de la base de données photos
+function initPhotoDatabase() {
+    const dbPath = path.join(__dirname, 'photos.db');
+    const photoDb = new sqlite3.Database(dbPath, (err) => {
+        if (err) {
+            console.error('❌ Erreur connexion SQLite:', err);
+            return;
+        }
+        console.log('🗄️ Connexion SQLite établie');
+    });
+    
+    photoDb.serialize(() => {
+        // Créer la table photos si elle n'existe pas
+        photoDb.run(`CREATE TABLE IF NOT EXISTS photos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename TEXT NOT NULL,
+            title TEXT NOT NULL,
+            category TEXT DEFAULT 'upload',
+            uploadDate TEXT DEFAULT CURRENT_TIMESTAMP,
+            fileType TEXT DEFAULT 'image'
+        )`, (err) => {
+            if (err) {
+                console.error('❌ Erreur création table photos:', err);
+            } else {
+                console.log('✅ Table photos créée/vérifiée');
+            }
+        });
+    });
+    
+    photoDb.close((err) => {
+        if (err) {
+            console.error('❌ Erreur fermeture base:', err);
+        } else {
+            console.log('🗄️ Base de données photos initialisée avec succès');
+        }
+    });
+}
+
+// Initialiser la base de données photos au démarrage
+initPhotoDatabase();
+
 // Config multer pour stocker les fichiers dans /images
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, imagesDir),
@@ -108,20 +149,29 @@ app.post('/api/photos', upload.single('photo'), (req, res) => {
 
         // Sauvegarder en base de données
         const dbPath = path.join(__dirname, 'photos.db');
-        const photoDb = new sqlite3.Database(dbPath);
+        const photoDb = new sqlite3.Database(dbPath, (err) => {
+            if (err) {
+                console.error('❌ Erreur connexion base photos:', err);
+                return res.status(500).json({ error: 'Erreur de connexion à la base de données' });
+            }
+        });
         
         photoDb.run(
             `INSERT INTO photos (filename, title, category, fileType) VALUES (?, ?, ?, ?)`,
             [photoData.filename, photoData.title, photoData.category, photoData.fileType],
             function(err) {
                 if (err) {
-                    console.error('Erreur insertion photo:', err);
+                    console.error('❌ Erreur insertion photo:', err);
+                    console.error('Détails erreur:', err.message);
                     photoDb.close();
-                    return res.status(500).json({ error: 'Erreur lors de la sauvegarde en base' });
+                    return res.status(500).json({ 
+                        error: 'Erreur lors de la sauvegarde en base',
+                        details: err.message 
+                    });
                 }
                 
                 photoData.id = this.lastID;
-                console.log(`📸 Nouveau fichier uploadé: ${photoData.filename} (ID: ${photoData.id})`);
+                console.log(`✅ Photo sauvegardée: ${photoData.filename} (ID: ${photoData.id})`);
                 
                 photoDb.close();
                 res.json({ 
@@ -458,28 +508,3 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Export pour compatibilité ES modules
 export default app;
-
-// Fonction d'initialisation de la base de données photos
-function initPhotoDatabase() {
-    const dbPath = path.join(__dirname, 'photos.db');
-    const photoDb = new sqlite3.Database(dbPath);
-    
-    photoDb.serialize(() => {
-        // Créer la table photos si elle n'existe pas
-        photoDb.run(`CREATE TABLE IF NOT EXISTS photos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            filename TEXT NOT NULL,
-            title TEXT NOT NULL,
-            category TEXT DEFAULT 'upload',
-            uploadDate TEXT DEFAULT CURRENT_TIMESTAMP,
-            fileType TEXT DEFAULT 'image'
-        )`);
-        
-        console.log('🗄️ Base de données photos initialisée');
-    });
-    
-    photoDb.close();
-}
-
-// Initialiser la base de données photos au démarrage
-initPhotoDatabase();
