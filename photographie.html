@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photographie - Magic PS Care - Galerie Magique v2.1</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/site.css">
     <style>
         /* Arrière-plan magique animé */
         body {
@@ -644,6 +644,14 @@
 
     <script>
         // FORCE DEPLOY v2.1 - Galerie Magique Complete avec Bouton Accueil - $(Get-Date)
+        
+        // Variables globales
+        let isAdmin = false;
+        let currentUser = null;
+        let deleteMode = false;
+        let currentFilter = 'tout';
+        let gallery = null; // Sera initialisé après DOM Ready
+        
         const realPhotos = [
             { filename: '1751921535345-magic_1.jpg', title: 'Spectacle de Magie 1', id: 1, category: 'photo' },
             { filename: '1751921551416-magic_3.jpg', title: 'Spectacle de Magie 3', id: 2, category: 'photo' },
@@ -652,11 +660,6 @@
             { filename: '1751921616369-tble_3.jpg', title: 'Table de Magie 3', id: 5, category: 'photo' },
             { filename: '1751921416230-nnnn.jpg', title: 'Photo NNNN', id: 6, category: 'photo' }
         ];
-
-        const gallery = document.getElementById('gallery');
-        let deleteMode = false;
-        let currentUser = null;
-        let currentFilter = 'tout'; // Filtre actuel
 
         // Filtrer par catégorie
         function filterByCategory(category) {
@@ -695,11 +698,12 @@
             try {
                 // Vérifier d'abord le localStorage pour la session locale
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                const isAdmin = localStorage.getItem('is_admin') === 'true';
+                const isAdminLocal = localStorage.getItem('is_admin') === 'true';
                 const userNom = localStorage.getItem('user_nom') || 'Administrateur';
                 
-                if (isLoggedIn && isAdmin) {
+                if (isLoggedIn && isAdminLocal) {
                     // Utilisateur admin connecté - afficher le panneau d'administration
+                    isAdmin = true;
                     document.getElementById('admin-panel').classList.remove('hidden');
                     console.log(`👑 Mode administrateur activé pour ${userNom}`);
                     
@@ -721,15 +725,18 @@
                 
                 if (sessionData.authenticated && sessionData.user && sessionData.user.is_admin) {
                     // Utilisateur admin connecté via API - afficher le panneau d'administration
+                    isAdmin = true;
                     document.getElementById('admin-panel').classList.remove('hidden');
                     console.log('👑 Mode administrateur activé via API');
                 } else {
                     // Utilisateur normal ou non connecté - masquer le panneau
+                    isAdmin = false;
                     document.getElementById('admin-panel').classList.add('hidden');
                     console.log('👤 Mode spectateur');
                 }
             } catch (error) {
                 console.log('❌ Erreur lors de la vérification:', error);
+                isAdmin = false;
                 document.getElementById('admin-panel').classList.add('hidden');
             }
         }
@@ -798,7 +805,9 @@
             }
             
             // Supprimer le message de chargement
-            gallery.removeChild(loadingDiv);
+            if (loadingDiv.parentNode) {
+                gallery.removeChild(loadingDiv);
+            }
             
             // Obtenir les photos selon le filtre actuel
             const photosToShow = getFilteredPhotos();
@@ -824,7 +833,7 @@
             for (const photo of photosToShow) {
                 try {
                     const element = await createImageElement(photo);
-                    gallery.insertBefore(element, loadingDiv);
+                    gallery.appendChild(element);
                     imagesLoaded++;
                 } catch (error) {
                     console.error('Erreur lors du chargement de', photo.filename, error);
@@ -832,8 +841,7 @@
                 }
             }
             
-            // Retirer le message de chargement
-            gallery.removeChild(loadingDiv);
+            console.log(`✅ Galerie chargée: ${imagesLoaded} images affichées, ${imagesFailed} erreurs`);
         }
 
         // Supprimer une photo
@@ -981,6 +989,14 @@
 
         // Événements du panneau d'administration
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les références DOM
+            gallery = document.getElementById('gallery');
+            
+            // Vérifier le statut admin et charger la galerie
+            checkAdminStatus().then(() => {
+                loadGallery();
+            });
+            
             // Bouton d'ajout de photo
             document.getElementById('add-photo-btn').addEventListener('click', function() {
                 document.getElementById('photo-upload').click();
@@ -1005,19 +1021,15 @@
             
             // Bouton de déconnexion
             document.getElementById('logout-btn').addEventListener('click', logout);
+            
+            // Charger le header
+            fetch('header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('navbar-placeholder').innerHTML = data;
+                })
+                .catch(err => console.log('Header non chargé'));
         });
-
-        // Initialisation
-        checkAdminStatus();
-        loadGallery();
-
-        // Charger le header
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('navbar-placeholder').innerHTML = data;
-            })
-            .catch(err => console.log('Header non chargé'));
     </script>
 </body>
 </html>
