@@ -774,6 +774,32 @@
         async function loadGallery() {
             gallery.innerHTML = '';
             
+            // Afficher un message de chargement
+            const loadingDiv = document.createElement('div');
+            loadingDiv.innerHTML = '🔄 Chargement des images...';
+            loadingDiv.style.textAlign = 'center';
+            loadingDiv.style.padding = '20px';
+            loadingDiv.style.color = 'white';
+            gallery.appendChild(loadingDiv);
+            
+            try {
+                // Charger les photos depuis l'API
+                const response = await fetch('/api/photos');
+                if (response.ok) {
+                    const data = await response.json();
+                    realPhotos.length = 0; // Vider le tableau
+                    realPhotos.push(...data.photos); // Ajouter les photos de la base
+                    console.log(`📸 ${realPhotos.length} photos chargées depuis la base de données`);
+                } else {
+                    console.warn('Erreur chargement API, utilisation photos statiques');
+                }
+            } catch (error) {
+                console.warn('Erreur chargement API:', error);
+            }
+            
+            // Supprimer le message de chargement
+            gallery.removeChild(loadingDiv);
+            
             // Obtenir les photos selon le filtre actuel
             const photosToShow = getFilteredPhotos();
             
@@ -784,19 +810,12 @@
                     <div style="text-align: center; padding: 40px; color: white;">
                         <h3>📂 Aucun contenu dans cette catégorie</h3>
                         <p>Il n'y a pas encore de ${currentFilter === 'photo' ? 'photos' : 'vidéos'} à afficher.</p>
+                        ${isAdmin ? '<p>Utilisez le bouton "📸 Ajouter Photo" pour ajouter du contenu.</p>' : ''}
                     </div>
                 `;
                 gallery.appendChild(emptyDiv);
                 return;
             }
-            
-            // Afficher un message de chargement
-            const loadingDiv = document.createElement('div');
-            loadingDiv.innerHTML = '🔄 Chargement des images...';
-            loadingDiv.style.textAlign = 'center';
-            loadingDiv.style.padding = '20px';
-            loadingDiv.style.color = 'white';
-            gallery.appendChild(loadingDiv);
             
             let imagesLoaded = 0;
             let imagesFailed = 0;

@@ -100,24 +100,130 @@ app.post('/api/photos', upload.single('photo'), (req, res) => {
         }
 
         const photoData = {
-            id: Date.now(),
             filename: req.file.filename,
             title: req.body.title || req.file.originalname.replace(/\.[^/.]+$/, ""),
             category: req.body.category || 'upload',
-            uploadDate: new Date().toISOString(),
             fileType: req.file.mimetype.startsWith('image/') ? 'image' : 'video'
         };
 
-        console.log(`📸 Nouveau fichier uploadé: ${photoData.filename} (${photoData.fileType})`);
-
-        res.json({ 
-            success: true, 
-            photo: photoData,
-            message: `${photoData.fileType === 'image' ? 'Photo' : 'Vidéo'} uploadée avec succès`
-        });
+        // Sauvegarder en base de données
+        const dbPath = path.join(__dirname, 'photos.db');
+        const photoDb = new sqlite3.Database(dbPath);
+        
+        photoDb.run(
+            `INSERT INTO photos (filename, title, category, fileType) VALUES (?, ?, ?, ?)`,
+            [photoData.filename, photoData.title, photoData.category, photoData.fileType],
+            function(err) {
+                if (err) {
+                    console.error('Erreur insertion photo:', err);
+                    photoDb.close();
+                    return res.status(500).json({ error: 'Erreur lors de la sauvegarde en base' });
+                }
+                
+                photoData.id = this.lastID;
+                console.log(`📸 Nouveau fichier uploadé: ${photoData.filename} (ID: ${photoData.id})`);
+                
+                photoDb.close();
+                res.json({ 
+                    success: true, 
+                    photo: photoData,
+                    message: `${photoData.fileType === 'image' ? 'Photo' : 'Vidéo'} uploadée avec succès`
+                });
+            }
+        );
     } catch (error) {
         console.error('Erreur upload:', error);
         res.status(500).json({ error: 'Erreur serveur lors de l\'upload' });
+    }
+});
+
+// Endpoint pour supprimer des photos/vidéos
+app.delete('/api/photos', (req, res) => {
+    try {
+        // Vérifier l'authentification
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'Token d\'authentification manquant' });
+        }
+
+        const { id, filename } = req.body;
+        if (!filename && !id) {
+            return res.status(400).json({ error: 'ID ou nom de fichier manquant' });
+        }
+
+        // Supprimer de la base de données
+        const dbPath = path.join(__dirname, 'photos.db');
+        const photoDb = new sqlite3.Database(dbPath);
+        
+        let query, params;
+        if (id) {
+            query = 'DELETE FROM photos WHERE id = ?';
+            params = [id];
+        } else {
+            query = 'DELETE FROM photos WHERE filename = ?';
+            params = [filename];
+        }
+        
+        photoDb.run(query, params, function(err) {
+            if (err) {
+                console.error('Erreur suppression base:', err);
+                photoDb.close();
+                return res.status(500).json({ error: 'Erreur lors de la suppression en base' });
+            }
+            
+            // Si la suppression en base a réussi, supprimer le fichier physique
+            if (filename) {
+                const filePath = path.join(__dirname, 'images', filename);
+                
+                if (fs.existsSync(filePath)) {
+                    try {
+                        fs.unlinkSync(filePath);
+                        console.log(`🗑️ Fichier supprimé: ${filename}`);
+                    } catch (fileErr) {
+                        console.error('Erreur suppression fichier:', fileErr);
+                    }
+                } else {
+                    console.log(`⚠️ Fichier non trouvé: ${filename}`);
+                }
+            }
+            
+            console.log(`🗑️ Photo supprimée de la base (${this.changes} ligne(s) affectée(s))`);
+            photoDb.close();
+            
+            res.json({ 
+                success: true, 
+                message: `Photo supprimée avec succès`,
+                deletedRows: this.changes
+            });
+        });
+    } catch (error) {
+        console.error('Erreur suppression:', error);
+        res.status(500).json({ error: 'Erreur serveur lors de la suppression' });
+    }
+});
+
+// Endpoint pour récupérer la liste des photos depuis la base de données
+app.get('/api/photos', (req, res) => {
+    try {
+        const dbPath = path.join(__dirname, 'photos.db');
+        const photoDb = new sqlite3.Database(dbPath);
+        
+        photoDb.all('SELECT * FROM photos ORDER BY id DESC', (err, rows) => {
+            if (err) {
+                console.error('Erreur récupération photos:', err);
+                photoDb.close();
+                return res.status(500).json({ error: 'Erreur lors de la récupération des photos' });
+            }
+            
+            photoDb.close();
+            res.json({ 
+                success: true, 
+                photos: rows 
+            });
+        });
+    } catch (error) {
+        console.error('Erreur get photos:', error);
+        res.status(500).json({ error: 'Erreur serveur lors de la récupération' });
     }
 });
 
@@ -352,3 +458,28 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Export pour compatibilité ES modules
 export default app;
+
+// Fonction d'initialisation de la base de données photos
+function initPhotoDatabase() {
+    const dbPath = path.join(__dirname, 'photos.db');
+    const photoDb = new sqlite3.Database(dbPath);
+    
+    photoDb.serialize(() => {
+        // Créer la table photos si elle n'existe pas
+        photoDb.run(`CREATE TABLE IF NOT EXISTS photos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename TEXT NOT NULL,
+            title TEXT NOT NULL,
+            category TEXT DEFAULT 'upload',
+            uploadDate TEXT DEFAULT CURRENT_TIMESTAMP,
+            fileType TEXT DEFAULT 'image'
+        )`);
+        
+        console.log('🗄️ Base de données photos initialisée');
+    });
+    
+    photoDb.close();
+}
+
+// Initialiser la base de données photos au démarrage
+initPhotoDatabase();
