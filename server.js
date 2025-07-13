@@ -78,6 +78,49 @@ app.get('/', (req, res) => {
 // Endpoint /upload désactivé (MongoDB supprimé)
 // app.post('/upload', ...)
 
+// Endpoint pour upload de photos/vidéos avec authentification
+app.post('/api/photos', upload.single('photo'), (req, res) => {
+    try {
+        // Vérifier l'authentification
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'Token d\'authentification manquant' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ error: 'Aucun fichier envoyé' });
+        }
+
+        // Valider le type de fichier
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'video/mp4', 'video/mov'];
+        if (!allowedTypes.includes(req.file.mimetype)) {
+            return res.status(400).json({ 
+                error: 'Type de fichier non supporté. Utilisez: JPG, PNG, GIF, MP4, MOV' 
+            });
+        }
+
+        const photoData = {
+            id: Date.now(),
+            filename: req.file.filename,
+            title: req.body.title || req.file.originalname.replace(/\.[^/.]+$/, ""),
+            category: req.body.category || 'upload',
+            uploadDate: new Date().toISOString(),
+            fileType: req.file.mimetype.startsWith('image/') ? 'image' : 'video'
+        };
+
+        console.log(`📸 Nouveau fichier uploadé: ${photoData.filename} (${photoData.fileType})`);
+
+        res.json({ 
+            success: true, 
+            photo: photoData,
+            message: `${photoData.fileType === 'image' ? 'Photo' : 'Vidéo'} uploadée avec succès`
+        });
+    } catch (error) {
+        console.error('Erreur upload:', error);
+        res.status(500).json({ error: 'Erreur serveur lors de l\'upload' });
+    }
+});
+
 // Pour servir l'API stats devis
 import statsDevisApi from './api/statsDevis.js';
 app.use('/api/stats/devis', bodyParser.json(), statsDevisApi);

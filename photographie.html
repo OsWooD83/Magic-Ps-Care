@@ -633,7 +633,7 @@
                         🚪 Déconnexion
                     </button>
                 </div>
-                <input type="file" id="photo-upload" accept="image/*" class="hidden">
+                <input type="file" id="photo-upload" accept="image/*,video/mp4,video/mov" class="hidden">
             </div>
             
             <div class="gallery-v2" id="gallery">
@@ -856,22 +856,33 @@
 
         // Ajouter une nouvelle photo
         async function uploadPhoto(file) {
-            // Upload avec les métadonnées du fichier
-            const fileInfo = {
-                title: file.name.replace(/\.[^/.]+$/, ""), // Nom sans extension
-                filename: `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
-                category: 'upload'
-            };
-
             try {
                 const sessionToken = localStorage.getItem('sessionToken');
+                
+                // Vérifier l'authentification
+                if (!sessionToken) {
+                    alert('❌ Vous devez être connecté pour uploader des fichiers');
+                    return;
+                }
+                
+                // Créer FormData pour l'upload
+                const formData = new FormData();
+                formData.append('photo', file);
+                formData.append('title', file.name.replace(/\.[^/.]+$/, ""));
+                formData.append('category', 'upload');
+
+                // Afficher une indication de chargement
+                const uploadButton = document.querySelector('#add-photo-btn');
+                const originalText = uploadButton.textContent;
+                uploadButton.textContent = '⏳ Upload en cours...';
+                uploadButton.disabled = true;
+
                 const response = await fetch('/api/photos', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${sessionToken}`
                     },
-                    body: JSON.stringify(fileInfo)
+                    body: formData // Pas de Content-Type pour FormData
                 });
 
                 if (response.ok) {
@@ -881,20 +892,28 @@
                     const newPhoto = {
                         id: result.photo.id,
                         filename: result.photo.filename,
-                        title: result.photo.title
+                        title: result.photo.title,
+                        category: result.photo.category
                     };
                     realPhotos.push(newPhoto);
                     
                     // Recharger la galerie
                     loadGallery();
-                    alert(`✅ Photo "${fileInfo.title}" ajoutée avec succès`);
+                    
+                    const fileType = file.type.startsWith('image/') ? 'Photo' : 'Vidéo';
+                    alert(`✅ ${fileType} "${result.photo.title}" ajoutée avec succès !`);
                 } else {
                     const errorData = await response.json();
-                    alert(`❌ Erreur: ${errorData.error || 'Erreur lors de l\'ajout'}`);
+                    alert(`❌ Erreur: ${errorData.error || 'Erreur lors de l\'upload'}`);
                 }
             } catch (error) {
-                console.error('Erreur:', error);
-                alert('❌ Erreur de connexion lors de l\'ajout');
+                console.error('Erreur upload:', error);
+                alert('❌ Erreur de connexion lors de l\'upload');
+            } finally {
+                // Restaurer le bouton
+                const uploadButton = document.querySelector('#add-photo-btn');
+                uploadButton.textContent = originalText;
+                uploadButton.disabled = false;
             }
         }
 
@@ -952,10 +971,12 @@
             document.getElementById('photo-upload').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    if (file.type.startsWith('image/')) {
+                    // Vérifier le type de fichier
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'video/mp4', 'video/mov'];
+                    if (allowedTypes.includes(file.type)) {
                         uploadPhoto(file);
                     } else {
-                        alert('Veuillez sélectionner un fichier image valide');
+                        alert('❌ Type de fichier non supporté.\nFormats acceptés: JPG, PNG, GIF, MP4, MOV');
                     }
                 }
             });
