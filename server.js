@@ -534,7 +534,7 @@ if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, '0.0.0.0', () => console.log(`Serveur lancé sur le port ${PORT}`));
 }
 
-app.listen(4000, () => {
+app.listen(4000, '0.0.0.0', () => {
   console.log('Serveur principal sur le port 4000');
 });
 

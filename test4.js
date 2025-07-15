@@ -70,6 +70,6 @@ app.delete('/api/photos', (req, res) => {
 });
 
 // Démarrer le serveur
-app.listen(4001, () => {
+app.listen(4001, '0.0.0.0', () => {
   console.log('Serveur secondaire sur le port 4001');
 });
