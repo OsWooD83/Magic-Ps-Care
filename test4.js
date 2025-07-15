@@ -70,8 +70,6 @@ app.delete('/api/photos', (req, res) => {
 });
 
 // Démarrer le serveur
-app.listen(3001, () => {
-    console.log(`Serveur galerie démarré sur http://localhost:${PORT}`);
-    console.log('Le script démarre bien');
-    console.log('Test démarrage');
+app.listen(4001, () => {
+  console.log('Serveur secondaire sur le port 4001');
 });

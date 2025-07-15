@@ -534,5 +534,9 @@ if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, '0.0.0.0', () => console.log(`Serveur lancé sur le port ${PORT}`));
 }
 
+app.listen(4000, () => {
+  console.log('Serveur principal sur le port 4000');
+});
+
 // Export pour compatibilité ES modules
 export default app;
