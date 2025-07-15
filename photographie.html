@@ -250,6 +250,13 @@
                 width: 200px;
             }
         }
+
+    /* Sélection visuelle en mode suppression */
+    .gallery-item-v2.selected-for-delete {
+        outline: 4px solid #f44336;
+        box-shadow: 0 0 20px #f44336, 0 0 10px #fff;
+        opacity: 1 !important;
+    }
         
         .category-btn {
             padding: 15px 30px;
@@ -653,14 +660,8 @@ let selectedPhotos = [];
         let currentFilter = 'tout';
         let gallery = null; // Sera initialisé après DOM Ready
         
-        const realPhotos = [
-            { filename: '1751921535345-magic_1.jpg', title: 'Spectacle de Magie 1', id: 1, category: 'photo' },
-            { filename: '1751921551416-magic_3.jpg', title: 'Spectacle de Magie 3', id: 2, category: 'photo' },
-            { filename: '1751921578686-table_2.jpg', title: 'Table de Magie', id: 3, category: 'photo' },
-            { filename: '1751921566296-parapluit.jpg', title: 'Tour du Parapluie', id: 4, category: 'photo' },
-            { filename: '1751921616369-tble_3.jpg', title: 'Table de Magie 3', id: 5, category: 'photo' },
-            { filename: '1751921416230-nnnn.jpg', title: 'Photo NNNN', id: 6, category: 'photo' }
-        ];
+        // La liste sera remplie dynamiquement depuis l'API
+        const realPhotos = [];
 
         // Filtrer par catégorie
         function filterByCategory(category) {
@@ -748,7 +749,7 @@ let selectedPhotos = [];
             wrapper.className = 'gallery-item-v2';
             wrapper.setAttribute('data-id', photo.id);
 
-    // Sélection en mode suppression
+    // Sélection en mode suppression OU agrandissement image
     wrapper.addEventListener('click', function(e) {
         if (deleteMode) {
             e.stopPropagation();
@@ -760,8 +761,44 @@ let selectedPhotos = [];
                 selectedPhotos.splice(idx, 1);
                 wrapper.classList.remove('selected-for-delete');
             }
+            updateGroupDeleteBtnVisibility();
+        } else {
+            // Agrandir l'image (si ce n'est pas une vidéo)
+            if (photo.fileType !== 'mp4' && photo.fileType !== 'mov') {
+                openImageModal(`images/${photo.filename}`, photo.title);
+            }
         }
     });
+        // MODAL pour agrandir l'image
+        function openImageModal(src, alt) {
+            // Vérifier si le modal existe déjà
+            let modal = document.getElementById('image-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'image-modal';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.background = 'rgba(0,0,0,0.85)';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.zIndex = '9999';
+                modal.style.cursor = 'zoom-out';
+                modal.innerHTML = '<img id="modal-img" style="max-width:90vw; max-height:90vh; border-radius:18px; box-shadow:0 8px 40px #000; background:#fff;">';
+                document.body.appendChild(modal);
+                modal.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            } else {
+                modal.style.display = 'flex';
+            }
+            const img = modal.querySelector('#modal-img');
+            img.src = src;
+            img.alt = alt || '';
+        }
             
     const ext = photo.fileType || '';
     const filePath = `images/${photo.filename}`;
@@ -808,37 +845,53 @@ let selectedPhotos = [];
         async function loadGallery() {
             gallery.innerHTML = '';
 
-    // Ajouter le bouton de suppression groupée si en mode suppression
-    let groupDeleteBtn = document.getElementById('group-delete-btn');
-    if (deleteMode && isAdmin) {
-        if (!groupDeleteBtn) {
-            groupDeleteBtn = document.createElement('button');
-            groupDeleteBtn.id = 'group-delete-btn';
-            groupDeleteBtn.className = 'btn btn-danger';
-            groupDeleteBtn.textContent = 'Supprimer la sélection';
-            groupDeleteBtn.style.margin = '16px auto';
-            groupDeleteBtn.style.display = 'block';
-            groupDeleteBtn.onclick = async function() {
-                if (selectedPhotos.length === 0) {
-                    alert('Aucune image sélectionnée.');
-                    return;
+            // Toujours gérer le bouton de suppression groupée en mode suppression admin
+            let groupDeleteBtn = document.getElementById('group-delete-btn');
+            if (deleteMode && isAdmin) {
+                if (!groupDeleteBtn) {
+                    groupDeleteBtn = document.createElement('button');
+                    groupDeleteBtn.id = 'group-delete-btn';
+                    groupDeleteBtn.className = 'btn btn-danger';
+                    groupDeleteBtn.textContent = 'Supprimer la sélection';
+                    groupDeleteBtn.style.margin = '16px auto';
+                    groupDeleteBtn.style.display = 'none';
+                    groupDeleteBtn.onclick = async function() {
+                        if (selectedPhotos.length === 0) {
+                            alert('Aucune image sélectionnée.');
+                            return;
+                        }
+                        if (!confirm(`Supprimer ${selectedPhotos.length} image(s) sélectionnée(s) ?`)) return;
+                        for (const id of [...selectedPhotos]) {
+                            const photo = realPhotos.find(p => p.id === id);
+                            if (photo) {
+                                await deletePhoto(photo.id, photo.filename, true);
+                            }
+                        }
+                        selectedPhotos = [];
+                        loadGallery();
+                    };
                 }
-                if (!confirm(`Supprimer ${selectedPhotos.length} image(s) sélectionnée(s) ?`)) return;
-                for (const id of [...selectedPhotos]) {
-                    const photo = realPhotos.find(p => p.id === id);
-                    if (photo) {
-                        await deletePhoto(photo.id, photo.filename, true);
-                    }
+                // Toujours insérer le bouton en haut de la galerie
+                if (!groupDeleteBtn.parentNode) {
+                    gallery.parentNode.insertBefore(groupDeleteBtn, gallery);
                 }
-                selectedPhotos = [];
-                loadGallery();
-            };
-            gallery.parentNode.insertBefore(groupDeleteBtn, gallery);
+            } else if (groupDeleteBtn && groupDeleteBtn.parentNode) {
+                groupDeleteBtn.remove();
+            }
+
+            // Mettre à jour la visibilité du bouton après chaque chargement
+            updateGroupDeleteBtnVisibility();
+        // Met à jour la visibilité du bouton "Supprimer la sélection"
+        function updateGroupDeleteBtnVisibility() {
+            const groupDeleteBtn = document.getElementById('group-delete-btn');
+            if (!groupDeleteBtn) return;
+            if (deleteMode && isAdmin && selectedPhotos.length > 0) {
+                groupDeleteBtn.style.display = 'block';
+            } else {
+                groupDeleteBtn.style.display = 'none';
+            }
         }
-    } else if (groupDeleteBtn) {
-        groupDeleteBtn.remove();
-    }
-            
+
             // Afficher un message de chargement
             const loadingDiv = document.createElement('div');
             loadingDiv.innerHTML = '🔄 Chargement des images...';
@@ -846,40 +899,53 @@ let selectedPhotos = [];
             loadingDiv.style.padding = '20px';
             loadingDiv.style.color = 'white';
             gallery.appendChild(loadingDiv);
-            
+
             try {
-                // Charger les photos depuis l'API
-                const response = await fetch('/api/photos');
+                // Charger la liste des images depuis l'API locale
+                const apiBase = window.location.origin;
+                const response = await fetch(`${apiBase}/api/list-images`);
                 if (response.ok) {
                     const data = await response.json();
-                    realPhotos.length = 0; // Vider le tableau
-                    realPhotos.push(...data.photos); // Ajouter les photos de la base
-                    console.log(`📸 ${realPhotos.length} photos chargées depuis la base de données`);
+                    realPhotos.length = 0;
+                    let id = 1;
+                    for (const filename of data.images) {
+                        // Déduire le type
+                        const ext = filename.split('.').pop().toLowerCase();
+                        let category = ['mp4', 'mov'].includes(ext) ? 'video' : 'photo';
+                        realPhotos.push({
+                            id: id++,
+                            filename,
+                            title: filename,
+                            category,
+                            fileType: ext
+                        });
+                    }
+                    console.log(`📸 ${realPhotos.length} images trouvées dans le dossier images`);
                 } else {
-                    console.warn('Erreur chargement API, utilisation photos statiques');
+                    console.warn('Erreur chargement API list-images');
                 }
             } catch (error) {
-                console.warn('Erreur chargement API:', error);
+                console.warn('Erreur chargement API list-images:', error);
             }
-            
+
             // Supprimer le message de chargement
             if (loadingDiv.parentNode) {
                 gallery.removeChild(loadingDiv);
             }
-            
-    // Répartir les fichiers selon leur type pour les filtres
-    for (const photo of realPhotos) {
-        const ext = (photo.fileType || '').toLowerCase();
-        if (['mp4', 'mov'].includes(ext)) {
-            photo.category = 'video';
-        } else {
-            photo.category = 'photo';
-        }
-    }
-    // Obtenir les photos selon le filtre actuel
-    const photosToShow = getFilteredPhotos();
-    selectedPhotos = [];
-            
+
+            // Répartir les fichiers selon leur type pour les filtres
+            for (const photo of realPhotos) {
+                const ext = (photo.fileType || '').toLowerCase();
+                if (['mp4', 'mov'].includes(ext)) {
+                    photo.category = 'video';
+                } else {
+                    photo.category = 'photo';
+                }
+            }
+            // Obtenir les photos selon le filtre actuel
+            const photosToShow = getFilteredPhotos();
+            selectedPhotos = [];
+
             if (photosToShow.length === 0) {
                 // Afficher un message si aucune photo dans cette catégorie
                 const emptyDiv = document.createElement('div');
@@ -893,10 +959,10 @@ let selectedPhotos = [];
                 gallery.appendChild(emptyDiv);
                 return;
             }
-            
+
             let imagesLoaded = 0;
             let imagesFailed = 0;
-            
+
             // Charger les images une par une
             for (const photo of photosToShow) {
                 try {
@@ -908,7 +974,7 @@ let selectedPhotos = [];
                     imagesFailed++;
                 }
             }
-            
+
             console.log(`✅ Galerie chargée: ${imagesLoaded} images affichées, ${imagesFailed} erreurs`);
         }
 
@@ -956,74 +1022,67 @@ let selectedPhotos = [];
 
         // Ajouter une nouvelle photo
         async function uploadPhoto(file) {
-            try {
-                const sessionToken = localStorage.getItem('sessionToken');
-                
-                // Vérifier l'authentification
-                if (!sessionToken) {
-                    alert('❌ Vous devez être connecté pour uploader des fichiers');
-                    return;
-                }
-                
-                // Créer FormData pour l'upload
-                const formData = new FormData();
-                formData.append('photo', file);
-                formData.append('title', file.name.replace(/\.[^/.]+$/, ""));
-                formData.append('category', 'upload');
-
-                // Afficher une indication de chargement
-                const uploadButton = document.querySelector('#add-photo-btn');
-        let originalText = uploadButton ? uploadButton.textContent : '';
-                uploadButton.textContent = '⏳ Upload en cours...';
-                uploadButton.disabled = true;
-
-                const response = await fetch('/api/photos', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${sessionToken}`
-                    },
-                    body: formData // Pas de Content-Type pour FormData
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    
-                    // Ajouter à la liste locale
-                    const newPhoto = {
-                        id: result.photo.id,
-                        filename: result.photo.filename,
-                        title: result.photo.title,
-                        category: result.photo.category
-                    };
-                    realPhotos.push(newPhoto);
-                    
-                    // Recharger la galerie
-                    loadGallery();
-                    
-                    const fileType = file.type.startsWith('image/') ? 'Photo' : 'Vidéo';
-                    alert(`✅ ${fileType} "${result.photo.title}" ajoutée avec succès !`);
-                } else {
-                    const errorData = await response.json();
-                    alert(`❌ Erreur: ${errorData.error || 'Erreur lors de l\'upload'}`);
-                }
-            } catch (error) {
-                console.error('Erreur upload:', error);
-                alert('❌ Erreur de connexion lors de l\'upload');
-            } finally {
-                // Restaurer le bouton
-                const uploadButton = document.querySelector('#add-photo-btn');
+    let originalText = '';
+    try {
+        const sessionToken = localStorage.getItem('sessionToken');
+        // Vérifier l'authentification
+        if (!sessionToken) {
+            alert('❌ Vous devez être connecté pour uploader des fichiers');
+            return;
+        }
+        // Créer FormData pour l'upload
+        const formData = new FormData();
+        formData.append('photo', file);
+        formData.append('title', file.name.replace(/\.[^/.]+$/, ""));
+        formData.append('category', 'upload');
+        // Afficher une indication de chargement
+        const uploadButton = document.querySelector('#add-photo-btn');
+        originalText = uploadButton ? uploadButton.textContent : '';
+        uploadButton.textContent = '⏳ Upload en cours...';
+        uploadButton.disabled = true;
+        const response = await fetch('/api/photos', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${sessionToken}`
+            },
+            body: formData // Pas de Content-Type pour FormData
+        });
+        if (response.ok) {
+            const result = await response.json();
+            // Ajouter à la liste locale
+            const newPhoto = {
+                id: result.photo.id,
+                filename: result.photo.filename,
+                title: result.photo.title,
+                category: result.photo.category
+            };
+            realPhotos.push(newPhoto);
+            // Recharger la galerie
+            loadGallery();
+            const fileType = file.type.startsWith('image/') ? 'Photo' : 'Vidéo';
+            alert(`✅ ${fileType} "${result.photo.title}" ajoutée avec succès !`);
+        } else {
+            const errorData = await response.json();
+            alert(`❌ Erreur: ${errorData.error || "Erreur lors de l'upload"}`);
+        }
+    } catch (error) {
+        console.error('Erreur upload:', error);
+        alert("❌ Erreur de connexion lors de l'upload");
+    } finally {
+        // Restaurer le bouton
+        const uploadButton = document.querySelector('#add-photo-btn');
         if (uploadButton) {
             uploadButton.textContent = originalText;
-                uploadButton.disabled = false;
-            }
+            uploadButton.disabled = false;
         }
+    }
+}
 
         // Basculer le mode suppression
         function toggleDeleteMode() {
-    deleteMode = !deleteMode;
-    selectedPhotos = [];
+            deleteMode = !deleteMode;
+            selectedPhotos = [];
             const toggleBtn = document.getElementById('toggle-delete-mode');
-            
             if (deleteMode) {
                 gallery.classList.add('delete-mode');
                 toggleBtn.textContent = '❌ Quitter le mode suppression';
@@ -1033,6 +1092,7 @@ let selectedPhotos = [];
                 toggleBtn.textContent = '🗑️ Mode suppression';
                 toggleBtn.classList.remove('active');
             }
+            updateGroupDeleteBtnVisibility();
         }
 
         // Déconnexion administrateur
