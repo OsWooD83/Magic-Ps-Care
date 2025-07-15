@@ -266,18 +266,36 @@ app.get('/api/photos', (req, res) => {
     try {
         const dbPath = path.join(__dirname, 'photos.db');
         const photoDb = new sqlite3.Database(dbPath);
-        
         photoDb.all('SELECT * FROM photos ORDER BY id DESC', (err, rows) => {
             if (err) {
                 console.error('Erreur récupération photos:', err);
                 photoDb.close();
                 return res.status(500).json({ error: 'Erreur lors de la récupération des photos' });
             }
-            
+            if (rows.length > 0) {
+                photoDb.close();
+                return res.json({ success: true, photos: rows });
+            }
+            // Si la base est vide, lister les fichiers du dossier images
             photoDb.close();
-            res.json({ 
-                success: true, 
-                photos: rows 
+            const imagesDir = path.join(__dirname, 'images');
+            fs.readdir(imagesDir, (err, files) => {
+                if (err) {
+                    console.error('Erreur lecture dossier images:', err);
+                    return res.status(500).json({ error: 'Erreur lecture dossier images' });
+                }
+                // Filtrer uniquement les fichiers images courants
+                const allowedExt = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.mp4', '.mov'];
+                const photos = files.filter(f => allowedExt.includes(path.extname(f).toLowerCase()))
+                    .map((filename, idx) => ({
+                        id: idx + 1,
+                        filename,
+                        title: filename,
+                        category: 'photo',
+                        uploadDate: '',
+                        fileType: path.extname(filename).toLowerCase().replace('.', '')
+                    }));
+                res.json({ success: true, photos });
             });
         });
     } catch (error) {
@@ -512,7 +530,7 @@ const PORT = process.env.PORT || 4000;
 
 // Configuration pour développement local
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
+    app.listen(PORT, '0.0.0.0', () => console.log(`Serveur lancé sur le port ${PORT}`));
 }
 
 // Export pour compatibilité ES modules

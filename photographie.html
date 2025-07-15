@@ -649,6 +649,7 @@
         let isAdmin = false;
         let currentUser = null;
         let deleteMode = false;
+let selectedPhotos = [];
         let currentFilter = 'tout';
         let gallery = null; // Sera initialisé après DOM Ready
         
@@ -746,40 +747,97 @@
             const wrapper = document.createElement('div');
             wrapper.className = 'gallery-item-v2';
             wrapper.setAttribute('data-id', photo.id);
-            
-            const img = document.createElement('img');
-            img.alt = photo.title;
-            img.loading = 'lazy';
-            
-            // Vérifier si l'image existe avant de l'assigner
-            const imagePath = `images/${photo.filename}`;
-            const imageExists = await checkImageExists(imagePath);
-            
-            if (imageExists) {
-                img.src = imagePath;
-                console.log('✅ Chargée:', photo.filename);
+
+    // Sélection en mode suppression
+    wrapper.addEventListener('click', function(e) {
+        if (deleteMode) {
+            e.stopPropagation();
+            const idx = selectedPhotos.indexOf(photo.id);
+            if (idx === -1) {
+                selectedPhotos.push(photo.id);
+                wrapper.classList.add('selected-for-delete');
             } else {
-                // Image de fallback ou placeholder
-                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vbiBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
-                console.error('❌ Image non trouvée:', photo.filename);
-                img.classList.add('image-error');
+                selectedPhotos.splice(idx, 1);
+                wrapper.classList.remove('selected-for-delete');
             }
+        }
+    });
             
-            // Bouton de suppression (visible uniquement en mode admin et mode suppression)
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.innerHTML = '✕';
-            deleteBtn.onclick = () => deletePhoto(photo.id, photo.filename);
-            
-            wrapper.appendChild(img);
-            wrapper.appendChild(deleteBtn);
-            
-            return wrapper;
+    const ext = photo.fileType || '';
+    const filePath = `images/${photo.filename}`;
+    let mediaElem;
+    if (['mp4', 'mov'].includes(ext)) {
+        mediaElem = document.createElement('video');
+        mediaElem.src = filePath;
+        mediaElem.controls = true;
+        mediaElem.width = 320;
+        mediaElem.height = 240;
+        mediaElem.title = photo.title;
+        mediaElem.style.display = 'block';
+        mediaElem.style.margin = '0 auto';
+    } else {
+        mediaElem = document.createElement('img');
+        mediaElem.alt = photo.title;
+        mediaElem.loading = 'lazy';
+        // Vérifier si l'image existe avant de l'assigner (uniquement pour les images)
+        const imageExists = await checkImageExists(filePath);
+        if (imageExists) {
+            mediaElem.src = filePath;
+            console.log('✅ Chargée:', photo.filename);
+        } else {
+            // Image de fallback ou placeholder
+            mediaElem.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vbiBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+            console.error('❌ Image non trouvée:', photo.filename);
+            mediaElem.classList.add('image-error');
+        }
+    }
+    // Bouton de suppression (visible uniquement en mode admin et mode suppression)
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.innerHTML = '✕';
+    deleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        deletePhoto(photo.id, photo.filename);
+    };
+    wrapper.appendChild(mediaElem);
+    wrapper.appendChild(deleteBtn);
+    return wrapper;
         }
 
         // Charger les images dans la galerie
         async function loadGallery() {
             gallery.innerHTML = '';
+
+    // Ajouter le bouton de suppression groupée si en mode suppression
+    let groupDeleteBtn = document.getElementById('group-delete-btn');
+    if (deleteMode && isAdmin) {
+        if (!groupDeleteBtn) {
+            groupDeleteBtn = document.createElement('button');
+            groupDeleteBtn.id = 'group-delete-btn';
+            groupDeleteBtn.className = 'btn btn-danger';
+            groupDeleteBtn.textContent = 'Supprimer la sélection';
+            groupDeleteBtn.style.margin = '16px auto';
+            groupDeleteBtn.style.display = 'block';
+            groupDeleteBtn.onclick = async function() {
+                if (selectedPhotos.length === 0) {
+                    alert('Aucune image sélectionnée.');
+                    return;
+                }
+                if (!confirm(`Supprimer ${selectedPhotos.length} image(s) sélectionnée(s) ?`)) return;
+                for (const id of [...selectedPhotos]) {
+                    const photo = realPhotos.find(p => p.id === id);
+                    if (photo) {
+                        await deletePhoto(photo.id, photo.filename, true);
+                    }
+                }
+                selectedPhotos = [];
+                loadGallery();
+            };
+            gallery.parentNode.insertBefore(groupDeleteBtn, gallery);
+        }
+    } else if (groupDeleteBtn) {
+        groupDeleteBtn.remove();
+    }
             
             // Afficher un message de chargement
             const loadingDiv = document.createElement('div');
@@ -809,8 +867,9 @@
                 gallery.removeChild(loadingDiv);
             }
             
-            // Obtenir les photos selon le filtre actuel
-            const photosToShow = getFilteredPhotos();
+    // Obtenir les photos selon le filtre actuel
+    const photosToShow = getFilteredPhotos();
+    selectedPhotos = [];
             
             if (photosToShow.length === 0) {
                 // Afficher un message si aucune photo dans cette catégorie
@@ -844,119 +903,47 @@
             console.log(`✅ Galerie chargée: ${imagesLoaded} images affichées, ${imagesFailed} erreurs`);
         }
 
-        // Supprimer une photo définitivement
-        async function deletePhoto(photoId, filename) {
-            if (!confirm(`🗑️ Êtes-vous sûr de vouloir supprimer définitivement la photo "${filename}" ?\n\n⚠️ Cette action est irréversible !`)) {
+        // Supprimer une photo
+    async function deletePhoto(photoId, filename, silent = false) {
+        if (!silent) {
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer la photo "${filename}" ?`)) {
                 return;
             }
-
-            // Afficher un indicateur de suppression
-            const photoElement = document.querySelector(`[data-id="${photoId}"]`);
-            if (photoElement) {
-                photoElement.style.opacity = '0.3';
-                photoElement.style.pointerEvents = 'none';
-                
-                // Ajouter un overlay de suppression
-                const loadingOverlay = document.createElement('div');
-                loadingOverlay.style.cssText = `
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(244, 67, 54, 0.8);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-weight: bold;
-                    border-radius: 15px;
-                    z-index: 1000;
-                `;
-                loadingOverlay.innerHTML = '🗑️ Suppression...';
-                photoElement.appendChild(loadingOverlay);
-            }
-
-            try {
-                const sessionToken = localStorage.getItem('sessionToken');
-                
-                if (!sessionToken) {
-                    alert('❌ Vous devez être connecté pour supprimer des photos');
-                    if (photoElement) {
-                        photoElement.style.opacity = '1';
-                        photoElement.style.pointerEvents = 'auto';
-                        photoElement.removeChild(loadingOverlay);
-                    }
-                    return;
-                }
-
-                console.log(`🗑️ Suppression de la photo: ID=${photoId}, Filename=${filename}`);
-
-                const response = await fetch('/api/photos', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${sessionToken}`
-                    },
-                    body: JSON.stringify({ id: photoId, filename: filename })
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('✅ Réponse serveur:', result);
-                    
-                    // Supprimer de la liste locale
-                    const index = realPhotos.findIndex(p => p.id === photoId);
-                    if (index > -1) {
-                        realPhotos.splice(index, 1);
-                        console.log(`✅ Photo supprimée de la liste locale (index ${index})`);
-                    }
-                    
-                    // Animation de suppression
-                    if (photoElement) {
-                        photoElement.style.transform = 'scale(0)';
-                        photoElement.style.transition = 'all 0.5s ease-out';
-                        setTimeout(() => {
-                            photoElement.remove();
-                        }, 500);
-                    }
-                    
-                    // Recharger la galerie après un délai
-                    setTimeout(() => {
-                        loadGallery();
-                    }, 600);
-                    
-                    // Notification de succès
-                    alert(`✅ Photo "${filename}" supprimée définitivement de la base de données !`);
-                    
-                } else {
-                    const errorData = await response.json();
-                    console.error('❌ Erreur serveur:', errorData);
-                    alert(`❌ Erreur lors de la suppression: ${errorData.error || 'Erreur inconnue'}`);
-                    
-                    // Restaurer l'élément en cas d'erreur
-                    if (photoElement) {
-                        photoElement.style.opacity = '1';
-                        photoElement.style.pointerEvents = 'auto';
-                        if (loadingOverlay && loadingOverlay.parentNode) {
-                            photoElement.removeChild(loadingOverlay);
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('❌ Erreur de connexion:', error);
-                alert('❌ Erreur de connexion lors de la suppression. Vérifiez votre connexion internet.');
-                
-                // Restaurer l'élément en cas d'erreur
-                if (photoElement) {
-                    photoElement.style.opacity = '1';
-                    photoElement.style.pointerEvents = 'auto';
-                    if (loadingOverlay && loadingOverlay.parentNode) {
-                        photoElement.removeChild(loadingOverlay);
-                    }
-                }
-            }
         }
+
+        try {
+            const sessionToken = localStorage.getItem('sessionToken');
+            const response = await fetch('/api/photos', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionToken}`
+                },
+                body: JSON.stringify({ id: photoId, filename: filename })
+            });
+
+            if (response.ok) {
+                // Supprimer de la liste locale
+                const index = realPhotos.findIndex(p => p.id === photoId);
+                if (index > -1) {
+                    realPhotos.splice(index, 1);
+                }
+                // Supprimer de la sélection si présent
+                const selIdx = selectedPhotos.indexOf(photoId);
+                if (selIdx > -1) selectedPhotos.splice(selIdx, 1);
+                if (!silent) {
+                    loadGallery();
+                    alert('✅ Photo supprimée avec succès');
+                }
+            } else {
+                const errorData = await response.json();
+                if (!silent) alert(`❌ Erreur: ${errorData.error || 'Erreur lors de la suppression'}`);
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            if (!silent) alert('❌ Erreur de connexion lors de la suppression');
+        }
+    }
 
         // Ajouter une nouvelle photo
         async function uploadPhoto(file) {
@@ -977,7 +964,7 @@
 
                 // Afficher une indication de chargement
                 const uploadButton = document.querySelector('#add-photo-btn');
-                const originalText = uploadButton.textContent;
+        let originalText = uploadButton ? uploadButton.textContent : '';
                 uploadButton.textContent = '⏳ Upload en cours...';
                 uploadButton.disabled = true;
 
@@ -1016,39 +1003,26 @@
             } finally {
                 // Restaurer le bouton
                 const uploadButton = document.querySelector('#add-photo-btn');
-                uploadButton.textContent = originalText;
+        if (uploadButton) {
+            uploadButton.textContent = originalText;
                 uploadButton.disabled = false;
             }
         }
 
-        // Basculer le mode suppression avec feedback amélioré
+        // Basculer le mode suppression
         function toggleDeleteMode() {
-            deleteMode = !deleteMode;
+    deleteMode = !deleteMode;
+    selectedPhotos = [];
             const toggleBtn = document.getElementById('toggle-delete-mode');
             
             if (deleteMode) {
                 gallery.classList.add('delete-mode');
                 toggleBtn.textContent = '❌ Quitter le mode suppression';
                 toggleBtn.classList.add('active');
-                toggleBtn.style.background = 'linear-gradient(45deg, #e53935, #d32f2f)';
-                
-                // Notification d'activation du mode suppression
-                console.log('🗑️ Mode suppression ACTIVÉ');
-                
-                // Afficher un message d'aide
-                setTimeout(() => {
-                    if (deleteMode) { // Vérifier que le mode est toujours actif
-                        alert('🗑️ MODE SUPPRESSION ACTIVÉ\n\nCliquez sur les croix rouges ✕ pour supprimer définitivement les images de la base de données.\n\n⚠️ Attention: Cette action est irréversible !');
-                    }
-                }, 500);
-                
             } else {
                 gallery.classList.remove('delete-mode');
                 toggleBtn.textContent = '🗑️ Mode suppression';
                 toggleBtn.classList.remove('active');
-                toggleBtn.style.background = '';
-                
-                console.log('✅ Mode suppression DÉSACTIVÉ');
             }
         }
 
