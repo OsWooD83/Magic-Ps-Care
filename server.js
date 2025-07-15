@@ -39,6 +39,7 @@ app.use(express.json());
 // Sert les fichiers statiques (dont index.html) depuis le dossier courant
 app.use(express.static(__dirname));
 app.use(express.static('d:/TW Pascal'));
+app.use('/photos', express.static(__dirname + '/images'));
 
 // MongoDB supprimé : plus de connexion
 

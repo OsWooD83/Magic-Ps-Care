@@ -76,65 +76,15 @@ try {
     Write-Host "⚠️  Erreur lors du push (possiblement rien à commiter)" -ForegroundColor Yellow
 }
 
-# Test de connexion SSH
-if (!(Test-SshConnection)) {
-    exit 1
-}
-
-# Déploiement sur le VPS
-Write-Host "📦 Déploiement sur le VPS..." -ForegroundColor Cyan
-
-$deployScript = @"
-echo '📂 Navigation vers le projet...'
-cd $VpsPath || { echo 'Erreur: dossier non trouvé'; exit 1; }
-
-echo '📥 Récupération du code depuis GitHub...'
+echo ' Récupération du code depuis GitHub...'
 git pull origin main
-
 echo '📦 Installation des dépendances Node.js...'
 npm install
-
-echo '🔧 Configuration de l'environnement...'
+echo '🔧 Configuration de l\'environnement...'
 export NODE_ENV=production
-
-echo '🔄 Redémarrage de l'application...'
+echo '🔄 Redémarrage de l\'application...'
 # Tentative avec PM2
-if command -v pm2 >/dev/null 2>&1; then
-    pm2 restart magic-ps-care || pm2 start server.js --name magic-ps-care
-    echo '✅ Application redémarrée avec PM2'
-# Tentative avec systemd
-elif systemctl is-active --quiet magic-ps-care 2>/dev/null; then
-    sudo systemctl restart magic-ps-care
-    echo '✅ Service systemd redémarré'
-# Méthode simple
-else
-    pkill -f 'node server.js' 2>/dev/null || true
-    nohup node server.js > app.log 2>&1 &
-    echo '✅ Application démarrée en arrière-plan'
-fi
-
 echo '🌐 Vérification du statut...'
 sleep 3
-if pgrep -f 'node server.js' >/dev/null; then
-    echo '✅ Application en cours d''exécution'
-else
-    echo '⚠️  Application peut-être non démarrée, vérifiez les logs'
-fi
-"@
-
-try {
-    ssh -i $SshKey $VpsUser@$VpsHost $deployScript
-    Write-Host ""
-    Write-Host "🎉 DÉPLOIEMENT TERMINÉ AVEC SUCCÈS !" -ForegroundColor Green
-    Write-Host "🌐 Votre application est maintenant déployée sur le VPS" -ForegroundColor Cyan
-    Write-Host "📝 URL probable: http://$VpsHost ou https://$VpsHost" -ForegroundColor White
-} catch {
-    Write-Host "❌ Erreur lors du déploiement: $_" -ForegroundColor Red
-}
-
 Write-Host ""
-Write-Host "📋 Prochaines étapes recommandées:" -ForegroundColor Yellow
-Write-Host "   1. Tester l'application sur votre domaine" -ForegroundColor White
-Write-Host "   2. Configurer un reverse proxy (Nginx/Apache)" -ForegroundColor White
-Write-Host "   3. Installer un certificat SSL" -ForegroundColor White
-Write-Host "   4. Configurer PM2 pour la production" -ForegroundColor White
+Write-Host "✅ Push GitHub terminé. Vous pouvez maintenant déployer manuellement sur votre VPS." -ForegroundColor Green

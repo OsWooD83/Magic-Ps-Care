@@ -867,6 +867,15 @@ let selectedPhotos = [];
                 gallery.removeChild(loadingDiv);
             }
             
+    // Répartir les fichiers selon leur type pour les filtres
+    for (const photo of realPhotos) {
+        const ext = (photo.fileType || '').toLowerCase();
+        if (['mp4', 'mov'].includes(ext)) {
+            photo.category = 'video';
+        } else {
+            photo.category = 'photo';
+        }
+    }
     // Obtenir les photos selon le filtre actuel
     const photosToShow = getFilteredPhotos();
     selectedPhotos = [];
