@@ -1,4 +1,29 @@
-// Express.js API pour upload, suppression et listing persistant des photos
+import fs from 'fs';
+import path from 'path';
+import readline from 'readline';
+
+const imagesDir = path.join(process.cwd(), 'images');
+const files = fs.readdirSync(imagesDir);
+
+console.log('Liste des images :');
+files.forEach((file, idx) => {
+  console.log(`${idx + 1}. ${file}`);
+});
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question('Entrez les numéros des images à supprimer (séparés par un espace) : ', (answer) => {
+  const nums = answer.split(' ').map(n => parseInt(n, 10) - 1).filter(n => n >= 0 && n < files.length);
+  nums.forEach(n => {
+    const filePath = path.join(imagesDir, files[n]);
+    fs.unlinkSync(filePath);
+    console.log('Supprimé :', files[n]);
+  });
+  rl.close();
+});// Express.js API pour upload, suppression et listing persistant des photos
 import express from 'express';
 import multer from 'multer';
 import fs from 'fs';
@@ -18,7 +43,7 @@ app.use(express.json());
 
 // Servir les fichiers statiques (HTML, CSS, JS, images)
 app.use(express.static(process.cwd()));
-app.use('/images', express.static(imagesDir));
+app.use('/images', express.static(path.join(process.cwd(), 'images')));
 
 // Multer pour upload
 const storage = multer.diskStorage({
@@ -70,6 +95,6 @@ app.delete('/api/photos', (req, res) => {
 });
 
 // Démarrer le serveur
-app.listen(4001, '0.0.0.0', () => {
-  console.log('Serveur secondaire sur le port 4001');
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Serveur principal sur le port ${PORT}`);
 });

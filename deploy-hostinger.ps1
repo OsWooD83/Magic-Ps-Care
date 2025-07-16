@@ -40,8 +40,9 @@ try {
             Write-Host "❌ Déploiement annulé" -ForegroundColor Red
             exit 1
         }
+
     }
-} catch {
+
     Write-Host "❌ Git non disponible ou erreur" -ForegroundColor Red
     exit 1
 }
