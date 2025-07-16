@@ -1,3 +1,6 @@
+img[src^="data:image/svg+xml"], img.image-error {
+  display: none !important;
+}
 /* Bouton œil pour afficher/masquer le mot de passe sur la page de login */
 .eye-icon {
     pointer-events: none;
