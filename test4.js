@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 import readline from 'readline';
 
@@ -26,7 +25,7 @@ rl.question('Entrez les numéros des images à supprimer (séparés par un espac
 });// Express.js API pour upload, suppression et listing persistant des photos
 import express from 'express';
 import multer from 'multer';
-import fs from 'fs';
+// ...existing code...
 import path from 'path';
 
 const app = express();
@@ -95,6 +94,6 @@ app.delete('/api/photos', (req, res) => {
 });
 
 // Démarrer le serveur
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(3000, '0.0.0.0', () => {
   console.log(`Serveur principal sur le port ${PORT}`);
 });

@@ -1,5 +1,4 @@
-// ...code existant...
-const cors = require('cors');
+import cors from 'cors';
 app.use(cors({
   origin: [
     'https://oswood83.github.io'
@@ -11,4 +10,3 @@ app.post('/api/logout', (req, res) => {
   res.status(200).json({ message: 'Déconnecté' });
 });
 
-// ...code existant...
