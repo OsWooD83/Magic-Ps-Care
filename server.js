@@ -62,7 +62,6 @@ function initPhotoDatabase() {
     const photoDb = new sqlite3.Database(dbPath, (err) => {
         if (err) {
             console.error('❌ Erreur connexion SQLite:', err);
-// ...existing code...
             return;
         }
         console.log('🗄️ Connexion SQLite établie');
