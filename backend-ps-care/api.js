@@ -1,7 +1,12 @@
-// === ROUTES AVIS (GET/POST) ===
+import express from 'express';
+import bodyParser from 'body-parser';
 import fs from 'fs';
+const router = express.Router();
+router.use(bodyParser.json());
+
 const AVIS_FILE = 'avis-data.json';
 
+// === ROUTES AVIS (GET/POST) ===
 // GET /api/avis : retourne la liste des avis
 router.get('/avis', (req, res) => {
     fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
@@ -39,10 +44,6 @@ router.post('/visiteurs/devis', (req, res) => {
     res.json({ success: true });
 });
 console.log('DEBUG: api.js chargé');
-import express from 'express';
-import bodyParser from 'body-parser';
-const router = express.Router();
-router.use(bodyParser.json());
 
 // Ajout de la route POST /login pour l'authentification simple
 router.post('/login', (req, res) => {
