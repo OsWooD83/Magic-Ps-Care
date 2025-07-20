@@ -1,3 +1,43 @@
+// === ROUTES AVIS (GET/POST) ===
+import fs from 'fs';
+const AVIS_FILE = 'avis-data.json';
+
+// GET /api/avis : retourne la liste des avis
+router.get('/avis', (req, res) => {
+    fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
+        if (err) return res.json([]);
+        try {
+            const avis = JSON.parse(data);
+            res.json(Array.isArray(avis) ? avis : []);
+        } catch {
+            res.json([]);
+        }
+    });
+});
+
+// POST /api/avis : ajoute un avis
+router.post('/avis', (req, res) => {
+    const { nom, note, commentaire } = req.body;
+    if (!nom || !note) return res.status(400).json({ success: false, message: 'Nom et note requis' });
+    fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
+        let avis = [];
+        if (!err) {
+            try { avis = JSON.parse(data); } catch {}
+        }
+        const nouvelAvis = { nom, note, commentaire };
+        avis.unshift(nouvelAvis);
+        fs.writeFile(AVIS_FILE, JSON.stringify(avis, null, 2), () => {
+            res.json({ success: true });
+        });
+    });
+});
+
+// === ROUTE POST /api/visiteurs/devis ===
+router.post('/visiteurs/devis', (req, res) => {
+    // Incrémente un compteur dans un fichier ou log (ici, simple log)
+    console.log('Compteur devis incrémenté');
+    res.json({ success: true });
+});
 console.log('DEBUG: api.js chargé');
 import express from 'express';
 import bodyParser from 'body-parser';

@@ -47,6 +47,8 @@ app.use('/api', apiRouter);
 app.use(express.static(__dirname));
 app.use(express.static('d:/TW Pascal'));
 app.use('/photos', express.static(path.join(__dirname, 'images')));
+// Sert les images aussi via /images
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Crée le dossier images s'il n'existe pas
 const imagesDir = path.join(__dirname, 'images');
