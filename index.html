@@ -1,3 +1,16 @@
+</ul>
+<script>
+// Incrémente le compteur de clics sur tous les boutons Devis
+document.addEventListener('DOMContentLoaded', function() {
+    // Sélecteurs pour tous les boutons Devis (mailto et autres)
+    const devisBtns = document.querySelectorAll('.btn-devis, .btn-devis-mailto, #navDevisLink');
+    devisBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            fetch('/api/visiteurs/devis', { method: 'POST' });
+        });
+    });
+});
+</script>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -296,7 +309,22 @@
                 <li><a href="#prestations">Prestations</a></li>
                 <li><a href="photographie.html">Photographie</a></li>
                 <li><a href="#tarifs" id="navDevisLink">Devis</a></li>
+                <li><a href="#" id="openAvisModalBtn">Avis</a></li>
                 <li><a href="login.html" id="navLoginBtn">Spectateur - Se connecter</a></li>
+                <li style="display:none;" id="navStatsLi"><a href="statistiques.html" id="navStatsBtn">Statistiques</a></li>
+</ul>
+<script>
+// Affiche le bouton Statistiques uniquement si connecté
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/session')
+      .then(r => r.json())
+      .then(data => {
+        if (data.authenticated) {
+          document.getElementById('navStatsLi').style.display = '';
+        }
+      });
+});
+</script>
             </ul>
         </div>
     </nav>
@@ -381,7 +409,7 @@
     }
     </style>
     <script>
-    // Menu déroulant JS pur
+    // Menu déroulant JS pur + ouverture modale avis
     document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('customMenuBtn');
         const menu = document.getElementById('customDropdownMenu');
@@ -398,6 +426,91 @@
         btn.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') menu.classList.remove('show');
         });
+
+        // Bouton Avis dans le menu
+        const openAvisBtn = document.getElementById('openAvisModalBtn');
+        if (openAvisBtn) {
+            openAvisBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const avisModal = document.getElementById('avisModal');
+                if (avisModal) avisModal.style.display = 'flex';
+            });
+        }
+        // Fermeture modale avis
+        const closeAvisBtn = document.getElementById('closeAvisModal');
+        if (closeAvisBtn) {
+            closeAvisBtn.addEventListener('click', function() {
+                const avisModal = document.getElementById('avisModal');
+                if (avisModal) avisModal.style.display = 'none';
+            });
+        }
+        // Clic en dehors de la modale pour fermer
+        const avisModal = document.getElementById('avisModal');
+        if (avisModal) {
+            avisModal.addEventListener('click', function(e) {
+                if (e.target === avisModal) avisModal.style.display = 'none';
+            });
+        }
+        // Génération des étoiles dynamiques pour chaque .star-rating
+        document.querySelectorAll('.star-rating').forEach(function(container) {
+            container.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('span');
+                star.className = 'star inactive';
+                star.innerHTML = '★';
+                star.dataset.value = i;
+                star.tabIndex = 0;
+                star.setAttribute('role', 'button');
+                star.setAttribute('aria-label', i + ' étoile');
+                container.appendChild(star);
+            }
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('star')) {
+                    const value = parseInt(e.target.dataset.value);
+                    setStars(container, value);
+                    container.dataset.selected = value;
+                }
+            });
+            container.addEventListener('keydown', function(e) {
+                if (e.target.classList.contains('star')) {
+                    let value = parseInt(e.target.dataset.value);
+                    if (e.key === 'ArrowLeft' && value > 1) value--;
+                    if (e.key === 'ArrowRight' && value < 5) value++;
+                    setStars(container, value);
+                    container.dataset.selected = value;
+                }
+            });
+        });
+        function setStars(container, value) {
+            const stars = container.querySelectorAll('.star');
+            stars.forEach(function(star, idx) {
+                if (idx < value) {
+                    star.classList.remove('inactive');
+                } else {
+                    star.classList.add('inactive');
+                }
+            });
+        }
+        // Validation du formulaire d'avis
+        const avisForm = document.getElementById('avisForm');
+        if (avisForm) {
+            avisForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // On récupère la note de la première .star-rating (Qualité du spectacle)
+                const note = document.querySelector('.star-rating').dataset.selected || 0;
+                const nom = document.getElementById('avisNom').value;
+                const mail = document.getElementById('avisMail').value;
+                const commentaire = document.getElementById('avisCommentaire') ? document.getElementById('avisCommentaire').value : '';
+                if (note < 1) {
+                    alert('Merci de donner une note en étoiles.');
+                    return;
+                }
+                alert('Merci pour votre avis !\nNote : ' + note + ' étoiles\nNom : ' + nom + '\nCommentaire : ' + commentaire);
+                avisForm.reset();
+                setStars(document.querySelector('.star-rating'), 0);
+                document.getElementById('avisModal').style.display = 'none';
+            });
+        }
     });
     </script>
     <header id="accueil" class="hero-section hero-section-fix d-flex align-items-center justify-content-center text-center header-title-high">
@@ -1227,10 +1340,165 @@ document.addEventListener('DOMContentLoaded', function() {
         <h2 class="section-title mb-3 text-center">Membres de l'association</h2>
         <ul class="list-group list-group-flush text-start membres-list">
             <li class="list-group-item bg-transparent">Président: Pascal SIBOUR <span class="membre-alias">(ted Winter)</span></li>
+            <br>
             <li class="list-group-item bg-transparent">Secrétaire: Marion FROGER</li>
+            <br>
             <li class="list-group-item bg-transparent">Trésorier: Franck VERCELLOTTI</li>
         </ul>
     </div>
+
+    <!-- ======= DÉBUT DU BLOC 'TOUS LES AVIS' ======= -->
+    <!-- Pour changer l'emplacement d'affichage des avis, déplacez ce bloc où vous le souhaitez dans la page -->
+    <!-- Bloc 'Tous les avis' : le tableau des commentaires avec pagination commence ici -->
+    <!-- Tableau des avis (commentaires) -->
+    <div class="container my-5" id="avisTableContainer">
+      <h2 class="section-title mb-4 text-center">Tous les avis</h2>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center bg-dark bg-opacity-75 text-light" id="avisTable">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Note</th>
+              <th>Commentaire</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Les avis seront insérés ici dynamiquement -->
+          </tbody>
+        </table>
+      </div>
+      <nav>
+        <ul class="pagination justify-content-center" id="avisPagination"></ul>
+      </nav>
+    </div>
+
+    <!-- ======= FIN DU BLOC 'TOUS LES AVIS' ======= -->
+<script>
+// --- Gestion du tableau des avis avec pagination via API Node.js ---
+document.addEventListener('DOMContentLoaded', function() {
+  const avisTableBody = document.querySelector('#avisTable tbody');
+  const avisPagination = document.getElementById('avisPagination');
+  const AVIS_PAR_PAGE = 10;
+  let avisList = [];
+  let totalPages = 1;
+  let currentPage = 1;
+
+  // Récupère la liste des avis depuis l'API
+  async function fetchAvisList() {
+    try {
+      const res = await fetch('/api/avis');
+      if (!res.ok) throw new Error('Erreur API');
+      avisList = await res.json();
+    } catch (e) {
+      avisList = [];
+    }
+    totalPages = Math.ceil(avisList.length / AVIS_PAR_PAGE) || 1;
+  }
+
+  function renderAvisTable(page = 1) {
+    const start = (page - 1) * AVIS_PAR_PAGE;
+    const end = start + AVIS_PAR_PAGE;
+    const avisToShow = avisList.slice(start, end);
+    avisTableBody.innerHTML = '';
+    if (avisToShow.length === 0) {
+      avisTableBody.innerHTML = '<tr><td colspan="3">Aucun avis pour le moment.</td></tr>';
+    } else {
+      avisToShow.forEach(avis => {
+        avisTableBody.innerHTML += `<tr><td>${escapeHtml(avis.nom)}</td><td>${renderStars(avis.note)}</td><td>${escapeHtml(avis.commentaire)}</td></tr>`;
+      });
+    }
+    renderPagination(page, totalPages);
+  }
+
+  function renderStars(note) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+      stars += `<span style="color:${i <= note ? '#ffd700' : '#e0dcdc'};font-size:1.2em;">★</span>`;
+    }
+    return stars;
+  }
+
+  function renderPagination(current, total) {
+    avisPagination.innerHTML = '';
+    if (total <= 1) return;
+    for (let i = 1; i <= total; i++) {
+      const li = document.createElement('li');
+      li.className = 'page-item' + (i === current ? ' active' : '');
+      const a = document.createElement('a');
+      a.className = 'page-link';
+      a.href = '#';
+      a.textContent = i;
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        currentPage = i;
+        renderAvisTable(i);
+      });
+      li.appendChild(a);
+      avisPagination.appendChild(li);
+    }
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c];
+    });
+  }
+
+  // Ajout d'un avis via l'API lors de la soumission du formulaire
+  const avisForm = document.getElementById('avisForm');
+  if (avisForm) {
+    avisForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      // Additionne les 3 notes si elles existent, sinon prend la première .star-rating
+      let note = 0;
+      const stars = document.querySelectorAll('.star-rating');
+      if (stars.length >= 3) {
+        note = 0;
+        stars.forEach(s => {
+          note += parseInt(s.dataset.selected || 0);
+        });
+        note = Math.round(note / 3); // Moyenne sur 5
+      } else {
+        note = parseInt(document.querySelector('.star-rating').dataset.selected || 0);
+      }
+      const nom = document.getElementById('avisNom') ? document.getElementById('avisNom').value : '';
+      const commentaire = document.getElementById('avisCommentaire') ? document.getElementById('avisCommentaire').value : '';
+      if (note < 1) {
+        alert('Merci de donner une note en étoiles.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/avis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom, note, commentaire })
+        });
+        if (!res.ok) throw new Error('Erreur lors de l\'envoi de l\'avis');
+        avisForm.reset();
+        document.querySelectorAll('.star-rating').forEach(s => s.dataset.selected = 0);
+        await refreshAvis();
+        document.getElementById('avisModal').style.display = 'none';
+        alert('Merci pour votre avis !');
+      } catch (err) {
+        alert('Erreur lors de l\'envoi de l\'avis. Merci de réessayer plus tard.');
+      }
+    });
+  }
+
+  // Rafraîchit la liste des avis depuis l'API et met à jour le tableau
+  async function refreshAvis() {
+    await fetchAvisList();
+    renderAvisTable(1);
+    currentPage = 1;
+  }
+
+  // Initialisation du tableau à l'ouverture de la page
+  (async function() {
+    await refreshAvis();
+  })();
+});
+</script>
 
     <!-- Modale Avis -->
     <div id="avisModal" class="avis-modal-bg-fix">

@@ -1,0 +1,88 @@
+
+body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 60% 40%, #2b1055 0%, #7597de 100%) no-repeat;
+    font-family: 'Cinzel Decorative', 'Segoe UI', Arial, sans-serif;
+    color: #fff;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.container {
+    background: rgba(44, 19, 80, 0.92);
+    border-radius: 22px;
+    box-shadow: 0 8px 32px 0 rgba(44,19,80,0.25), 0 0 60px 10px #a685ff44;
+    padding: 38px 32px 28px 32px;
+    margin: 60px auto 0 auto;
+    max-width: 520px;
+    text-align: center;
+    border: 2px solid #a685ff;
+    position: relative;
+    z-index: 2;
+}
+
+h1 {
+    color: #ffe066;
+    font-size: 2.5rem;
+    margin-bottom: 28px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 18px #a685ff, 0 0 2px #fff;
+    font-family: 'Cinzel Decorative', cursive, serif;
+}
+
+#visiteursChart {
+    margin-bottom: 22px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 12px;
+    box-shadow: 0 2px 16px 0 #ffe06644;
+    padding: 8px;
+}
+
+#totalVisiteurs {
+    font-size: 1.25rem;
+    color: #ffe066;
+    margin-bottom: 18px;
+    text-shadow: 0 0 8px #a685ff;
+}
+
+a.btn-devis {
+    display: inline-block;
+    background: linear-gradient(90deg, #a685ff 60%, #ffe066 100%);
+    color: #2b1055;
+    padding: 12px 32px;
+    border-radius: 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 8px;
+    box-shadow: 0 2px 18px rgba(166,133,255,0.18);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    border: 1.5px solid #ffe066;
+    letter-spacing: 1px;
+}
+a.btn-devis:hover {
+    background: linear-gradient(90deg, #ffe066 0%, #a685ff 100%);
+    color: #2b1055;
+    box-shadow: 0 4px 24px rgba(255,224,102,0.22);
+}
+
+/* Effets magiques */
+.magic-stars {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+}
+.magic-stars span {
+    position: absolute;
+    width: 4px; height: 4px;
+    background: #ffe066;
+    border-radius: 50%;
+    opacity: 0.8;
+    box-shadow: 0 0 8px #ffe066, 0 0 16px #a685ff;
+    animation: twinkle 2.5s infinite ease-in-out;
+}
+@keyframes twinkle {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+}

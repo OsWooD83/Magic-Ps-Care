@@ -1,7 +1,7 @@
 // Configuration API centralisée
 const API_CONFIG = {
   // URL de base pour les API - utilise l'URL directe car process.env n'existe pas côté client
-  baseURL: '',
+  baseURL: 'https://31.97.193.23',
   
   // Endpoints principaux
   endpoints: {
