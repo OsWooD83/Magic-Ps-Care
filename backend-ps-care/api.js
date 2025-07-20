@@ -1,6 +1,63 @@
-const express = require('express');
-const app = express();
-const port = 3000;
+console.log('DEBUG: api.js chargé');
+import express from 'express';
+import bodyParser from 'body-parser';
+const router = express.Router();
+router.use(bodyParser.json());
+
+// Ajout de la route POST /login pour l'authentification simple
+router.post('/login', (req, res) => {
+    console.log('DEBUG: POST /api/login appelé');
+    let body = req.body;
+    // Si le body est vide (pas de body-parser sur le sous-routeur), parser manuellement
+    if (!body || Object.keys(body).length === 0) {
+        let data = '';
+        req.on('data', chunk => { data += chunk; });
+        req.on('end', () => {
+            try {
+                body = JSON.parse(data);
+            } catch (e) {
+                return res.status(400).json({ success: false, message: 'Requête invalide' });
+            }
+            handleLogin(body, req, res);
+        });
+        return;
+    }
+    handleLogin(body, req, res);
+});
+
+function handleLogin(body, req, res) {
+    const { email, password } = body;
+    if (!email || !password) {
+        return res.status(400).json({ success: false, message: 'Email et mot de passe requis' });
+    }
+    // Authentification simple admin
+    if (email === 'admin@magicpscare.com' && password === 'admin123') {
+        req.session = req.session || {};
+        req.session.user = {
+            id: 1,
+            nom: 'Administrateur Magic PS Care',
+            email: email,
+            is_admin: true
+        };
+        return res.json({
+            success: true,
+            message: 'Connecté. Bienvenue, Administrateur Magic PS Care (admin)',
+            is_admin: true,
+            nom: 'Administrateur Magic PS Care',
+            email: email,
+            user: req.session.user
+        });
+    } else {
+        return res.status(401).json({ success: false, message: 'Email ou mot de passe incorrect' });
+    }
+}
+
+console.log('DEBUG: api.js chargé');
+
+// Route de test simple
+router.get('/test', (req, res) => {
+    res.json({ message: 'API test OK' });
+});
 
 // Simule des données pour chaque période
 function getFakeStats(type, periode) {
@@ -29,18 +86,20 @@ function getFakeStats(type, periode) {
     return { labels, counts };
 }
 
-app.get('/api/stats/devis', (req, res) => {
+router.get('/stats/devis', (req, res) => {
     const periode = req.query.periode || 'jour';
     res.json(getFakeStats('devis', periode));
 });
 
-app.get('/api/stats/trafic', (req, res) => {
+router.get('/stats/trafic', (req, res) => {
     const periode = req.query.periode || 'jour';
     res.json(getFakeStats('trafic', periode));
 });
 
-app.use(express.static(__dirname)); // Pour servir Stats.HTML et css/site.css
-
-app.listen(port, () => {
-    console.log(`API stats en écoute sur http://localhost:${port}`);
+// Route de test pour la session (à adapter selon la logique réelle)
+router.get('/session', (req, res) => {
+    res.json({ status: 'ok', session: null });
 });
+
+
+export default router;

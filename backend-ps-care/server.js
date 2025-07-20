@@ -15,7 +15,7 @@ app.use(cors({
     'https://magicpscare.vercel.app',
     'https://association-magic-ps-care.vercel.app',
     'https://association-magic-ps-care-cogf6ko31.vercel.app',
-    'http://localhost:4000',
+    // 'http://localhost:4000',
     'http://localhost:3000'
   ],
   credentials: true,
@@ -77,7 +77,7 @@ app.get('/', (req, res) => {
 
 // Pour servir l'API stats devis
 const statsDevisApi = require('./api/statsDevis');
-app.use('/api/stats/devis', bodyParser.json(), statsDevisApi);
+app.use('/api/stats/devis', statsDevisApi);
 
 // Ajoute ce proxy pour compatibilité avec /api/stats/reset
 app.post('/api/stats/reset', (req, res) => {
@@ -88,6 +88,10 @@ app.post('/api/stats/reset', (req, res) => {
 
 const bcrypt = require('bcrypt');
 const sqlite3 = require('sqlite3').verbose();
+// Route GET de test pour /api/login (debug proxy)
+app.get('/api/login', (req, res) => {
+    res.json({ success: true, message: 'Connexion backend OK (GET /api/login)' });
+});
 
 // === ROUTE /api/login pour la connexion utilisateur ===
 app.post('/api/login', express.json(), (req, res) => {
@@ -164,5 +168,5 @@ app.get('/isLoggedIn', (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
+const PORT = 3000;
+// app.listen supprimé pour éviter tout conflit de port

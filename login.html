@@ -10,7 +10,7 @@
     <style>
         body {
             min-height: 100vh;
-            background: url('images/magic-bg.jpg') no-repeat center center fixed, linear-gradient(135deg, #181c2b 0%, #2d1a3a 100%);
+            background: url('images/1751921535345-magic_1.jpg') no-repeat center center fixed, linear-gradient(135deg, #181c2b 0%, #2d1a3a 100%);
             background-size: cover;
             display: flex;
             align-items: center;
@@ -122,7 +122,7 @@
 <body>
     <div class="avatar-tw" id="avatarTW">TW</div>
     <div class="login-card">
-        <img src="images/magic-logo.png" alt="Logo Magic PS Care" class="login-logo" onerror="this.style.display='none'">
+        <img src="images/1751921482940-Image2.png" alt="Logo Magic PS Care" class="login-logo" onerror="this.style.display='none'">
         <div class="text-center">
             <div class="login-title">Magic PS Care</div>
             <div class="login-subtitle">Connexion à votre espace</div>
@@ -166,75 +166,71 @@
         const password = document.getElementById('password').value;
         const msg = document.getElementById('loginMsg');
         msg.textContent = '';
+        // Détection automatique de l'URL de l'API selon l'environnement
+        let API_BASE = '';
+        if (window.location.hostname.includes('magicpscare.com')) {
+            API_BASE = 'https://magicpscare.com';
+        } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            API_BASE = 'http://localhost:4000';
+        } else {
+            API_BASE = '';
+        }
         try {
-            // 1. Tentative via proxy Vercel d'abord
+            // 1. Tentative via proxy sur le bon domaine
             console.log('🔍 Tentative de connexion via proxy...');
-            
             let data;
             try {
-                // Première tentative: proxy Vercel simple
-                const proxyRes = await fetch('/api/proxy?endpoint=login', {
+                const proxyRes = await fetch(`${API_BASE}/api/proxy?endpoint=login`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ email, password })
                 });
-                
                 if (proxyRes.ok) {
                     data = await proxyRes.json();
-                    console.log('✅ Succès via proxy Vercel');
+                    console.log('✅ Succès via proxy');
                 } else {
                     throw new Error(`Proxy failed: ${proxyRes.status}`);
                 }
             } catch (proxyError) {
                 console.log('⚠️ Proxy échoué, tentative API fallback:', proxyError);
-                
                 // Fallback: API_CONFIG
                 if (window.API_CONFIG) {
                     data = await window.API_CONFIG.login({ email, password });
                 } else {
                     // Dernier recours: direct
-                    const res = await fetch('/api/login', {
+                    const res = await fetch(`${API_BASE}/api/login`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         credentials: 'include',
                         mode: 'cors',
                         body: JSON.stringify({ email, password })
                     });
-                    
                     if (!res.ok) {
                         throw new Error(`Erreur HTTP: ${res.status}`);
                     }
-                    
                     data = await res.json();
                 }
             }
-            
             console.log('✅ Réponse reçue:', data);
-            
             if (data.success) {
                 msg.textContent = 'Connexion réussie ! Accès administrateur activé.';
                 msg.style.color = 'limegreen';
                 document.getElementById('avatarTW').style.display = 'flex';
-                
                 // Stocker la session administrateur
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('sessionToken', 'admin_' + Date.now());
                 localStorage.setItem('is_admin', 'true');
-                
                 // Stocker les infos utilisateur
                 if (data.user) {
                     localStorage.setItem('user_nom', data.user.nom || 'Administrateur');
                     localStorage.setItem('user_email', data.user.email || email);
                     localStorage.setItem('user_id', data.user.id || '1');
                 }
-                
                 console.log('✅ Session administrateur créée');
-                
                 // Rediriger vers l'accueil
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 1000);
-                
                 // Ou rediriger directement vers la galerie si demandé
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('redirect') === 'gallery') {
@@ -250,7 +246,6 @@
             console.error('❌ Erreur de connexion:', err);
             msg.textContent = `Erreur serveur: ${err.message}`;
             msg.style.color = 'red';
-            
             // Message d'aide pour l'utilisateur
             if (err.message.includes('CORS') || err.message.includes('fetch')) {
                 msg.textContent += '\n\nProblème de connexion détecté. Le serveur redémarre...';

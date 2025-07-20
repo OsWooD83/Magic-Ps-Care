@@ -1,3 +1,4 @@
+console.log('🚦 Début exécution server.js');
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
@@ -18,12 +19,16 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
+// Middleware pour parser le JSON dans les requêtes
+app.use(express.json());
+
+// ...routes /api/login supprimées, gérées dans le routeur apiRouter...
+
 // CORS pour autoriser GitHub Pages
 app.use(cors({
   origin: [
-    'https://oswood83.github.io',
-    'http://localhost:4000',
-    'http://localhost:3000'
+    'https://magicpscare.com',
+    'https://www.magicpscare.com'
   ],
   credentials: true
 }));
@@ -34,14 +39,14 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
-app.use(express.json());
+
+import apiRouter from './backend-ps-care/api.js';
+app.use('/api', apiRouter);
 
 // Sert les fichiers statiques (dont index.html) depuis le dossier courant
 app.use(express.static(__dirname));
 app.use(express.static('d:/TW Pascal'));
-app.use('/photos', express.static(__dirname + '/images'));
-
-// MongoDB supprimé : plus de connexion
+app.use('/photos', express.static(path.join(__dirname, 'images')));
 
 // Crée le dossier images s'il n'existe pas
 const imagesDir = path.join(__dirname, 'images');
@@ -55,6 +60,7 @@ function initPhotoDatabase() {
     const photoDb = new sqlite3.Database(dbPath, (err) => {
         if (err) {
             console.error('❌ Erreur connexion SQLite:', err);
+// ...existing code...
             return;
         }
         console.log('🗄️ Connexion SQLite établie');
@@ -262,52 +268,30 @@ app.delete('/api/photos', (req, res) => {
     }
 });
 
-// Endpoint pour récupérer la liste des photos depuis la base de données
-app.get('/api/photos', (req, res) => {
+
+// Nouvelle route pour retourner la liste brute des fichiers images/vidéos (pour galerie JS)
+app.get('/api/list-images', (req, res) => {
     try {
-        const dbPath = path.join(__dirname, 'photos.db');
-        const photoDb = new sqlite3.Database(dbPath);
-        photoDb.all('SELECT * FROM photos ORDER BY id DESC', (err, rows) => {
+        const imagesDir = path.join(__dirname, 'images');
+        fs.readdir(imagesDir, (err, files) => {
             if (err) {
-                console.error('Erreur récupération photos:', err);
-                photoDb.close();
-                return res.status(500).json({ error: 'Erreur lors de la récupération des photos' });
+                console.error('Erreur lecture dossier images:', err);
+                return res.status(500).json({ error: 'Erreur lecture dossier images' });
             }
-            if (rows.length > 0) {
-                photoDb.close();
-                return res.json({ success: true, photos: rows });
-            }
-            // Si la base est vide, lister les fichiers du dossier images
-            photoDb.close();
-            const imagesDir = path.join(__dirname, 'images');
-            fs.readdir(imagesDir, (err, files) => {
-                if (err) {
-                    console.error('Erreur lecture dossier images:', err);
-                    return res.status(500).json({ error: 'Erreur lecture dossier images' });
-                }
-                // Filtrer uniquement les fichiers images courants
-                const allowedExt = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.mp4', '.mov'];
-                const photos = files.filter(f => allowedExt.includes(path.extname(f).toLowerCase()))
-                    .map((filename, idx) => ({
-                        id: idx + 1,
-                        filename,
-                        title: filename,
-                        category: 'photo',
-                        uploadDate: '',
-                        fileType: path.extname(filename).toLowerCase().replace('.', '')
-                    }));
-                res.json({ success: true, photos });
-            });
+            // Filtrer uniquement les fichiers images/vidéos
+            const allowedExt = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.mp4', '.mov'];
+            const images = files.filter(f => allowedExt.includes(path.extname(f).toLowerCase()));
+            res.json({ images });
         });
     } catch (error) {
-        console.error('Erreur get photos:', error);
-        res.status(500).json({ error: 'Erreur serveur lors de la récupération' });
+        console.error('Erreur /api/list-images:', error);
+        res.status(500).json({ error: 'Erreur serveur lors de la récupération des images' });
     }
 });
 
 // Pour servir l'API stats devis
 import statsDevisApi from './api/statsDevis.js';
-app.use('/api/stats/devis', bodyParser.json(), statsDevisApi);
+app.use('/api/stats/devis', statsDevisApi);
 
 // Ajoute ce proxy pour compatibilité avec /api/stats/reset
 app.post('/api/stats/reset', (req, res) => {
@@ -344,8 +328,99 @@ app.all('/api/proxy', async (req, res) => {
                 return res.status(401).json({ success: false, message: 'Email ou mot de passe incorrect' });
             }
         } else {
-            // Mode développement: à adapter selon votre logique
-            return res.status(501).json({ success: false, message: 'Proxy login non implémenté en mode développement' });
+            // Mode développement: réutilise la logique de /api/login
+            try {
+                const dbPath = path.join(__dirname, 'sql', 'users.db');
+                if (!fs.existsSync(dbPath)) {
+                    // Fallback si pas de base
+                    if (email === 'admin@magicpscare.com' && password === 'admin123') {
+                        req.session.user = {
+                            id: 1,
+                            nom: 'Administrateur Magic PS Care',
+                            email: email,
+                            is_admin: true
+                        };
+                        return res.json({
+                            success: true,
+                            message: 'Connecté. Bienvenue, Administrateur Magic PS Care (admin)',
+                            is_admin: true,
+                            nom: 'Administrateur Magic PS Care',
+                            email: email
+                        });
+                    } else {
+                        return res.status(401).json({ success: false, message: 'Email ou mot de passe incorrect' });
+                    }
+                }
+                const db = new sqlite3.Database(dbPath);
+                db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
+                    if (err) {
+                        db.close();
+                        // Fallback en cas d'erreur DB
+                        if (email === 'admin@magicpscare.com' && password === 'admin123') {
+                            req.session.user = {
+                                id: 1,
+                                nom: 'Administrateur Magic PS Care',
+                                email: email,
+                                is_admin: true
+                            };
+                            return res.json({
+                                success: true,
+                                message: 'Connecté. Bienvenue, Administrateur Magic PS Care (admin)',
+                                is_admin: true,
+                                nom: 'Administrateur Magic PS Care',
+                                email: email
+                            });
+                        }
+                        return res.status(500).json({ success: false, message: 'Erreur serveur.' });
+                    }
+                    if (!row || !row.password || typeof row.password !== 'string' || !row.password.startsWith('$2')) {
+                        db.close();
+                        return res.status(401).json({ success: false, message: 'Utilisateur non trouvé ou mot de passe incorrect.' });
+                    }
+                    bcrypt.compare(password, row.password, (err, result) => {
+                        db.close();
+                        if (err) {
+                            return res.status(500).json({ success: false, message: 'Erreur serveur.' });
+                        }
+                        if (result === true) {
+                            const isAdmin = row.is_admin !== undefined ? (row.is_admin === 1 || row.is_admin === true) : false;
+                            req.session.user = {
+                                id: row.id,
+                                nom: row.nom,
+                                email: row.email,
+                                is_admin: isAdmin
+                            };
+                            return res.json({
+                                success: true,
+                                message: 'Connecté. Bienvenue, ' + row.nom + (isAdmin ? ' (admin)' : ''),
+                                is_admin: isAdmin,
+                                nom: row.nom,
+                                email: row.email
+                            });
+                        } else {
+                            return res.status(401).json({ success: false, message: 'Mot de passe incorrect.' });
+                        }
+                    });
+                });
+            } catch (error) {
+                // Dernière tentative de fallback
+                if (email === 'admin@magicpscare.com' && password === 'admin123') {
+                    req.session.user = {
+                        id: 1,
+                        nom: 'Administrateur Magic PS Care',
+                        email: email,
+                        is_admin: true
+                    };
+                    return res.json({
+                        success: true,
+                        message: 'Connecté. Bienvenue, Administrateur Magic PS Care (admin)',
+                        is_admin: true,
+                        nom: 'Administrateur Magic PS Care',
+                        email: email
+                    });
+                }
+                return res.status(500).json({ success: false, message: 'Erreur serveur interne' });
+            }
         }
     } else {
         res.status(404).json({ success: false, message: 'Endpoint proxy non supporté' });
@@ -563,16 +638,11 @@ app.use((req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = 3000;
+app.listen(PORT, '0.0.0.0', () => console.log(`Serveur principal sur le port ${PORT}`));
 
-// Configuration pour développement local
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, '0.0.0.0', () => console.log(`Serveur lancé sur le port ${PORT}`));
-}
 
-app.listen(4000, '0.0.0.0', () => {
-  console.log('Serveur principal sur le port 4000');
-});
+
 
 // Export pour compatibilité ES modules
 export default app;

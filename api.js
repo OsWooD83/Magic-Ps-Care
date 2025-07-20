@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const app = express();
 const port = 3000;
 
@@ -44,3 +44,20 @@ app.use(express.static(__dirname)); // Pour servir Stats.HTML et css/site.css
 app.listen(port, () => {
     console.log(`API stats en écoute sur http://localhost:${port}`);
 });
+
+const router = express.Router();
+
+router.get('/session', (req, res) => {
+  res.json({ status: 'ok', session: null });
+});
+
+// Toutes vos routes ici
+router.get('/test', (req, res) => { ... });
+router.post('/login', (req, res) => {
+    console.log('POST /api/login appelé');
+    // ...le reste du code...
+});
+
+console.log('API router chargé (DEBUG)');
+
+export default router;
