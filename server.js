@@ -56,6 +56,11 @@ if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir);
 }
 
+// Route de compatibilité /api/devis-stats qui redirige vers /api/stats/devis
+app.get('/api/devis-stats', (req, res) => {
+  res.redirect('/api/stats/devis');
+});
+
 // Fonction d'initialisation de la base de données photos
 function initPhotoDatabase() {
     const dbPath = path.join(__dirname, 'photos.db');
