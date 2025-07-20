@@ -51,50 +51,50 @@ router.post('/login', (req, res) => {
     let body = req.body;
     // Si le body est vide (pas de body-parser sur le sous-routeur), parser manuellement
     if (!body || Object.keys(body).length === 0) {
-        let data = '';
-        req.on('data', chunk => { data += chunk; });
-        req.on('end', () => {
-            try {
-                body = JSON.parse(data);
-            } catch (e) {
-                return res.status(400).json({ success: false, message: 'Requête invalide' });
-            }
-            handleLogin(body, req, res);
-        });
-        return;
-    }
-    handleLogin(body, req, res);
+
+import express from 'express';
+import bodyParser from 'body-parser';
+import fs from 'fs';
+const router = express.Router();
+router.use(bodyParser.json());
+
+const AVIS_FILE = 'avis-data.json';
+
+// === ROUTES AVIS (GET/POST) ===
+router.get('/avis', (req, res) => {
+    fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
+        if (err) return res.json([]);
+        try {
+            const avis = JSON.parse(data);
+            res.json(Array.isArray(avis) ? avis : []);
+        } catch {
+            res.json([]);
+        }
+    });
 });
 
-function handleLogin(body, req, res) {
-    const { email, password } = body;
-    if (!email || !password) {
-        return res.status(400).json({ success: false, message: 'Email et mot de passe requis' });
-    }
-    // Authentification simple admin
-    if (email === 'admin@magicpscare.com' && password === 'admin123') {
-        req.session = req.session || {};
-        req.session.user = {
-            id: 1,
-            nom: 'Administrateur Magic PS Care',
-            email: email,
-            is_admin: true
-        };
-        return res.json({
-            success: true,
-            message: 'Connecté. Bienvenue, Administrateur Magic PS Care (admin)',
-            is_admin: true,
-            nom: 'Administrateur Magic PS Care',
-            email: email,
-            user: req.session.user
+router.post('/avis', (req, res) => {
+    const { nom, note, commentaire } = req.body;
+    if (!nom || !note) return res.status(400).json({ success: false, message: 'Nom et note requis' });
+    fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
+        let avis = [];
+        if (!err) {
+            try { avis = JSON.parse(data); } catch {}
+        }
+        const nouvelAvis = { nom, note, commentaire };
+        avis.unshift(nouvelAvis);
+        fs.writeFile(AVIS_FILE, JSON.stringify(avis, null, 2), () => {
+            res.json({ success: true });
         });
-    } else {
-        return res.status(401).json({ success: false, message: 'Email ou mot de passe incorrect' });
-    }
-}
+    });
+});
 
+// === ROUTE POST /api/visiteurs/devis ===
+router.post('/visiteurs/devis', (req, res) => {
+    console.log('Compteur devis incrémenté');
+    res.json({ success: true });
+});
 console.log('DEBUG: api.js chargé');
-
 // Route de test simple
 router.get('/test', (req, res) => {
     res.json({ message: 'API test OK' });
