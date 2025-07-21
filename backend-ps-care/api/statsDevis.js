@@ -1,7 +1,8 @@
 // Dépendances : express, body-parser, sqlite3 (ou mysql2 selon votre choix)
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const sqlite3 = require('sqlite3').verbose();
+import sqlite3pkg from 'sqlite3';
+const sqlite3 = sqlite3pkg.verbose();
 // Remplacez le chemin par celui de votre base SQLite
 const db = new sqlite3.Database('./devis_stats.db');
 
@@ -60,4 +61,4 @@ router.get('/', (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;

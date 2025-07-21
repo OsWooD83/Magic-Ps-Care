@@ -1,6 +1,6 @@
-const express = require('express');
-const session = require('express-session');
-const cors = require('cors');
+import express from 'express';
+import session from 'express-session';
+import cors from 'cors';
 
 const app = express();
 
@@ -71,4 +71,4 @@ app.get('/devis-stats', (req, res) => {
 });
 
 // Pour Vercel serverless
-module.exports = app;
+export default app;

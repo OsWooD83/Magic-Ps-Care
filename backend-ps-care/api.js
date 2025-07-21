@@ -1,104 +1,6 @@
 import express from 'express';
-import bodyParser from 'body-parser';
-import fs from 'fs';
+
 const router = express.Router();
-router.use(bodyParser.json());
-
-const AVIS_FILE = 'avis-data.json';
-
-// === ROUTES AVIS (GET/POST) ===
-// GET /api/avis : retourne la liste des avis
-router.get('/avis', (req, res) => {
-    fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
-        if (err) return res.json([]);
-        try {
-            const avis = JSON.parse(data);
-            res.json(Array.isArray(avis) ? avis : []);
-        } catch {
-            res.json([]);
-        }
-    });
-});
-
-// POST /api/avis : ajoute un avis
-router.post('/avis', (req, res) => {
-    const { nom, note, commentaire } = req.body;
-    if (!nom || !note) return res.status(400).json({ success: false, message: 'Nom et note requis' });
-    fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
-        let avis = [];
-        if (!err) {
-            try { avis = JSON.parse(data); } catch {}
-        }
-        const nouvelAvis = { nom, note, commentaire };
-        avis.unshift(nouvelAvis);
-        fs.writeFile(AVIS_FILE, JSON.stringify(avis, null, 2), () => {
-            res.json({ success: true });
-        });
-    });
-});
-
-// === ROUTE POST /api/visiteurs/devis ===
-router.post('/visiteurs/devis', (req, res) => {
-    // Incrémente un compteur dans un fichier ou log (ici, simple log)
-    console.log('Compteur devis incrémenté');
-    res.json({ success: true });
-});
-console.log('DEBUG: api.js chargé');
-
-// Ajout de la route POST /login pour l'authentification simple
-router.post('/login', (req, res) => {
-    console.log('DEBUG: POST /api/login appelé');
-    let body = req.body;
-    // Si le body est vide (pas de body-parser sur le sous-routeur), parser manuellement
-    if (!body || Object.keys(body).length === 0) {
-
-import express from 'express';
-import bodyParser from 'body-parser';
-import fs from 'fs';
-const router = express.Router();
-router.use(bodyParser.json());
-
-const AVIS_FILE = 'avis-data.json';
-
-// === ROUTES AVIS (GET/POST) ===
-router.get('/avis', (req, res) => {
-    fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
-        if (err) return res.json([]);
-        try {
-            const avis = JSON.parse(data);
-            res.json(Array.isArray(avis) ? avis : []);
-        } catch {
-            res.json([]);
-        }
-    });
-});
-
-router.post('/avis', (req, res) => {
-    const { nom, note, commentaire } = req.body;
-    if (!nom || !note) return res.status(400).json({ success: false, message: 'Nom et note requis' });
-    fs.readFile(AVIS_FILE, 'utf8', (err, data) => {
-        let avis = [];
-        if (!err) {
-            try { avis = JSON.parse(data); } catch {}
-        }
-        const nouvelAvis = { nom, note, commentaire };
-        avis.unshift(nouvelAvis);
-        fs.writeFile(AVIS_FILE, JSON.stringify(avis, null, 2), () => {
-            res.json({ success: true });
-        });
-    });
-});
-
-// === ROUTE POST /api/visiteurs/devis ===
-router.post('/visiteurs/devis', (req, res) => {
-    console.log('Compteur devis incrémenté');
-    res.json({ success: true });
-});
-console.log('DEBUG: api.js chargé');
-// Route de test simple
-router.get('/test', (req, res) => {
-    res.json({ message: 'API test OK' });
-});
 
 // Simule des données pour chaque période
 function getFakeStats(type, periode) {
@@ -127,20 +29,35 @@ function getFakeStats(type, periode) {
     return { labels, counts };
 }
 
+// Route stats devis
 router.get('/stats/devis', (req, res) => {
     const periode = req.query.periode || 'jour';
     res.json(getFakeStats('devis', periode));
 });
 
+// Route stats trafic
 router.get('/stats/trafic', (req, res) => {
     const periode = req.query.periode || 'jour';
     res.json(getFakeStats('trafic', periode));
 });
 
-// Route de test pour la session (à adapter selon la logique réelle)
+// Route session
 router.get('/session', (req, res) => {
     res.json({ status: 'ok', session: null });
 });
 
+// Route test
+router.get('/test', (req, res) => {
+    res.json({ message: 'API test OK' });
+});
+
+// Exemple de route login (à adapter selon votre logique)
+router.post('/login', (req, res) => {
+    console.log('POST /api/login appelé');
+    // ...votre logique d'authentification ici...
+    res.json({ success: true });
+});
+
+console.log('API router chargé (DEBUG)');
 
 export default router;

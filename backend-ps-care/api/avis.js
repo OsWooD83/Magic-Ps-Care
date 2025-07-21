@@ -1,9 +1,9 @@
 // Express.js API pour avis - à placer côté serveur Node.js
 
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const mysql = require('mysql2/promise');
-const nodemailer = require('nodemailer'); // Ajout pour l'envoi d'e-mail
+import mysql from 'mysql2/promise';
+import nodemailer from 'nodemailer'; // Ajout pour l'envoi d'e-mail
 
 // Configurez votre connexion MySQL ici
 const dbConfig = {
@@ -109,7 +109,7 @@ router.get('/test-mail', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
 
 /*
 À intégrer dans votre serveur Express principal (exemple dans app.js) :

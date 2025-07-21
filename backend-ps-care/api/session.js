@@ -1,5 +1,5 @@
 // API Session pour Magic PS Care
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 // Route GET /api/session - Vérifier l'état de la session
@@ -45,4 +45,4 @@ router.post('/logout', (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
