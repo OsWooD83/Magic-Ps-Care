@@ -1,9 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcrypt');
-const session = require('express-session'); // Ajouté
-const app = express();
+// Fichier non utilisé, conversion ES module à faire si besoin...
+// const bcrypt = require('bcrypt');
+// const session = require('express-session'); // Ajouté
+// const app = express();
 const db = new sqlite3.Database('./users.db');
 
 app.use(bodyParser.json());

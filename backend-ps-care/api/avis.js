@@ -114,11 +114,7 @@ export default router;
 /*
 À intégrer dans votre serveur Express principal (exemple dans app.js) :
 
-const express = require('express');
-const app = express();
-app.use(express.json());
-app.use('/api/avis', require('./api/avis'));
-app.listen(3000);
+// ...exemple CommonJS supprimé, voir version ES module dans le projet principal...
 
 Créer la table SQL :
 
