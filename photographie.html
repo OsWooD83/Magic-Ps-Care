@@ -944,7 +944,14 @@ let selectedPhotos = [];
             }
             // Filtrer les doublons par nom de fichier (ne garder qu'un exemplaire de chaque)
             const seenFilenames = new Set();
+            let foundSpecial = false;
             const uniquePhotos = getFilteredPhotos().filter(photo => {
+                // Cas spécial : forcer qu'une seule occurrence de 1752009434415-252252.jpg
+                if (photo.filename === '1752009434415-252252.jpg') {
+                    if (foundSpecial) return false;
+                    foundSpecial = true;
+                    return true;
+                }
                 if (seenFilenames.has(photo.filename)) return false;
                 seenFilenames.add(photo.filename);
                 return true;
