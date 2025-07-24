@@ -169,7 +169,7 @@ app.post('/api/photos', upload.single('photo'), (req, res) => {
             fileType: req.file.mimetype.startsWith('image/') ? 'image' : 'video'
         };
 
-        // Sauvegarder en base de données
+        // Vérification doublon côté serveur (même nom original)
         const dbPath = path.join(__dirname, 'photos.db');
         const photoDb = new sqlite3.Database(dbPath, (err) => {
             if (err) {
@@ -177,32 +177,48 @@ app.post('/api/photos', upload.single('photo'), (req, res) => {
                 return res.status(500).json({ error: 'Erreur de connexion à la base de données' });
             }
         });
-        
-        photoDb.run(
-            `INSERT INTO photos (filename, title, category, fileType) VALUES (?, ?, ?, ?)`,
-            [photoData.filename, photoData.title, photoData.category, photoData.fileType],
-            function(err) {
-                if (err) {
-                    console.error('❌ Erreur insertion photo:', err);
-                    console.error('Détails erreur:', err.message);
+
+        // Vérifier si un fichier avec le même nom original existe déjà
+        const originalName = req.file.originalname.replace(/\s+/g, '_');
+        photoDb.get('SELECT filename FROM photos WHERE filename LIKE ?', [`%${originalName}`], (err, row) => {
+            if (err) {
+                photoDb.close();
+                return res.status(500).json({ error: 'Erreur lors de la vérification des doublons' });
+            }
+            if (row) {
+                photoDb.close();
+                // Supprimer le fichier uploadé car il ne sera pas utilisé
+                const uploadedPath = path.join(__dirname, 'images', photoData.filename);
+                if (fs.existsSync(uploadedPath)) {
+                    fs.unlinkSync(uploadedPath);
+                }
+                return res.status(409).json({ error: 'Un fichier avec ce nom existe déjà sur le serveur. Veuillez renommer votre fichier.' });
+            }
+            // Si pas de doublon, insérer normalement
+            photoDb.run(
+                `INSERT INTO photos (filename, title, category, fileType) VALUES (?, ?, ?, ?)`,
+                [photoData.filename, photoData.title, photoData.category, photoData.fileType],
+                function(err) {
+                    if (err) {
+                        console.error('❌ Erreur insertion photo:', err);
+                        console.error('Détails erreur:', err.message);
+                        photoDb.close();
+                        return res.status(500).json({ 
+                            error: 'Erreur lors de la sauvegarde en base',
+                            details: err.message 
+                        });
+                    }
+                    photoData.id = this.lastID;
+                    console.log(`✅ Photo sauvegardée: ${photoData.filename} (ID: ${photoData.id})`);
                     photoDb.close();
-                    return res.status(500).json({ 
-                        error: 'Erreur lors de la sauvegarde en base',
-                        details: err.message 
+                    res.json({ 
+                        success: true, 
+                        photo: photoData,
+                        message: `${photoData.fileType === 'image' ? 'Photo' : 'Vidéo'} uploadée avec succès`
                     });
                 }
-                
-                photoData.id = this.lastID;
-                console.log(`✅ Photo sauvegardée: ${photoData.filename} (ID: ${photoData.id})`);
-                
-                photoDb.close();
-                res.json({ 
-                    success: true, 
-                    photo: photoData,
-                    message: `${photoData.fileType === 'image' ? 'Photo' : 'Vidéo'} uploadée avec succès`
-                });
-            }
-        );
+            );
+        });
     } catch (error) {
         console.error('Erreur upload:', error);
         res.status(500).json({ error: 'Erreur serveur lors de l\'upload' });

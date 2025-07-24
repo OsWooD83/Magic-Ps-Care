@@ -936,17 +936,22 @@ let selectedPhotos = [];
             // Répartir les fichiers selon leur type pour les filtres
             for (const photo of realPhotos) {
                 const ext = (photo.fileType || '').toLowerCase();
-                if (['mp4', 'mov'].includes(ext)) {
-                    photo.category = 'video';
+                if (["mp4", "mov"].includes(ext)) {
+                    photo.category = "video";
                 } else {
-                    photo.category = 'photo';
+                    photo.category = "photo";
                 }
             }
-            // Obtenir les photos selon le filtre actuel
-            const photosToShow = getFilteredPhotos();
+            // Filtrer les doublons par nom de fichier (ne garder qu'un exemplaire de chaque)
+            const seenFilenames = new Set();
+            const uniquePhotos = getFilteredPhotos().filter(photo => {
+                if (seenFilenames.has(photo.filename)) return false;
+                seenFilenames.add(photo.filename);
+                return true;
+            });
             selectedPhotos = [];
 
-            if (photosToShow.length === 0) {
+            if (uniquePhotos.length === 0) {
                 // Afficher un message si aucune photo dans cette catégorie
                 const emptyDiv = document.createElement('div');
                 emptyDiv.innerHTML = `
@@ -963,8 +968,8 @@ let selectedPhotos = [];
             let imagesLoaded = 0;
             let imagesFailed = 0;
 
-            // Charger les images une par une
-            for (const photo of photosToShow) {
+            // Charger les images une par une (uniques)
+            for (const photo of uniquePhotos) {
                 try {
                     const element = await createImageElement(photo);
                     gallery.appendChild(element);
@@ -979,15 +984,20 @@ let selectedPhotos = [];
         }
 
         // Supprimer une photo
+    // Nouvelle méthode de suppression d'image, uniquement si connecté
     async function deletePhoto(photoId, filename, silent = false) {
+        // Vérifier si l'utilisateur est connecté
+        const sessionToken = localStorage.getItem('sessionToken');
+        if (!sessionToken) {
+            alert('❌ Vous devez être connecté pour supprimer une image.');
+            return;
+        }
         if (!silent) {
             if (!confirm(`Êtes-vous sûr de vouloir supprimer la photo "${filename}" ?`)) {
                 return;
             }
         }
-
         try {
-            const sessionToken = localStorage.getItem('sessionToken');
             const response = await fetch('/api/photos', {
                 method: 'DELETE',
                 headers: {
@@ -996,7 +1006,6 @@ let selectedPhotos = [];
                 },
                 body: JSON.stringify({ id: photoId, filename: filename })
             });
-
             if (response.ok) {
                 // Supprimer de la liste locale
                 const index = realPhotos.findIndex(p => p.id === photoId);
@@ -1143,11 +1152,17 @@ let selectedPhotos = [];
                 if (file) {
                     // Vérifier le type de fichier
                     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'video/mp4', 'video/mov'];
-                    if (allowedTypes.includes(file.type)) {
-                        uploadPhoto(file);
-                    } else {
+                    if (!allowedTypes.includes(file.type)) {
                         alert('❌ Type de fichier non supporté.\nFormats acceptés: JPG, PNG, GIF, MP4, MOV');
+                        return;
                     }
+                    // Vérifier si le nom de fichier existe déjà (empêcher doublon)
+                    const exists = realPhotos.some(photo => photo.filename === file.name);
+                    if (exists) {
+                        alert('❌ Une image ou vidéo avec ce nom existe déjà dans la galerie.\nVeuillez renommer votre fichier avant de l\'ajouter.');
+                        return;
+                    }
+                    uploadPhoto(file);
                 }
             });
 
