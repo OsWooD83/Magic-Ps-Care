@@ -1,38 +1,38 @@
-// Script Node.js pour supprimer les images en double dans le dossier images
-// Un doublon est détecté si le nom de fichier (hors préfixe timestamp) existe plusieurs fois
+// Script Node.js ES module pour supprimer les doublons stricts (même nom de fichier) dans le dossier images
+// Place ce script sur ton VPS dans le dossier à nettoyer et exécute-le avec : node remove_duplicate_images.js
 
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const imagesDir = path.join(process.cwd(), 'images');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const imagesDir = path.join(__dirname, 'images'); // adapte le chemin si besoin
 
-// Fonction pour extraire le nom original sans le timestamp
-function getOriginalName(filename) {
-    // Ex: 1751921179930-TEDWINtTER_fini_.mp4 => TEDWINtTER_fini_.mp4
-    const dashIndex = filename.indexOf('-');
-    return dashIndex !== -1 ? filename.slice(dashIndex + 1) : filename;
-}
+// Map pour stocker le premier fichier trouvé par nom
+const seen = new Map();
 
-const files = fs.readdirSync(imagesDir);
-const seen = new Set();
-const duplicates = [];
-
-for (const file of files) {
-    const original = getOriginalName(file);
-    if (seen.has(original)) {
-        duplicates.push(file);
+fs.readdir(imagesDir, (err, files) => {
+  if (err) {
+    console.error('Erreur lecture dossier :', err);
+    process.exit(1);
+  }
+  let doublons = 0;
+  files.forEach(file => {
+    const base = path.basename(file);
+    const fullPath = path.join(imagesDir, file);
+    if (seen.has(base)) {
+      // Doublon trouvé, suppression
+      fs.unlinkSync(fullPath);
+      console.log('Supprimé :', fullPath);
+      doublons++;
     } else {
-        seen.add(original);
+      seen.set(base, fullPath);
     }
-}
-
-if (duplicates.length === 0) {
+  });
+  if (doublons === 0) {
     console.log('Aucun doublon trouvé.');
-} else {
-    console.log('Suppression des doublons :');
-    for (const file of duplicates) {
-        const filePath = path.join(imagesDir, file);
-        fs.unlinkSync(filePath);
-        console.log('Supprimé :', file);
-    }
-}
+  } else {
+    console.log(`Doublons supprimés : ${doublons}`);
+  }
+});

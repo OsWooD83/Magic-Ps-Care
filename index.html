@@ -17,6 +17,19 @@ document.addEventListener('DOMContentLoaded', function() {
     <meta charset="utf-8">
     <title>PS Care – Association de Magie</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="images/miniature.png">
+    <meta property="og:image" content="https://www.magicpscare.com/images/miniature.png">
+    <meta property="og:title" content="Magic PS Care">
+    <meta property="og:description" content="Découvrez Magic PS Care, votre site magique !">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Magic PS Care",
+      "url": "https://www.magicpscare.com/",
+      "logo": "https://www.magicpscare.com/images/miniature.png"
+    }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="lib/bootstrap.min.css">
     <link rel="stylesheet" href="css/site.css">
@@ -310,8 +323,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <li><a href="photographie.html">Photographie</a></li>
                 <li><a href="#tarifs" id="navDevisLink">Devis</a></li>
                 <li><a href="#" id="openAvisModalBtn">Avis</a></li>
-                <li><a href="login.html" id="navLoginBtn">Spectateur - Se connecter</a></li>
-                <li style="display:none;" id="navStatsLi"><a href="statistiques.html" id="navStatsBtn">Statistiques</a></li>
+                <li><a href="login/" id="navLoginBtn">Spectateur - Se connecter</a></li>
+                <li style="display:none;" id="navStatsLi"><a href="statistiques/" id="navStatsBtn">Statistiques</a></li>
 </ul>
 <script>
 // Affiche le bouton Statistiques uniquement si connecté
@@ -518,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h1 class="display-3 display-3-fix mb-3 title-high" style="width:100%; display:flex; justify-content:center; align-items:center;">
                 <span class="magic-title" style="display:block; width:100%; text-align:center;">Association Magic PS Care</span>
             </h1>
+            <img src="images/miniature.png" alt="Image magique" class="magie-img" style="max-width:220px; margin:20px auto; display:block; border-radius:1.2rem; box-shadow:0 4px 24px #7c4dff55; animation: magie-glow 2.5s infinite alternate;">
             <p class="lead mb-4 lead-magic-fix">
         L’association qui fait vivre la magie à travers spectacles, ateliers et solidarité.
             </p>

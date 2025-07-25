@@ -2,6 +2,7 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
+import crypto from 'crypto';
 
 const app = express();
 const PORT = 4000;
@@ -54,6 +55,60 @@ app.delete('/api/photos', (req, res) => {
         res.json({ success: true });
     });
 });
+
+const checkForDuplicates = dir => {
+    const files = fs.readdirSync(dir);
+    const nameMap = {};
+    const duplicates = [];
+
+    files.forEach(file => {
+        const base = path.basename(file).toLowerCase();
+        if (nameMap[base]) {
+            duplicates.push(file);
+        } else {
+            nameMap[base] = true;
+        }
+    });
+
+    return duplicates;
+};
+
+const findDuplicatesByHash = dir => {
+    const files = fs.readdirSync(dir);
+    const hashMap = {};
+    const duplicates = [];
+
+    files.forEach(file => {
+        const filePath = path.join(dir, file);
+        if (fs.statSync(filePath).isFile()) {
+            const fileBuffer = fs.readFileSync(filePath);
+            const hash = crypto.createHash('md5').update(fileBuffer).digest('hex');
+            if (hashMap[hash]) {
+                duplicates.push({ original: hashMap[hash], duplicate: file });
+            } else {
+                hashMap[hash] = file;
+            }
+        }
+    });
+
+    return duplicates;
+};
+
+const duplicates = checkForDuplicates(imagesDir);
+if (duplicates.length > 0) {
+    console.log('Doublons trouvés :');
+    duplicates.forEach(f => console.log(f));
+} else {
+    console.log('Aucun doublon trouvé.');
+}
+
+const hashDuplicates = findDuplicatesByHash(imagesDir);
+if (hashDuplicates.length > 0) {
+    console.log('Doublons trouvés (par hash) :');
+    hashDuplicates.forEach(d => console.log(`Original : ${d.original} | Doublon : ${d.duplicate}`));
+} else {
+    console.log('Aucun doublon trouvé par hash.');
+}
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Serveur principal sur le port ${PORT}`);
