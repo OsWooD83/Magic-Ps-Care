@@ -13,9 +13,6 @@ const bcrypt = require('bcrypt');
 const sqlite3 = require('sqlite3');
 const db = sqlite3.verbose();
 
-// Recreate __dirname for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const app = express();
 
@@ -312,7 +309,7 @@ app.get('/api/list-images', (req, res) => {
 });
 
 // Pour servir l'API stats devis
-import statsDevisApi from './api/statsDevis.js';
+const statsDevisApi = require('./api/statsDevis.js');
 app.use('/api/stats/devis', statsDevisApi);
 
 // Ajoute ce proxy pour compatibilité avec /api/stats/reset
@@ -666,5 +663,4 @@ app.listen(PORT, '0.0.0.0', () => console.log(`Serveur principal sur le port ${P
 
 
 
-// Export pour compatibilité ES modules
-export default app;
+// ...existing code...
