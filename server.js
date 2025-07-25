@@ -1,5 +1,5 @@
 console.log('🚦 Début exécution server.js');
-import express from 'express';
+const express = require('express');
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
