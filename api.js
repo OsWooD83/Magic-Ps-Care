@@ -60,4 +60,4 @@ router.post('/login', (req, res) => {
 
 console.log('API router chargé (DEBUG)');
 
-export default router;
+module.exports = router;

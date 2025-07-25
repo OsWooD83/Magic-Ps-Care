@@ -40,7 +40,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-import apiRouter from './backend-ps-care/api.js';
+const apiRouter = require('./api.js');
 app.use('/api', apiRouter);
 
 // Sert les fichiers statiques (dont index.html) depuis le dossier courant
