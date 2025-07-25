@@ -1,5 +1,20 @@
 </ul>
 <script>
+// Désactive et grise le bouton Statistiques si non connecté
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/session')
+      .then(r => r.json())
+      .then(data => {
+        var statsBtn = document.getElementById('navStatsBtn');
+        if (statsBtn && !data.authenticated) {
+          statsBtn.classList.add('disabled');
+          statsBtn.style.pointerEvents = 'none';
+          statsBtn.style.opacity = '0.5';
+        }
+      });
+});
+</script>
+<script>
 // Incrémente le compteur de clics sur tous les boutons Devis
 document.addEventListener('DOMContentLoaded', function() {
     // Sélecteurs pour tous les boutons Devis (mailto et autres)
@@ -323,21 +338,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <li><a href="photographie.html">Photographie</a></li>
                 <li><a href="#tarifs" id="navDevisLink">Devis</a></li>
                 <li><a href="#" id="openAvisModalBtn">Avis</a></li>
+                <li><a href="statistiques/" id="navStatsBtn">Statistiques</a></li>
                 <li><a href="login/" id="navLoginBtn">Spectateur - Se connecter</a></li>
-                <li style="display:none;" id="navStatsLi"><a href="statistiques/" id="navStatsBtn">Statistiques</a></li>
 </ul>
-<script>
-// Affiche le bouton Statistiques uniquement si connecté
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('/api/session')
-      .then(r => r.json())
-      .then(data => {
-        if (data.authenticated) {
-          document.getElementById('navStatsLi').style.display = '';
-        }
-      });
-});
-</script>
             </ul>
         </div>
     </nav>
