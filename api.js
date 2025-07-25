@@ -52,7 +52,9 @@ router.get('/session', (req, res) => {
 });
 
 // Toutes vos routes ici
-router.get('/test', (req, res) => { ... });
+router.get('/test', (req, res) => {
+  res.send('Test OK');
+});
 router.post('/login', (req, res) => {
     console.log('POST /api/login appelé');
     // ...le reste du code...
