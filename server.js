@@ -1,16 +1,16 @@
 console.log('🚦 Début exécution server.js');
 const express = require('express');
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-// import { MongoClient, ObjectId } from 'mongodb'; // MongoDB supprimé
-import multer from 'multer';
-import bodyParser from 'body-parser';
-import session from 'express-session';
-import cors from 'cors';
-import bcrypt from 'bcrypt';
-import sqlite3 from 'sqlite3';
+const fs = require('fs');
+const path = require('path');
+// const { fileURLToPath } = require('url');
+// const { dirname } = require('path');
+// // import { MongoClient, ObjectId } from 'mongodb'; // MongoDB supprimé
+const multer = require('multer');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const cors = require('cors');
+const bcrypt = require('bcrypt');
+const sqlite3 = require('sqlite3');
 const db = sqlite3.verbose();
 
 // Recreate __dirname for ES modules

@@ -1,8 +1,8 @@
 console.log('test2');// Express.js API pour upload, suppression et listing persistant des photos
 const express = require('express');
-import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 console.log('Fichier exécuté');
 

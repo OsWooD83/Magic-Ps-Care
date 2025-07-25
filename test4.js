@@ -1,8 +1,8 @@
 const express = require('express');
-import fs from 'fs';
-import path from 'path';
-import multer from 'multer';
-import crypto from 'crypto';
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = 4000;
