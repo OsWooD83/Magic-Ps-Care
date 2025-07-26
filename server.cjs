@@ -39,13 +39,21 @@ app.get('/api/devis-stats', (req, res) => {
   res.redirect('/api/stats/devis');
 });
 
-// Route proxy pour relayer vers /api/login
+// Middleware CORS spécifique à la route /api/proxy
+app.use('/api/proxy', require('cors')({
+  origin: [
+    'https://magicpscare.com',
+    'https://www.magicpscare.com'
+  ],
+  credentials: true
+}));
+
+// Route proxy pour relayer vers /api/login en conservant la méthode et le corps
 app.use('/api/proxy', (req, res, next) => {
   const endpoint = req.query.endpoint;
   if (endpoint === 'login') {
-    // Redirige vers la route /api/login (POST)
+    // Préserve la méthode et le corps de la requête
     req.url = '/login';
-    req.method = 'POST';
     return apiRouter.handle(req, res, next);
   } else {
     res.status(404).send('Endpoint not found');
