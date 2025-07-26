@@ -38,6 +38,19 @@ if (!fs.existsSync(imagesDir)) {
 app.get('/api/devis-stats', (req, res) => {
   res.redirect('/api/stats/devis');
 });
+
+// Route proxy pour relayer vers /api/login
+app.use('/api/proxy', (req, res, next) => {
+  const endpoint = req.query.endpoint;
+  if (endpoint === 'login') {
+    // Redirige vers la route /api/login (POST)
+    req.url = '/login';
+    req.method = 'POST';
+    return apiRouter.handle(req, res, next);
+  } else {
+    res.status(404).send('Endpoint not found');
+  }
+});
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Serveur Node.js en écoute sur le port ${PORT}`);
