@@ -10,7 +10,17 @@ const bcrypt = require('bcrypt');
 const sqlite3 = require('sqlite3');
 const db = sqlite3.verbose();
 
+
 const app = express();
+
+// Middleware CORS global pour toutes les routes
+app.use(require('cors')({
+  origin: [
+    'https://magicpscare.com',
+    'https://www.magicpscare.com'
+  ],
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(cors({
