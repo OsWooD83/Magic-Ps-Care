@@ -944,11 +944,13 @@ let selectedPhotos = [];
             }
             // Filtrer les doublons par nom de fichier (ne garder qu'un exemplaire de chaque)
             const seenFilenames = new Set();
-            const uniquePhotos = getFilteredPhotos().filter(photo => {
-                if (seenFilenames.has(photo.filename)) return false;
-                seenFilenames.add(photo.filename);
-                return true;
-            });
+            const uniquePhotos = [];
+            for (const photo of getFilteredPhotos()) {
+                if (!seenFilenames.has(photo.filename)) {
+                    seenFilenames.add(photo.filename);
+                    uniquePhotos.push(photo);
+                }
+            }
             selectedPhotos = [];
 
             if (uniquePhotos.length === 0) {
