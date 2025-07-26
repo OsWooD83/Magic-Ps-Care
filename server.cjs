@@ -38,4 +38,7 @@ if (!fs.existsSync(imagesDir)) {
 app.get('/api/devis-stats', (req, res) => {
   res.redirect('/api/stats/devis');
 });
-// ...le reste du code server.js doit être synchronisé ici...
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Serveur Node.js en écoute sur le port ${PORT}`);
+});
