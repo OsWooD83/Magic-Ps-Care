@@ -26,7 +26,7 @@ app.use(session({
     saveUninitialized: false
 }));
 const apiRouter = require('./api.js');
-app.use('/api', apiRouter);
+app.use('/api', apiRouter); // api.js exporte bien un router
 app.use(express.static(__dirname));
 app.use(express.static('d:/TW Pascal'));
 app.use('/photos', express.static(path.join(__dirname, 'images')));

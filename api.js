@@ -1,6 +1,5 @@
 const express = require('express');
-const app = express();
-const port = 3000;
+const router = express.Router();
 
 // Simule des données pour chaque période
 function getFakeStats(type, periode) {
@@ -29,23 +28,15 @@ function getFakeStats(type, periode) {
     return { labels, counts };
 }
 
-app.get('/api/stats/devis', (req, res) => {
+router.get('/stats/devis', (req, res) => {
     const periode = req.query.periode || 'jour';
     res.json(getFakeStats('devis', periode));
 });
 
-app.get('/api/stats/trafic', (req, res) => {
+router.get('/stats/trafic', (req, res) => {
     const periode = req.query.periode || 'jour';
     res.json(getFakeStats('trafic', periode));
 });
-
-app.use(express.static(__dirname)); // Pour servir Stats.HTML et css/site.css
-
-app.listen(port, () => {
-    console.log(`API stats en écoute sur http://localhost:${port}`);
-});
-
-const router = express.Router();
 
 router.get('/session', (req, res) => {
   res.json({ status: 'ok', session: null });
