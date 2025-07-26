@@ -1,15 +1,20 @@
 </ul>
 <script>
-// Désactive et grise le bouton Statistiques si non connecté
+// Affiche le bouton Statistiques si connecté, sinon le masque
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/api/session')
       .then(r => r.json())
       .then(data => {
         var statsBtn = document.getElementById('navStatsBtn');
-        if (statsBtn && !data.authenticated) {
-          statsBtn.classList.add('disabled');
-          statsBtn.style.pointerEvents = 'none';
-          statsBtn.style.opacity = '0.5';
+        if (statsBtn) {
+          if (data.authenticated) {
+            statsBtn.style.display = 'inline-block';
+            statsBtn.classList.remove('disabled');
+            statsBtn.style.pointerEvents = '';
+            statsBtn.style.opacity = '';
+          } else {
+            statsBtn.style.display = 'none';
+          }
         }
       });
 });
@@ -338,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <li><a href="photographie.html">Photographie</a></li>
                 <li><a href="#tarifs" id="navDevisLink">Devis</a></li>
                 <li><a href="#" id="openAvisModalBtn">Avis</a></li>
-                <li><a href="statistiques/" id="navStatsBtn">Statistiques</a></li>
+                <li><a href="statistiques/" id="navStatsBtn" style="display:none">Statistiques</a></li>
                 <li><a href="login/" id="navLoginBtn">Spectateur - Se connecter</a></li>
 </ul>
             </ul>
