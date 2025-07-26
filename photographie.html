@@ -787,7 +787,7 @@ let selectedPhotos = [];
                 modal.style.justifyContent = 'center';
                 modal.style.zIndex = '9999';
                 modal.style.cursor = 'zoom-out';
-                modal.innerHTML = '<img id="modal-img" style="max-width:90vw; max-height:90vh; border-radius:18px; box-shadow:0 8px 40px #000; background:#fff;">';
+                modal.innerHTML = '';
                 document.body.appendChild(modal);
                 modal.addEventListener('click', function() {
                     modal.style.display = 'none';
@@ -1188,7 +1188,8 @@ let selectedPhotos = [];
 const uniqueImages = [...new Set(images)];
 
 uniqueImages.forEach(img => {
-  document.write('<img src="images/' + img + '" alt="Photo">');
+  // Toutes les photos supprimées
+  // document.write('<img src="images/' + img + '" alt="Photo">');
 });
         });
     </script>
