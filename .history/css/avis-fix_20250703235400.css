@@ -1,0 +1,4 @@
+/* Styles extraits de index.html pour remplacer les styles inline de la div moyenne */
+.moyenne-hidden {
+  display: none;
+}
