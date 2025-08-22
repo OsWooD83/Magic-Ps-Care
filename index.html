@@ -346,35 +346,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 <li><a href="#accueil">Accueil</a></li>
                 <li><a href="#prestations">Prestations</a></li>
                 <li><a href="photographie.html">Photographie</a></li>
-<<<<<<< HEAD
+
                 <li><a href="https://www.facebook.com/profile.php?id=61577612734844" target="_blank">Facebook</a></li>
-=======
-                <li><a href="https://facebook.com" target="_blank">Facebook</a></li>
->>>>>>> a258f6d2825cd43d09e9bfa6196604d40f6ca767
+
                 <li><a href="#tarifs" id="navDevisLink">Devis</a></li>
                 <li><a href="#" id="openAvisModalBtn">Avis</a></li>
                   <li><a href="statistiques/" id="navStatsBtn" style="display:none"><span style="color: red; font-weight: bold;">Statistiques</span></a></li>
                 <li><a href="login/" id="navLoginBtn">Spectateur - Se connecter</a></li>
                   <li><a href="https://www.fr.freelancer.com/u/enzov5?frm=enzov5&sb=t" target="_blank">Créateur</a></li>
-<<<<<<< HEAD
+
                 <li><a href="#" id="openLegalModalBtn">Information légales</a></li>
 </ul>
 
 <!-- Modale Informations légales -->
-<div id="legalModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0, 0, 0, 0.733);">
-  <div style="background:#4c49eb; margin:10% auto; padding:20px; border-radius:8px; width:90%; max-width:400px; position:relative;">
-    <span id="closeLegalModalBtn" style="position:absolute; top:10px; right:15px; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
-    <h2>Informations légales et juridiques</h2>
-    <p><span style="color: red;">N° de SIRET:</span> 990 225 252 00016</p>
-    <p><span style="color: red;">N° de SIREN:</span> 990 225 252</p>
-    <p><span style="color: red;">APE:</span> 90.01Z</p>
-    <p><span style="color: red;">N° RNA:</span> W 832 022 161</p>
+<div id="legalModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(44, 62, 80, 0.85); justify-content:center; align-items:center;">
+  <div id="legalModalContent" style="background: linear-gradient(135deg, #4c49eb 0%, #6dd5fa 100%); box-shadow: 0 8px 32px rgba(44,62,80,0.25); margin:0 auto; padding:32px 24px 24px 24px; border-radius:18px; max-width:370px; width:90%; position:relative; color:#fff; text-align:center; animation: modalFadeIn 0.4s;">
+    <button id="closeLegalModalBtn" style="position:absolute; top:18px; right:18px; background:transparent; border:none; font-size:2rem; color:#fff; cursor:pointer;">
+      <span aria-label="Fermer" title="Fermer">&#10006;</span>
+    </button>
+    <h2 style="color:#ffd700; font-family:'Cinzel Decorative',cursive; font-size:1.5rem; margin-bottom:1.2em;">Informations légales et juridiques</h2>
+    <div style="font-size:1.08rem; line-height:1.7;">
+      <p><strong>N° de SIRET:</strong> <span style="color:#ffd700;">990 225 252 00016</span></p>
+      <p><strong>N° de SIREN:</strong> <span style="color:#ffd700;">990 225 252</span></p>
+      <p><strong>CODE APE:</strong> <span style="color:#ffd700;">90.01Z</span></p>
+      <p><strong>N° RNA:</strong> <span style="color:#ffd700;">W 832 022 161</span></p>
+    </div>
   </div>
 </div>
+<style>
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+</style>
         </ul>
-=======
+
 </ul>
->>>>>>> a258f6d2825cd43d09e9bfa6196604d40f6ca767
             </ul>
         </div>
     </nav>
@@ -755,23 +762,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Attendre que les images soient chargées pour avoir la bonne largeur
     window.addEventListener('load', animate);
 })();
-<<<<<<< HEAD
-// ...existing code...
-// Modale Informations légales
-document.getElementById('openLegalModalBtn').onclick = function() {
-  document.getElementById('legalModal').style.display = 'block';
-};
-document.getElementById('closeLegalModalBtn').onclick = function() {
-  document.getElementById('legalModal').style.display = 'none';
-};
-window.onclick = function(event) {
-  var modal = document.getElementById('legalModal');
-  if (event.target == modal) {
-    modal.style.display = 'none';
+
+// Modale Informations légales : garantir que le DOM est chargé
+
+// Modale Informations légales : garantir que le DOM est chargé
+document.addEventListener('DOMContentLoaded', function() {
+  var openLegalBtn = document.getElementById('openLegalModalBtn');
+  var closeLegalBtn = document.getElementById('closeLegalModalBtn');
+  var legalModal = document.getElementById('legalModal');
+  if (openLegalBtn && closeLegalBtn && legalModal) {
+    openLegalBtn.onclick = function(e) {
+      e.preventDefault();
+      legalModal.style.display = 'block';
+    };
+    closeLegalBtn.onclick = function() {
+      legalModal.style.display = 'none';
+    };
+    window.addEventListener('click', function(event) {
+      if (event.target === legalModal) {
+        legalModal.style.display = 'none';
+      }
+    });
   }
-};
-=======
->>>>>>> a258f6d2825cd43d09e9bfa6196604d40f6ca767
+});
 </script>
     <section id="projets" class="section py-5 section-qui-sommes-nous">
         <div class="container qui-sommes-nous-container">
@@ -1406,19 +1419,13 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="container my-5 tarifs-container-fix">
         <h2 class="section-title mb-3 text-center">Membres de l'association</h2>
         <ul class="list-group list-group-flush text-start membres-list">
-<<<<<<< HEAD
+
             <li class="list-group-item bg-transparent">Président: Franck VERCELLOTTI</li>
             <br>
             <li class="list-group-item bg-transparent">Secrétaire: Marion FROGER</li>
             <br>
             <li class="list-group-item bg-transparent">Trésorier: Pascal SIBOUR</li>
-=======
-            <li class="list-group-item bg-transparent">Président: Pascal SIBOUR <span class="membre-alias">(ted Winter)</span></li>
-            <br>
-            <li class="list-group-item bg-transparent">Secrétaire: Marion FROGER</li>
-            <br>
-            <li class="list-group-item bg-transparent">Trésorier: Franck VERCELLOTTI</li>
->>>>>>> a258f6d2825cd43d09e9bfa6196604d40f6ca767
+
         </ul>
     </div>
 
@@ -1446,23 +1453,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <ul class="pagination justify-content-center" id="avisPagination"></ul>
       </nav>
     </div>
-<<<<<<< HEAD
-=======
-    <h4>Informations légales et juridiques: 
-      <br><br>
-    <span style="color: red;">N° de SIRET:</span> 990 225 252 00016 <br>
-    <br>
-    <br>
-    <span style="color: red;">N° de SIREN:</span> 990 225 252 
-    <br>
-    <br>
-    <span style="color: red;">CODE APE:</span> 90.01Z 
-    <br>
-    <br>
-    <span style="color: red;">N° RNA:</span> W 832 022 161 <br>
-    <br>
-</h4>
->>>>>>> a258f6d2825cd43d09e9bfa6196604d40f6ca767
 
     <!-- ======= FIN DU BLOC 'TOUS LES AVIS' ======= -->
 <script>
