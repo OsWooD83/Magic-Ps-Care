@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion - Magic PS Care</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lib/bootstrap.min.css">
+    <link rel="stylesheet" href="css/site.css">
+    <style>
+        body {
+            min-height: 100vh;
+            background: url('images/1751921535345-magic_1.jpg') no-repeat center center fixed, linear-gradient(135deg, #181c2b 0%, #2d1a3a 100%);
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: rgba(44, 24, 64, 0.92);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px #7c4dff55, 0 1.5px 8px #0002;
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 400px;
+            width: 100%;
+            margin: 40px auto;
+            position: relative;
+        }
+        .login-title {
+            font-family: 'Cinzel Decorative', serif;
+            color: #ffd700;
+            text-shadow: 0 0 16px #7c4dff88, 0 0 32px #fff17644;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+        .login-subtitle {
+            color: #b39ddb;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 8px #7c4dff44;
+        }
+        .form-label {
+            color: #ffd700;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .form-control {
+            background: rgba(44, 24, 64, 0.7);
+            color: #fff;
+            border: 1.5px solid #7c4dff;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+        }
+        .form-control:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 0 0.2rem #ffd70044;
+            background: rgba(44, 24, 64, 0.9);
+            color: #fff;
+        }
+        .btn-magic {
+            margin-top: 0.5rem;
+            font-size: 1.15rem;
+            padding: 0.7rem 0;
+            border-radius: 2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        #loginMsg {
+            min-height: 1.5em;
+        }
+        .login-logo {
+            display: block;
+            margin: 0 auto 1.2rem auto;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            box-shadow: 0 0 16px #ffd70088, 0 0 32px #7c4dff44;
+            object-fit: cover;
+            background: #fff;
+        }
+        .avatar-tw {
+            display: none;
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            background: #7c4dff;
+            color: #fff;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            box-shadow: 0 2px 8px #0003;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            text-align: center;
+            line-height: 48px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        @media (max-width: 575px) {
+            .login-card {
+                padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+            }
+            .login-title {
+                font-size: 1.3rem;
+            }
+            .avatar-tw {
+                top: 8px;
+                right: 8px;
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+                line-height: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="avatar-tw" id="avatarTW">TW</div>
+    <div class="login-card">
+        <img src="images/1751921482940-Image2.png" alt="Logo Magic PS Care" class="login-logo" onerror="this.style.display='none'">
+        <div class="text-center">
+            <div class="login-title">Magic PS Care</div>
+            <div class="login-subtitle">Connexion à votre espace</div>
+        </div>
+        <form id="loginForm" autocomplete="off">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required autocomplete="username">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Mot de passe</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="password" required autocomplete="current-password">
+                    <button type="button" class="btn btn-outline-secondary" id="togglePwd" tabindex="-1">
+                        <span id="eyeIcon" class="eye-icon">👁️</span>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-magic w-100">Se connecter</button>
+            <div id="loginMsg" class="mt-3 text-center"></div>
+        </form>
+    </div>
+    <script>
+    // Afficher/masquer le mot de passe
+    document.getElementById('togglePwd').addEventListener('click', function() {
+        const pwd = document.getElementById('password');
+        const icon = document.getElementById('eyeIcon');
+        if (pwd.type === 'password') {
+            pwd.type = 'text';
+            icon.textContent = '🙈';
+        } else {
+            pwd.type = 'password';
+            icon.textContent = '👁️';
+        }
+    });
+
+    // Envoi du formulaire en AJAX vers un endpoint Node.js
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const msg = document.getElementById('loginMsg');
+        msg.textContent = '';
+        // Détection automatique de l'URL de l'API selon l'environnement
+        let API_BASE = '';
+        if (window.location.hostname.includes('magicpscare.com')) {
+            API_BASE = 'https://magicpscare.com';
+        } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            API_BASE = 'http://localhost:4000';
+        } else {
+            API_BASE = '';
+        }
+        try {
+            // 1. Tentative via proxy sur le bon domaine
+            console.log('🔍 Tentative de connexion via proxy...');
+            let data;
+            try {
+                const proxyRes = await fetch(`${API_BASE}/api/proxy?endpoint=login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, password })
+                });
+                if (proxyRes.ok) {
+                    data = await proxyRes.json();
+                    console.log('✅ Succès via proxy');
+                } else {
+                    throw new Error(`Proxy failed: ${proxyRes.status}`);
+                }
+            } catch (proxyError) {
+                console.log('⚠️ Proxy échoué, tentative API fallback:', proxyError);
+                // Fallback: API_CONFIG
+                if (window.API_CONFIG) {
+                    data = await window.API_CONFIG.login({ email, password });
+                } else {
+                    // Dernier recours: direct
+                    const res = await fetch(`${API_BASE}/api/login`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        credentials: 'include',
+                        mode: 'cors',
+                        body: JSON.stringify({ email, password })
+                    });
+                    if (!res.ok) {
+                        throw new Error(`Erreur HTTP: ${res.status}`);
+                    }
+                    data = await res.json();
+                }
+            }
+            console.log('✅ Réponse reçue:', data);
+            if (data.success) {
+                msg.textContent = 'Connexion réussie ! Accès administrateur activé.';
+                msg.style.color = 'limegreen';
+                document.getElementById('avatarTW').style.display = 'flex';
+                // Stocker la session administrateur
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('sessionToken', 'admin_' + Date.now());
+                localStorage.setItem('is_admin', 'true');
+                // Stocker les infos utilisateur
+                if (data.user) {
+                    localStorage.setItem('user_nom', data.user.nom || 'Administrateur');
+                    localStorage.setItem('user_email', data.user.email || email);
+                    localStorage.setItem('user_id', data.user.id || '1');
+                }
+                console.log('✅ Session administrateur créée');
+                // Rediriger vers l'accueil
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+                // Ou rediriger directement vers la galerie si demandé
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('redirect') === 'gallery') {
+                    setTimeout(() => {
+                        window.location.href = 'photographie.html';
+                    }, 1000);
+                }
+            } else {
+                msg.textContent = data.message || 'Échec de la connexion.';
+                msg.style.color = 'red';
+            }
+        } catch (err) {
+            console.error('❌ Erreur de connexion:', err);
+            msg.textContent = `Erreur serveur: ${err.message}`;
+            msg.style.color = 'red';
+            // Message d'aide pour l'utilisateur
+            if (err.message.includes('CORS') || err.message.includes('fetch')) {
+                msg.textContent += '\n\nProblème de connexion détecté. Le serveur redémarre...';
+            }
+        }
+    });
+    // Déconnexion automatique après 5 minutes d'inactivité
+    let inactivityTime = 300000; // 5 minutes en millisecondes
+    let timeoutHandle;
+    function resetTimer() {
+        clearTimeout(timeoutHandle);
+        timeoutHandle = setTimeout(autoLogout, inactivityTime);
+    }
+    function autoLogout() {
+        fetch('/api/logout', { 
+            method: 'POST',
+            credentials: 'include' // Important pour les sessions et CORS
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('avatarTW').style.display = 'none';
+                    alert('Vous avez été déconnecté en raison d\'une inactivité prolongée.');
+                    window.location.href = 'login.html';
+                }
+            })
+            .catch(err => console.error('Erreur lors de la déconnexion automatique:', err));
+    }
+    document.addEventListener('mousemove', resetTimer);
+    document.addEventListener('keypress', resetTimer);
+    resetTimer(); // Initialiser le timer à l'ouverture de la page
+    </script>
+    
+    <!-- Script de fallback API pour gérer CORS -->
+    <script src="js/api-fallback.js"></script>
+</body>
+</html>

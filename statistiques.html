@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques du site</title>
+    <link rel="stylesheet" href="css/site.css">
+    <link rel="stylesheet" href="css/statistiques.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="magic-stars" id="magicStars"></div>
+    <div class="container">
+        <h1><span style="font-size:1.5em;vertical-align:middle;">✨</span> Statistiques Magiques <span style="font-size:1.5em;vertical-align:middle;">🪄</span></h1>
+        <canvas id="visiteursChart" width="400" height="200"></canvas>
+        <p id="totalVisiteurs"></p>
+        <a href="index.html">Retour à l'accueil</a>
+        <br><br>
+        <a href="#" id="btnDevis" class="btn-devis">Devis</a>
+    </div>
+    <script src="js/statistiques.js"></script>
+    <script>
+    // Génère des étoiles magiques animées
+    function createMagicStars(nb) {
+        const container = document.getElementById('magicStars');
+        for(let i=0;i<nb;i++) {
+            const star = document.createElement('span');
+            star.style.left = Math.random()*100 + 'vw';
+            star.style.top = Math.random()*100 + 'vh';
+            star.style.animationDelay = (Math.random()*2.5) + 's';
+            container.appendChild(star);
+        }
+    }
+    createMagicStars(32);
+    </script>
+    <script>
+    // Affiche le total visiteurs de façon dynamique
+    async function updateTotalVisiteurs() {
+        const res = await fetch('/api/visiteurs');
+        const data = await res.json();
+        document.getElementById('totalVisiteurs').textContent = `Nombre total de visiteurs : ${data.total || 0}`;
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        updateTotalVisiteurs();
+        setInterval(updateTotalVisiteurs, 5000);
+    });
+    </script>
+</body>
+</html>

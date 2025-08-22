@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photographie - Magic PS Care - Galerie Magique v2.1</title>
+    <link rel="stylesheet" href="css/site.css">
+    <style>
+        /* Arrière-plan magique animé */
+        body {
+            background: linear-gradient(45deg, #1a237e, #283593, #3949ab, #5e35b1, #7b1fa2, #8e24aa, #ad1457, #c2185b);
+            background-size: 400% 400%;
+            animation: magicGradient 8s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                radial-gradient(circle at 60% 70%, rgba(255,255,255,0.15) 1px, transparent 1px),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.12) 1px, transparent 1px);
+            background-size: 100px 100px, 150px 150px, 120px 120px, 80px 80px;
+            animation: sparkle 3s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes magicGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes sparkle {
+            0% { opacity: 0.3; transform: translateY(0px); }
+            50% { opacity: 0.8; transform: translateY(-20px); }
+            100% { opacity: 0.3; transform: translateY(0px); }
+        }
+        
+        /* Force le rechargement avec nouveau CSS */
+        .gallery-v2 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            padding: 16px;
+        }
+        .gallery-item-v2 {
+            position: relative;
+            flex: 1 1 calc(33.333% - 16px);
+            max-width: calc(33.333% - 16px);
+        }
+        .gallery-v2 img {
+            width: 100%;
+            height: 450px;
+            object-fit: contain;
+            background: transparent;
+            display: block;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .gallery-v2 img::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff);
+            background-size: 300% 300%;
+            border-radius: 15px;
+            z-index: -1;
+            animation: magicBorder 3s ease infinite;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .gallery-v2 img:hover::before {
+            opacity: 1;
+        }
+        
+        @keyframes magicBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .gallery-v2 img:hover {
+            transform: scale(1.1) rotateY(5deg);
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.4),
+                0 0 30px rgba(255,255,255,0.3),
+                inset 0 0 20px rgba(255,255,255,0.1);
+            z-index: 10;
+            filter: brightness(1.1) saturate(1.2);
+        }
+        
+        .gallery-v2 img.image-error {
+            background: #f5f5f5;
+            border: 2px dashed #ccc;
+        }
+        
+        /* Styles pour les catégories */
+        .category-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        /* Styles pour le titre principal - VERSION MAGIQUE */
+        .main-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 4em;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffd700, #ffea00, #fff176, #ffffff, #e1f5fe, #81d4fa, #29b6f6, #0288d1);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 
+                0 0 20px rgba(255,215,0,0.8),
+                0 0 40px rgba(255,215,0,0.6),
+                0 0 60px rgba(255,215,0,0.4);
+            letter-spacing: 3px;
+            animation: magicTitle 4s ease-in-out infinite, titleFloat 6s ease-in-out infinite;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        .main-title::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.3), rgba(255,215,0,0.3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transform: translateZ(-10px) scale(1.05);
+            filter: blur(2px);
+            opacity: 0.7;
+        }
+        
+        @keyframes magicTitle {
+            0%, 100% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg) drop-shadow(0 0 20px rgba(255,215,0,0.8));
+            }
+            25% { 
+                background-position: 100% 0%;
+                filter: hue-rotate(90deg) drop-shadow(0 0 30px rgba(255,105,180,0.8));
+            }
+            50% { 
+                background-position: 100% 100%;
+                filter: hue-rotate(180deg) drop-shadow(0 0 25px rgba(138,43,226,0.8));
+            }
+            75% { 
+                background-position: 0% 100%;
+                filter: hue-rotate(270deg) drop-shadow(0 0 35px rgba(0,191,255,0.8));
+            }
+        }
+        
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            33% { transform: translateY(-8px) rotateX(2deg); }
+            66% { transform: translateY(4px) rotateX(-1deg); }
+        }
+        
+        .main-title .emoji {
+            display: inline-block;
+            animation: magicEmoji 3s ease-in-out infinite;
+            margin-right: 20px;
+            font-size: 1.2em;
+            filter: drop-shadow(0 0 15px rgba(255,215,0,0.8));
+            transform-origin: center center;
+        }
+        
+        @keyframes magicEmoji {
+            0%, 100% { 
+                transform: rotate(0deg) scale(1) translateY(0px);
+                filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)) hue-rotate(0deg);
+            }
+            25% { 
+                transform: rotate(-10deg) scale(1.1) translateY(-5px);
+                filter: drop-shadow(0 0 20px rgba(255,105,180,0.8)) hue-rotate(90deg);
+            }
+            50% { 
+                transform: rotate(5deg) scale(1.2) translateY(-8px);
+                filter: drop-shadow(0 0 25px rgba(138,43,226,0.8)) hue-rotate(180deg);
+            }
+            75% { 
+                transform: rotate(-5deg) scale(1.1) translateY(-3px);
+                filter: drop-shadow(0 0 20px rgba(0,191,255,0.8)) hue-rotate(270deg);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.8em;
+                letter-spacing: 2px;
+                margin-bottom: 35px;
+            }
+            
+            .category-btn {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+            
+            .gallery-item-v2 {
+                flex: 1 1 calc(50% - 16px);
+                max-width: calc(50% - 16px);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 2.2em;
+                letter-spacing: 1px;
+            }
+            
+            .gallery-item-v2 {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+            
+            .category-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .category-btn {
+                width: 200px;
+            }
+        }
+
+    /* Sélection visuelle en mode suppression */
+    .gallery-item-v2.selected-for-delete {
+        outline: 4px solid #f44336;
+        box-shadow: 0 0 20px #f44336, 0 0 10px #fff;
+        opacity: 1 !important;
+    }
+        
+        .category-btn {
+            padding: 15px 30px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+        
+        .category-btn:hover::before {
+            left: 100%;
+        }
+        
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.7);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.3),
+                0 0 20px rgba(255,255,255,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(45deg, rgba(255,215,0,0.9), rgba(255,165,0,0.8));
+            color: #1a237e;
+            border-color: #ffd700;
+            box-shadow: 
+                0 8px 25px rgba(255,215,0,0.4),
+                0 0 30px rgba(255,215,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+            animation: activeGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes activeGlow {
+            0% { box-shadow: 0 8px 25px rgba(255,215,0,0.4), 0 0 30px rgba(255,215,0,0.3); }
+            100% { box-shadow: 0 12px 35px rgba(255,215,0,0.6), 0 0 40px rgba(255,215,0,0.5); }
+        }
+        
+        /* Styles pour le panneau d'administration - VERSION MAGIQUE */
+        .admin-panel {
+            background: linear-gradient(135deg, 
+                rgba(138,43,226,0.9) 0%, 
+                rgba(75,0,130,0.9) 25%,
+                rgba(72,61,139,0.9) 50%,
+                rgba(123,104,238,0.9) 75%,
+                rgba(147,112,219,0.9) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 
+                0 10px 40px rgba(138,43,226,0.3),
+                0 0 30px rgba(138,43,226,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.2),
+                inset 0 -1px 0 rgba(0,0,0,0.2);
+            border: 2px solid rgba(255,255,255,0.2);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-panel::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff);
+            background-size: 300% 300%;
+            border-radius: 20px;
+            z-index: -1;
+            animation: magicBorder 4s ease infinite;
+            opacity: 0.6;
+        }
+        
+        .admin-panel h2 {
+            margin: 0 0 25px 0;
+            font-size: 1.8em;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            background: linear-gradient(45deg, #ffd700, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1em;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #66BB6A);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #66BB6A, #4CAF50);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(76,175,80,0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #FF5722);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #FF5722, #f44336);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(244,67,54,0.4);
+        }
+        
+        .btn-danger.active {
+            background: linear-gradient(45deg, #b71c1c, #d32f2f);
+            animation: dangerPulse 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes dangerPulse {
+            0% { box-shadow: 0 10px 25px rgba(183,28,28,0.4); }
+            100% { box-shadow: 0 15px 35px rgba(183,28,28,0.6); }
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #6c757d, #868e96);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #868e96, #6c757d);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(108,117,125,0.4);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Bouton de suppression magique */
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(45deg, rgba(244, 67, 54, 0.95), rgba(229, 57, 53, 0.95));
+            color: white;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 5px 15px rgba(244, 67, 54, 0.4),
+                0 0 10px rgba(244, 67, 54, 0.3);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        
+        .delete-btn:hover {
+            background: linear-gradient(45deg, rgba(183, 28, 28, 0.95), rgba(198, 40, 40, 0.95));
+            transform: scale(1.2) rotate(90deg);
+            box-shadow: 
+                0 8px 25px rgba(183, 28, 28, 0.6),
+                0 0 20px rgba(183, 28, 28, 0.5);
+            border-color: rgba(255,255,255,0.7);
+        }
+        
+        .delete-mode .delete-btn {
+            display: flex;
+        }
+        
+        .delete-mode .gallery-item-v2 {
+            opacity: 0.7;
+        }
+        
+        .delete-mode .gallery-item-v2:hover {
+            opacity: 1;
+        }
+        
+        /* Bouton Accueil magique */
+        .home-btn-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        
+        .home-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, 
+                rgba(255,215,0,0.9) 0%, 
+                rgba(255,165,0,0.8) 50%,
+                rgba(255,140,0,0.9) 100%);
+            color: #1a237e;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1em;
+            box-shadow: 
+                0 8px 25px rgba(255,215,0,0.4),
+                0 0 20px rgba(255,215,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.5);
+            border: 2px solid rgba(255,255,255,0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .home-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .home-btn:hover::before {
+            left: 100%;
+        }
+        
+        .home-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 12px 35px rgba(255,215,0,0.5),
+                0 0 30px rgba(255,215,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.7);
+            border-color: rgba(255,255,255,0.8);
+        }
+        
+        .home-icon {
+            font-size: 1.2em;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            animation: homeIconFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes homeIconFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-2px); }
+        }
+        
+        .home-text {
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        /* Responsive pour le bouton accueil */
+        @media (max-width: 768px) {
+            .home-btn-container {
+                top: 15px;
+                left: 15px;
+            }
+            
+            .home-btn {
+                padding: 10px 16px;
+                font-size: 0.9em;
+            }
+            
+            .home-text {
+                display: none;
+            }
+            
+            .home-icon {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+    
+    <main>
+        <div class="container">
+            <!-- Bouton Accueil magique -->
+            <div class="home-btn-container">
+                <a href="index.html" class="home-btn">
+                    <span class="home-icon">🏠</span>
+                    <span class="home-text">Accueil</span>
+                </a>
+            </div>
+            
+            <h1 class="main-title">
+                <span class="emoji">🎭</span>Galerie Magic Ps Care
+            </h1>
+            
+            <!-- Navigation par catégories -->
+            <div class="category-nav">
+                <button class="category-btn active" data-category="tout" onclick="filterByCategory('tout')">
+                    🌟 Tout
+                </button>
+                <button class="category-btn" data-category="photo" onclick="filterByCategory('photo')">
+                    📸 Photos
+                </button>
+                <button class="category-btn" data-category="video" onclick="filterByCategory('video')">
+                    🎬 Vidéos
+                </button>
+            </div>
+            
+            <!-- Panneau d'administration (visible uniquement pour les admins) -->
+            <div id="admin-panel" class="admin-panel hidden">
+                <h2>🔧 Panneau d'Administration</h2>
+                <div class="admin-actions">
+                    <button id="add-photo-btn" class="btn btn-primary">
+                        ➕ Ajouter une photo
+                    </button>
+                    <button id="toggle-delete-mode" class="btn btn-danger">
+                        🗑️ Mode suppression
+                    </button>
+                    <button id="logout-btn" class="btn btn-secondary">
+                        🚪 Déconnexion
+                    </button>
+                </div>
+                <input type="file" id="photo-upload" accept="image/*,video/mp4,video/mov" class="hidden">
+            </div>
+            
+            <div class="gallery-v2" id="gallery">
+                <!-- Images chargées par JavaScript avec vrais noms -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // FORCE DEPLOY v2.1 - Galerie Magique Complete avec Bouton Accueil - $(Get-Date)
+        
+        // Variables globales
+        let isAdmin = false;
+        let currentUser = null;
+        let deleteMode = false;
+let selectedPhotos = [];
+        let currentFilter = 'tout';
+        let gallery = null; // Sera initialisé après DOM Ready
+        
+        // La liste sera remplie dynamiquement depuis l'API
+        const realPhotos = [];
+
+        // Filtrer par catégorie
+        function filterByCategory(category) {
+            currentFilter = category;
+            
+            // Mettre à jour les boutons actifs
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // Recharger la galerie avec le filtre
+            loadGallery();
+        }
+
+        // Obtenir les photos filtrées
+        function getFilteredPhotos() {
+            if (currentFilter === 'tout') {
+                return realPhotos;
+            }
+            return realPhotos.filter(photo => photo.category === currentFilter);
+        }
+
+        // Fonction pour vérifier si une image existe
+        function checkImageExists(imageSrc) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = imageSrc;
+            });
+        }
+
+        // Vérifier le statut de session et d'administration
+        async function checkAdminStatus() {
+            try {
+                // Vérifier d'abord le localStorage pour la session locale
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                const isAdminLocal = localStorage.getItem('is_admin') === 'true';
+                const userNom = localStorage.getItem('user_nom') || 'Administrateur';
+                
+                if (isLoggedIn && isAdminLocal) {
+                    // Utilisateur admin connecté - afficher le panneau d'administration
+                    isAdmin = true;
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    console.log(`👑 Mode administrateur activé pour ${userNom}`);
+                    
+                    currentUser = {
+                        nom: userNom,
+                        email: localStorage.getItem('user_email'),
+                        id: localStorage.getItem('user_id'),
+                        is_admin: true
+                    };
+                    
+                    return;
+                }
+                
+                // Fallback: vérifier via API session
+                const response = await fetch('/api/session');
+                const sessionData = await response.json();
+                
+                currentUser = sessionData.user;
+                
+                if (sessionData.authenticated && sessionData.user && sessionData.user.is_admin) {
+                    // Utilisateur admin connecté via API - afficher le panneau d'administration
+                    isAdmin = true;
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    console.log('👑 Mode administrateur activé via API');
+                } else {
+                    // Utilisateur normal ou non connecté - masquer le panneau
+                    isAdmin = false;
+                    document.getElementById('admin-panel').classList.add('hidden');
+                    console.log('👤 Mode spectateur');
+                }
+            } catch (error) {
+                console.log('❌ Erreur lors de la vérification:', error);
+                isAdmin = false;
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
+        }
+
+        // Créer une image dans la galerie
+        async function createImageElement(photo) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'gallery-item-v2';
+            wrapper.setAttribute('data-id', photo.id);
+
+    // Sélection en mode suppression OU agrandissement image
+    wrapper.addEventListener('click', function(e) {
+        if (deleteMode) {
+            e.stopPropagation();
+            const idx = selectedPhotos.indexOf(photo.id);
+            if (idx === -1) {
+                selectedPhotos.push(photo.id);
+                wrapper.classList.add('selected-for-delete');
+            } else {
+                selectedPhotos.splice(idx, 1);
+                wrapper.classList.remove('selected-for-delete');
+            }
+            updateGroupDeleteBtnVisibility();
+        } else {
+            // Agrandir l'image (si ce n'est pas une vidéo)
+            if (photo.fileType !== 'mp4' && photo.fileType !== 'mov') {
+                openImageModal(`images/${photo.filename}`, photo.title);
+            }
+        }
+    });
+        // MODAL pour agrandir l'image
+        function openImageModal(src, alt) {
+            // Vérifier si le modal existe déjà
+            let modal = document.getElementById('image-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'image-modal';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.background = 'rgba(0,0,0,0.85)';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.zIndex = '9999';
+                modal.style.cursor = 'zoom-out';
+                modal.innerHTML = '';
+                document.body.appendChild(modal);
+                modal.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            } else {
+                modal.style.display = 'flex';
+            }
+            const img = modal.querySelector('#modal-img');
+            img.src = src;
+            img.alt = alt || '';
+        }
+            
+    const ext = photo.fileType || '';
+    const filePath = `images/${photo.filename}`;
+    let mediaElem;
+    if (['mp4', 'mov'].includes(ext)) {
+        mediaElem = document.createElement('video');
+        mediaElem.src = filePath;
+        mediaElem.controls = true;
+        mediaElem.width = 320;
+        mediaElem.height = 240;
+        mediaElem.title = photo.title;
+        mediaElem.style.display = 'block';
+        mediaElem.style.margin = '0 auto';
+    } else {
+        mediaElem = document.createElement('img');
+        mediaElem.alt = photo.title;
+        mediaElem.loading = 'lazy';
+        // Vérifier si l'image existe avant de l'assigner (uniquement pour les images)
+        const imageExists = await checkImageExists(filePath);
+        if (imageExists) {
+            mediaElem.src = filePath;
+            console.log('✅ Chargée:', photo.filename);
+        } else {
+            // Image de fallback ou placeholder
+            mediaElem.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vbiBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+            console.error('❌ Image non trouvée:', photo.filename);
+            mediaElem.classList.add('image-error');
+        }
+    }
+    // Bouton de suppression (visible uniquement en mode admin et mode suppression)
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.innerHTML = '✕';
+    deleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        deletePhoto(photo.id, photo.filename);
+    };
+    wrapper.appendChild(mediaElem);
+    wrapper.appendChild(deleteBtn);
+    return wrapper;
+        }
+
+        // Charger les images dans la galerie
+        async function loadGallery() {
+            gallery.innerHTML = '';
+
+            // Toujours gérer le bouton de suppression groupée en mode suppression admin
+            let groupDeleteBtn = document.getElementById('group-delete-btn');
+            if (deleteMode && isAdmin) {
+                if (!groupDeleteBtn) {
+                    groupDeleteBtn = document.createElement('button');
+                    groupDeleteBtn.id = 'group-delete-btn';
+                    groupDeleteBtn.className = 'btn btn-danger';
+                    groupDeleteBtn.textContent = 'Supprimer la sélection';
+                    groupDeleteBtn.style.margin = '16px auto';
+                    groupDeleteBtn.style.display = 'none';
+                    groupDeleteBtn.onclick = async function() {
+                        if (selectedPhotos.length === 0) {
+                            alert('Aucune image sélectionnée.');
+                            return;
+                        }
+                        if (!confirm(`Supprimer ${selectedPhotos.length} image(s) sélectionnée(s) ?`)) return;
+                        for (const id of [...selectedPhotos]) {
+                            const photo = realPhotos.find(p => p.id === id);
+                            if (photo) {
+                                await deletePhoto(photo.id, photo.filename, true);
+                            }
+                        }
+                        selectedPhotos = [];
+                        loadGallery();
+                    };
+                }
+                // Toujours insérer le bouton en haut de la galerie
+                if (!groupDeleteBtn.parentNode) {
+                    gallery.parentNode.insertBefore(groupDeleteBtn, gallery);
+                }
+            } else if (groupDeleteBtn && groupDeleteBtn.parentNode) {
+                groupDeleteBtn.remove();
+            }
+
+            // Mettre à jour la visibilité du bouton après chaque chargement
+            updateGroupDeleteBtnVisibility();
+        // Met à jour la visibilité du bouton "Supprimer la sélection"
+        function updateGroupDeleteBtnVisibility() {
+            const groupDeleteBtn = document.getElementById('group-delete-btn');
+            if (!groupDeleteBtn) return;
+            if (deleteMode && isAdmin && selectedPhotos.length > 0) {
+                groupDeleteBtn.style.display = 'block';
+            } else {
+                groupDeleteBtn.style.display = 'none';
+            }
+        }
+
+            // Afficher un message de chargement
+            const loadingDiv = document.createElement('div');
+            loadingDiv.innerHTML = '🔄 Chargement des images...';
+            loadingDiv.style.textAlign = 'center';
+            loadingDiv.style.padding = '20px';
+            loadingDiv.style.color = 'white';
+            gallery.appendChild(loadingDiv);
+
+            try {
+                // Charger la liste des images depuis l'API locale
+                const apiBase = window.location.origin;
+                const response = await fetch(`${apiBase}/api/list-images`);
+                if (response.ok) {
+                    const data = await response.json();
+                    realPhotos.length = 0;
+                    let id = 1;
+                    for (const filename of data.images) {
+                        // Déduire le type
+                        const ext = filename.split('.').pop().toLowerCase();
+                        let category = ['mp4', 'mov'].includes(ext) ? 'video' : 'photo';
+                        realPhotos.push({
+                            id: id++,
+                            filename,
+                            title: filename,
+                            category,
+                            fileType: ext
+                        });
+                    }
+                    console.log(`📸 ${realPhotos.length} images trouvées dans le dossier images`);
+                } else {
+                    console.warn('Erreur chargement API list-images');
+                }
+            } catch (error) {
+                console.warn('Erreur chargement API list-images:', error);
+            }
+
+            // Supprimer le message de chargement
+            if (loadingDiv.parentNode) {
+                gallery.removeChild(loadingDiv);
+            }
+
+            // Répartir les fichiers selon leur type pour les filtres
+            for (const photo of realPhotos) {
+                const ext = (photo.fileType || '').toLowerCase();
+                if (["mp4", "mov"].includes(ext)) {
+                    photo.category = "video";
+                } else {
+                    photo.category = "photo";
+                }
+            }
+            // Filtrer les doublons par nom de fichier (ne garder qu'un exemplaire de chaque)
+            const seenFilenames = new Set();
+            const uniquePhotos = [];
+            for (const photo of getFilteredPhotos()) {
+                if (!seenFilenames.has(photo.filename)) {
+                    seenFilenames.add(photo.filename);
+                    uniquePhotos.push(photo);
+                }
+            }
+            selectedPhotos = [];
+
+            if (uniquePhotos.length === 0) {
+                // Afficher un message si aucune photo dans cette catégorie
+                const emptyDiv = document.createElement('div');
+                emptyDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: white;">
+                        <h3>📂 Aucun contenu dans cette catégorie</h3>
+                        <p>Il n'y a pas encore de ${currentFilter === 'photo' ? 'photos' : 'vidéos'} à afficher.</p>
+                        ${isAdmin ? '<p>Utilisez le bouton "📸 Ajouter Photo" pour ajouter du contenu.</p>' : ''}
+                    </div>
+                `;
+                gallery.appendChild(emptyDiv);
+                return;
+            }
+
+            let imagesLoaded = 0;
+            let imagesFailed = 0;
+
+            // Charger les images une par une (uniques)
+            for (const photo of uniquePhotos) {
+                try {
+                    const element = await createImageElement(photo);
+                    gallery.appendChild(element);
+                    imagesLoaded++;
+                } catch (error) {
+                    console.error('Erreur lors du chargement de', photo.filename, error);
+                    imagesFailed++;
+                }
+            }
+
+            console.log(`✅ Galerie chargée: ${imagesLoaded} images affichées, ${imagesFailed} erreurs`);
+        }
+
+        // Supprimer une photo
+    // Nouvelle méthode de suppression d'image, uniquement si connecté
+    async function deletePhoto(photoId, filename, silent = false) {
+        // Vérifier si l'utilisateur est connecté
+        const sessionToken = localStorage.getItem('sessionToken');
+        if (!sessionToken) {
+            alert('❌ Vous devez être connecté pour supprimer une image.');
+            return;
+        }
+        if (!silent) {
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer la photo "${filename}" ?`)) {
+                return;
+            }
+        }
+        try {
+            const response = await fetch('/api/photos', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionToken}`
+                },
+                body: JSON.stringify({ id: photoId, filename: filename })
+            });
+            if (response.ok) {
+                // Supprimer de la liste locale
+                const index = realPhotos.findIndex(p => p.id === photoId);
+                if (index > -1) {
+                    realPhotos.splice(index, 1);
+                }
+                // Supprimer de la sélection si présent
+                const selIdx = selectedPhotos.indexOf(photoId);
+                if (selIdx > -1) selectedPhotos.splice(selIdx, 1);
+                if (!silent) {
+                    loadGallery();
+                    alert('✅ Photo supprimée avec succès');
+                }
+            } else {
+                const errorData = await response.json();
+                if (!silent) alert(`❌ Erreur: ${errorData.error || 'Erreur lors de la suppression'}`);
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            if (!silent) alert('❌ Erreur de connexion lors de la suppression');
+        }
+    }
+
+        // Ajouter une nouvelle photo
+        async function uploadPhoto(file) {
+    let originalText = '';
+    try {
+        const sessionToken = localStorage.getItem('sessionToken');
+        // Vérifier l'authentification
+        if (!sessionToken) {
+            alert('❌ Vous devez être connecté pour uploader des fichiers');
+            return;
+        }
+        // Créer FormData pour l'upload
+        const formData = new FormData();
+        formData.append('photo', file);
+        formData.append('title', file.name.replace(/\.[^/.]+$/, ""));
+        formData.append('category', 'upload');
+        // Afficher une indication de chargement
+        const uploadButton = document.querySelector('#add-photo-btn');
+        originalText = uploadButton ? uploadButton.textContent : '';
+        uploadButton.textContent = '⏳ Upload en cours...';
+        uploadButton.disabled = true;
+        const response = await fetch('/api/photos', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${sessionToken}`
+            },
+            body: formData // Pas de Content-Type pour FormData
+        });
+        if (response.ok) {
+            const result = await response.json();
+            // Ajouter à la liste locale
+            const newPhoto = {
+                id: result.photo.id,
+                filename: result.photo.filename,
+                title: result.photo.title,
+                category: result.photo.category
+            };
+            realPhotos.push(newPhoto);
+            // Recharger la galerie
+            loadGallery();
+            const fileType = file.type.startsWith('image/') ? 'Photo' : 'Vidéo';
+            alert(`✅ ${fileType} "${result.photo.title}" ajoutée avec succès !`);
+        } else {
+            const errorData = await response.json();
+            alert(`❌ Erreur: ${errorData.error || "Erreur lors de l'upload"}`);
+        }
+    } catch (error) {
+        console.error('Erreur upload:', error);
+        alert("❌ Erreur de connexion lors de l'upload");
+    } finally {
+        // Restaurer le bouton
+        const uploadButton = document.querySelector('#add-photo-btn');
+        if (uploadButton) {
+            uploadButton.textContent = originalText;
+            uploadButton.disabled = false;
+        }
+    }
+}
+
+        // Basculer le mode suppression
+        function toggleDeleteMode() {
+            deleteMode = !deleteMode;
+            selectedPhotos = [];
+            const toggleBtn = document.getElementById('toggle-delete-mode');
+            if (deleteMode) {
+                gallery.classList.add('delete-mode');
+                toggleBtn.textContent = '❌ Quitter le mode suppression';
+                toggleBtn.classList.add('active');
+            } else {
+                gallery.classList.remove('delete-mode');
+                toggleBtn.textContent = '🗑️ Mode suppression';
+                toggleBtn.classList.remove('active');
+            }
+            updateGroupDeleteBtnVisibility();
+        }
+
+        // Déconnexion administrateur
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                // Supprimer les données de session du localStorage
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('sessionToken');
+                localStorage.removeItem('is_admin');
+                localStorage.removeItem('user_nom');
+                localStorage.removeItem('user_email');
+                localStorage.removeItem('user_id');
+                
+                // Masquer le panneau d'administration
+                document.getElementById('admin-panel').classList.add('hidden');
+                
+                // Désactiver le mode suppression si actif
+                if (deleteMode) {
+                    toggleDeleteMode();
+                }
+                
+                console.log('👋 Déconnexion réussie');
+                alert('✅ Vous avez été déconnecté avec succès');
+                
+                // Optionnel: rediriger vers la page de connexion
+                // window.location.href = 'login.html';
+            }
+        }
+
+        // Événements du panneau d'administration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les références DOM
+            gallery = document.getElementById('gallery');
+            
+            // Vérifier le statut admin et charger la galerie
+            checkAdminStatus().then(() => {
+                loadGallery();
+            });
+            
+            // Bouton d'ajout de photo
+            document.getElementById('add-photo-btn').addEventListener('click', function() {
+                document.getElementById('photo-upload').click();
+            });
+
+            // Upload de fichier
+            document.getElementById('photo-upload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Vérifier le type de fichier
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'video/mp4', 'video/mov'];
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('❌ Type de fichier non supporté.\nFormats acceptés: JPG, PNG, GIF, MP4, MOV');
+                        return;
+                    }
+                    // Vérifier si le nom de fichier existe déjà (empêcher doublon)
+                    const exists = realPhotos.some(photo => photo.filename === file.name);
+                    if (exists) {
+                        alert('❌ Une image ou vidéo avec ce nom existe déjà dans la galerie.\nVeuillez renommer votre fichier avant de l\'ajouter.');
+                        return;
+                    }
+                    uploadPhoto(file);
+                }
+            });
+
+            // Bouton de mode suppression
+            document.getElementById('toggle-delete-mode').addEventListener('click', toggleDeleteMode);
+            
+            // Bouton de déconnexion
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            
+            // Charger le header
+            fetch('header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('navbar-placeholder').innerHTML = data;
+                })
+                .catch(err => console.log('Header non chargé'));
+
+                const images = [
+  // ... liste des images récupérées ...
+];
+
+// Filtre les doublons (par nom de fichier)
+const uniqueImages = [...new Set(images)];
+
+uniqueImages.forEach(img => {
+  // Toutes les photos supprimées
+  // document.write('<img src="images/' + img + '" alt="Photo">');
+});
+// Affiche la liste des images récupérées dans la console
+console.log('Images utilisées dans photographie.html :');
+console.log(uniqueImages);
+        });
+    </script>
+</body>
+</html>

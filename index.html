@@ -1,0 +1,1963 @@
+</ul>
+<script>
+// Affiche le bouton Statistiques si connecté, sinon le masque
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/session')
+      .then(r => r.json())
+      .then(data => {
+        var statsBtn = document.getElementById('navStatsBtn');
+        if (statsBtn) {
+          if (data.authenticated) {
+            statsBtn.style.display = 'inline-block';
+            statsBtn.classList.remove('disabled');
+            statsBtn.style.pointerEvents = '';
+            statsBtn.style.opacity = '';
+          } else {
+            statsBtn.style.display = 'none';
+          }
+        }
+      });
+});
+</script>
+<script>
+// Incrémente le compteur de clics sur tous les boutons Devis
+document.addEventListener('DOMContentLoaded', function() {
+    // Sélecteurs pour tous les boutons Devis (mailto et autres)
+    const devisBtns = document.querySelectorAll('.btn-devis, .btn-devis-mailto, #navDevisLink');
+    devisBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            fetch('/api/visiteurs/devis', { method: 'POST' });
+        });
+    });
+});
+</script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>PS Care – Association de Magie</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="images/miniature.png">
+    <meta property="og:image" content="https://www.magicpscare.com/images/miniature.png">
+    <meta property="og:title" content="Magic PS Care">
+    <meta property="og:description" content="Découvrez Magic PS Care, votre site magique !">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Magic PS Care",
+      "url": "https://www.magicpscare.com/",
+      "logo": "https://www.magicpscare.com/images/miniature.png"
+    }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lib/bootstrap.min.css">
+    <link rel="stylesheet" href="css/site.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/inline-fix.css">
+    <link rel="stylesheet" href="css/extra-fix.css">
+    <link rel="stylesheet" href="css/table-fix.css">
+    <style>
+    /* Agrandir les boutons Devis dans la section Tarifs */
+    .btn-devis-mailto.btn-devis-fix {
+        font-size: 1.1rem !important;
+        padding: 0.5rem 1.2rem !important;
+        border-radius: 1rem !important;
+        min-width: 100px;
+        min-height: 38px;
+    }
+    /* Taille fixe réduite pour les images du carousel */
+    .carousel-img {
+        max-height: 600px !important;
+        height: 600px !important;
+        width: 1000px !important;
+        object-fit: cover;
+        display: inline-block;
+    }
+    /* Table responsive fix */
+    .table-responsive { overflow-x: auto; }
+    .table { min-width: 600px; }
+    </style>
+<style>
+@media (min-width: 576px) {
+  .responsive-scale-wrapper {
+    transform: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box;
+  }
+</style>
+<style>
+/* Responsive mobile : réduction à 80% mais occupe toute la largeur */
+@media (max-width: 575px) {
+  #tarifs .row.g-4 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem !important;
+  }
+  #tarifs .col-12.col-md-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100%;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-bottom: 0.7rem !important;
+  }
+  #tarifs .card {
+    border-radius: 1.1rem !important;
+    background: #1a1333 !important;
+    box-shadow: 0 2px 8px #7c4dff22;
+    border: 1.5px solid #7c4dff33 !important;
+    margin-bottom: 0 !important;
+  }
+  #tarifs .card-title {
+    font-size: 1.01rem !important;
+    color: #ffd700 !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1.3 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em !important;
+    text-align: center !important;
+    padding: 0.2rem 0.1rem !important;
+  }
+  #tarifs .card-title-red, #tarifs .card-title-green, #tarifs .card-title-km {
+    font-size: 1.01rem !important;
+    font-weight: 700 !important;
+    color: #ff2d2d !important;
+    margin-left: 0.2rem;
+  }
+  #tarifs .card-title-green {
+    color: #00e676 !important;
+  }
+  #tarifs .card-title-km {
+    color: #ffd700 !important;
+  }
+  #tarifs .btn-devis-mailto, #tarifs .btn-devis {
+    width: 100%;
+    font-size: 1.08rem !important;
+    padding: 0.55rem 0 !important;
+    margin-top: 0.4rem !important;
+    margin-bottom: 0.2rem !important;
+    border-radius: 1.1rem !important;
+    background: #7c4dff !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px #7c4dff33;
+  }
+  #tarifs .btn-devis-mailto:active, #tarifs .btn-devis:active {
+    background: #5a2bbf !important;
+    color: #ffd700 !important;
+  }
+  #tarifs .card-body {
+    padding: 1.1rem 0.7rem 0.7rem 0.7rem !important;
+  }
+  #tarifs .tarifs-border-fix {
+    border-radius: 1.1rem !important;
+    background: #2a1a44 !important;
+    box-shadow: 0 2px 8px #7c4dff22;
+    padding: 0.7rem 0.2rem 0.2rem 0.2rem !important;
+  }
+  #tarifs .section-title {
+    font-size: 1.08rem !important;
+    text-align: center !important;
+    margin-bottom: 0.7rem !important;
+    margin-top: 0.5rem !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0.01em !important;
+    font-weight: 600 !important;
+    padding-left: 0.2rem !important;
+    padding-right: 0.2rem !important;
+    color: #ffd700 !important;
+    background: #2a1a44 !important;
+    border-radius: 0.7rem !important;
+    box-shadow: 0 2px 8px #7c4dff22;
+    display: block;
+  }
+  #tarifs .card-title {
+    word-break: break-word;
+  }
+  #tarifs .card {
+    margin-bottom: 0.7rem !important;
+  }
+  #tarifs .card:last-child {
+    margin-bottom: 0 !important;
+  }
+  #tarifs .card-title-red {
+    display: inline-block;
+    margin-left: 0.2rem;
+  }
+  #tarifs .card-title-green {
+    display: inline-block;
+    margin-left: 0.2rem;
+  }
+  #tarifs .card-title-km {
+    display: inline-block;
+    margin-left: 0.2rem;
+  }
+  #tarifs .card-title, #tarifs .card-title-red, #tarifs .card-title-green, #tarifs .card-title-km {
+    vertical-align: middle;
+  }
+  #tarifs .card-title {
+    margin-bottom: 0.3rem !important;
+  }
+  #tarifs .card-title + .btn-devis-mailto, #tarifs .card-title + .btn-devis {
+    margin-top: 0.2rem !important;
+  }
+  #tarifs .card-body {
+    text-align: center !important;
+  }
+  #tarifs .card-title {
+    margin-top: 0.2rem !important;
+  }
+  #tarifs .card-title {
+    padding-bottom: 0.2rem !important;
+  }
+  #tarifs .card-title {
+    border-bottom: 1px solid #7c4dff33;
+  }
+  #tarifs .card-title:last-child {
+    border-bottom: none;
+  }
+  #tarifs .card-title {
+    background: transparent !important;
+  }
+  #tarifs .card-title-red, #tarifs .card-title-green, #tarifs .card-title-km {
+    background: transparent !important;
+  }
+  /* ...existing code... */
+  .lead-magic-fix {
+      font-size: 15px !important;
+      line-height: 1.3 !important;
+  }
+  /* ...existing code... */  #tarifs .card-title {
+    color: #ffd700 !important;
+  }
+  #tarifs .card-title-red {
+    color: #ff2d2d !important;
+  }
+  #tarifs .card-title-green {
+    color: #00e676 !important;
+  }
+  #tarifs .card-title-km {
+    color: #ffd700 !important;
+  }
+  #tarifs .card-title {
+    font-weight: 700 !important;
+  }
+  #tarifs .card-title {
+    font-size: 1.01rem !important;
+  }
+  #tarifs .card {
+    border: 1.5px solid #7c4dff33 !important;
+  }
+  #tarifs .card {
+    background: #1a1333 !important;
+  }
+  #tarifs .tarifs-border-fix {
+    background: #2a1a44 !important;
+  }
+  #tarifs .card-title {
+    color: #ffd700 !important;
+  }
+  #tarifs .card-title-red {
+    color: #ff2d2d !important;
+  }
+  #tarifs .card-title-green {
+    color: #00e676 !important;
+  }
+  #tarifs .card-title-km {
+    color: #ffd700 !important;
+  }
+  #tarifs .card-title {
+    font-size: 1.01rem !important;
+  }
+  #tarifs .card {
+    border-radius: 1.1rem !important;
+  }
+  #tarifs .tarifs-border-fix {
+    border-radius: 1.1rem !important;
+  }
+  #tarifs .card {
+    box-shadow: 0 2px 8px #7c4dff22;
+  }
+  #tarifs .tarifs-border-fix {
+    box-shadow: 0 2px 8px #7c4dff22;
+  }
+  #tarifs .card {
+    margin-bottom: 0.7rem !important;
+  }
+  #tarifs .card:last-child {
+    margin-bottom: 0 !important;
+  }
+  #tarifs .card-body {
+    padding: 1.1rem 0.7rem 0.7rem 0.7rem !important;
+  }
+  #tarifs .card-title {
+    padding-bottom: 0.2rem !important;
+  }
+  #tarifs .card-title {
+    border-bottom: 1px solid #7c4dff33;
+  }
+  #tarifs .card-title:last-child {
+    border-bottom: none;
+  }
+  #tarifs .card-title {
+    background: transparent !important;
+  }
+  #tarifs .card-title-red, #tarifs .card-title-green, #tarifs .card-title-km {
+    background: transparent !important;
+  }
+}
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100vw !important;
+    min-width: 0 !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+  .responsive-scale-wrapper {
+    transform: scale(0.78);
+    transform-origin: top center;
+    width: 128.2vw;
+    min-width: 128.2vw;
+    max-width: 128.2vw;
+    margin-left: -14.1vw;
+    margin-right: -14.1vw;
+    box-sizing: border-box;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="responsive-scale-wrapper">
+    <div class="avatar-tw" id="avatarTW">TW</div>
+    <div class="avatar-menu" id="avatarMenu">
+        <button id="btnLogout">Déconnexion</button>
+        <button id="btnStats">Stats</button>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: transparent; box-shadow: none;">
+        <div class="custom-dropdown-menu-container">
+            <button id="customMenuBtn" class="custom-menu-btn">Menu &#9662;</button>
+            <ul id="customDropdownMenu" class="custom-dropdown-menu">
+                <li><a href="#accueil">Accueil</a></li>
+                <li><a href="#prestations">Prestations</a></li>
+                <li><a href="photographie.html">Photographie</a></li>
+                <li><a href="https://www.facebook.com/profile.php?id=61577612734844" target="_blank">Facebook</a></li>
+                <li><a href="#tarifs" id="navDevisLink">Devis</a></li>
+                <li><a href="#" id="openAvisModalBtn">Avis</a></li>
+                  <li><a href="statistiques/" id="navStatsBtn" style="display:none"><span style="color: red; font-weight: bold;">Statistiques</span></a></li>
+                <li><a href="login/" id="navLoginBtn">Spectateur - Se connecter</a></li>
+                  <li><a href="https://www.fr.freelancer.com/u/enzov5?frm=enzov5&sb=t" target="_blank">Créateur</a></li>
+                <li><a href="#" id="openLegalModalBtn">Information légales</a></li>
+</ul>
+
+<!-- Modale Informations légales -->
+<div id="legalModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0, 0, 0, 0.733);">
+  <div style="background:#4c49eb; margin:10% auto; padding:20px; border-radius:8px; width:90%; max-width:400px; position:relative;">
+    <span id="closeLegalModalBtn" style="position:absolute; top:10px; right:15px; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
+    <h2>Informations légales et juridiques</h2>
+    <p><span style="color: red;">N° de SIRET:</span> 990 225 252 00016</p>
+    <p><span style="color: red;">N° de SIREN:</span> 990 225 252</p>
+    <p><span style="color: red;">APE:</span> 90.01Z</p>
+    <p><span style="color: red;">N° RNA:</span> W 832 022 161</p>
+  </div>
+</div>
+        </ul>
+            </ul>
+        </div>
+    </nav>
+
+    <style>
+    .custom-dropdown-menu-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: inline-block;
+        margin: 0 1.5rem 0 0;
+        z-index: 1100;
+    }
+    .navbar {
+        position: relative;
+        min-height: 56px;
+    }
+    .custom-menu-btn {
+        background: #7c4dff;
+        color: #fff;
+        border: none;
+        padding: 0.6em 1.2em;
+        border-radius: 1em;
+        font-size: 1.1em;
+        cursor: pointer;
+        font-family: inherit;
+        box-shadow: 0 2px 8px #7c4dff33;
+        transition: background 0.2s;
+    }
+    .custom-menu-btn:hover, .custom-menu-btn:focus {
+        background: #5a2bbf;
+        outline: none;
+    }
+    .custom-dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 110%;
+        background: #7c4dff;
+        min-width: 200px;
+        box-shadow: 0 4px 16px #7c4dff33, 0 1px 4px #0002;
+        border-radius: 1em;
+        z-index: 1000;
+        padding: 0.5em 0;
+        margin: 0;
+        list-style: none;
+        font-size: 1.05em;
+    }
+    .custom-dropdown-menu li {
+        width: 100%;
+    }
+    .custom-dropdown-menu li a {
+        display: block;
+        padding: 0.7em 1.2em;
+        color: #fff;
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s;
+        border-radius: 0.7em;
+    }
+    .custom-dropdown-menu li a:hover {
+        background: #5a2bbf;
+        color: #ffd700;
+    }
+    .custom-dropdown-menu.show {
+        display: block;
+        animation: fadeInMenu 0.2s;
+    }
+    @keyframes fadeInMenu {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 991px) {
+        .custom-dropdown-menu-container {
+            width: 100%;
+            text-align: right;
+        }
+        .custom-dropdown-menu {
+            right: 0;
+            left: auto;
+            min-width: 160px;
+        }
+    }
+    </style>
+    <script>
+    // Menu déroulant JS pur + ouverture modale avis
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('customMenuBtn');
+        const menu = document.getElementById('customDropdownMenu');
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menu.classList.toggle('show');
+        });
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && e.target !== btn) {
+                menu.classList.remove('show');
+            }
+        });
+        // Accessibilité clavier
+        btn.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') menu.classList.remove('show');
+        });
+
+        // Bouton Avis dans le menu
+        const openAvisBtn = document.getElementById('openAvisModalBtn');
+        if (openAvisBtn) {
+            openAvisBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const avisModal = document.getElementById('avisModal');
+                if (avisModal) avisModal.style.display = 'flex';
+            });
+        }
+        // Fermeture modale avis
+        const closeAvisBtn = document.getElementById('closeAvisModal');
+        if (closeAvisBtn) {
+            closeAvisBtn.addEventListener('click', function() {
+                const avisModal = document.getElementById('avisModal');
+                if (avisModal) avisModal.style.display = 'none';
+            });
+        }
+        // Clic en dehors de la modale pour fermer
+        const avisModal = document.getElementById('avisModal');
+        if (avisModal) {
+            avisModal.addEventListener('click', function(e) {
+                if (e.target === avisModal) avisModal.style.display = 'none';
+            });
+        }
+        // Génération des étoiles dynamiques pour chaque .star-rating
+        document.querySelectorAll('.star-rating').forEach(function(container) {
+            container.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('span');
+                star.className = 'star inactive';
+                star.innerHTML = '★';
+                star.dataset.value = i;
+                star.tabIndex = 0;
+                star.setAttribute('role', 'button');
+                star.setAttribute('aria-label', i + ' étoile');
+                container.appendChild(star);
+            }
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('star')) {
+                    const value = parseInt(e.target.dataset.value);
+                    setStars(container, value);
+                    container.dataset.selected = value;
+                }
+            });
+            container.addEventListener('keydown', function(e) {
+                if (e.target.classList.contains('star')) {
+                    let value = parseInt(e.target.dataset.value);
+                    if (e.key === 'ArrowLeft' && value > 1) value--;
+                    if (e.key === 'ArrowRight' && value < 5) value++;
+                    setStars(container, value);
+                    container.dataset.selected = value;
+                }
+            });
+        });
+        function setStars(container, value) {
+            const stars = container.querySelectorAll('.star');
+            stars.forEach(function(star, idx) {
+                if (idx < value) {
+                    star.classList.remove('inactive');
+                } else {
+                    star.classList.add('inactive');
+                }
+            });
+        }
+        // Validation du formulaire d'avis
+        const avisForm = document.getElementById('avisForm');
+        if (avisForm) {
+            avisForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // On récupère la note de la première .star-rating (Qualité du spectacle)
+                const note = document.querySelector('.star-rating').dataset.selected || 0;
+                const nom = document.getElementById('avisNom').value;
+                const mail = document.getElementById('avisMail').value;
+                const commentaire = document.getElementById('avisCommentaire') ? document.getElementById('avisCommentaire').value : '';
+                if (note < 1) {
+                    alert('Merci de donner une note en étoiles.');
+                    return;
+                }
+                alert('Merci pour votre avis !\nNote : ' + note + ' étoiles\nNom : ' + nom + '\nCommentaire : ' + commentaire);
+                avisForm.reset();
+                setStars(document.querySelector('.star-rating'), 0);
+                document.getElementById('avisModal').style.display = 'none';
+            });
+        }
+    });
+    </script>
+    <header id="accueil" class="hero-section hero-section-fix d-flex align-items-center justify-content-center text-center header-title-high">
+        <div class="container">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1.2rem;">
+                <img src="aa/logo.png" alt="Logo Magic PS Care" style="height: 64px; width: auto; border-radius: 1rem; box-shadow: 0 2px 8px #7c4dff44;">
+                <h1 class="display-3 display-3-fix mb-3 title-high" style="width:auto; display:flex; justify-content:center; align-items:center; margin:0;">
+                    <span class="magic-title" style="display:block; width:100%; text-align:center;">Association Magic PS Care</span>
+                </h1>
+                <img src="aa/slogan.jpg" alt="Slogan Magic PS Care" style="height: 63px; width: auto; border-radius: 1rem; box-shadow: 0 2px 8px #7c4dff44; margin-top: -30px;">
+            </div>
+            <p class="lead mb-4 lead-magic-fix" style="font-size:28px;">
+            L’association du Pradet qui fait vivre la magie à travers spectacles, ateliers et solidarité.
+        </p>
+            <a href="#prestations" class="btn btn-magic btn-lg btn-zoom-anim btn-magic-fix" id="btnScrollPrestations">Découvrir nos Prestations</a>
+        </div>
+    </header>
+    <style>
+    /* Centrage du titre principal en haut */
+    .magic-title {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 0 auto;
+    }
+    /* Remonter le titre principal plus haut */
+    .header-title-high {
+        padding-top: 1.2rem !important;
+        padding-bottom: 0.5rem !important;
+        min-height: unset !important;
+    }
+    .title-high {
+        margin-top: 0 !important;
+        margin-bottom: 0.7rem !important;
+    }
+    @media (max-width: 575px) {
+        .header-title-high {
+            padding-top: 0.7rem !important;
+        }
+        .title-high {
+            margin-bottom: 0.5rem !important;
+        }
+        .lead-magic-fix {
+            font-size: 1.02rem !important;
+            line-height: 1.3 !important;
+        }
+        .section-qui-sommes-nous {
+        padding-top: 1.2rem !important;
+        padding-bottom: 0.7rem !important;
+    }
+    .qui-sommes-nous-container {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    .qui-sommes-nous-title {
+        font-size: 1.25rem !important;
+        margin-bottom: 0.7rem !important;
+        text-align: center !important;
+    }
+    .qui-sommes-nous-text {
+        font-size: 0.98rem !important;
+        line-height: 1.5 !important;
+        text-align: justify !important;
+        margin-bottom: 0.7rem !important;
+    }
+    /* Amélioration du tableau Nos Prestations Magiques sur mobile */
+    .table-responsive {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
+      margin-left: -0.5rem;
+      margin-right: -0.5rem;
+    }
+    .table {
+      min-width: 520px !important;
+      font-size: 0.92rem !important;
+    }
+    .table thead th, .table tbody td {
+      padding: 0.45rem 0.3rem !important;
+      vertical-align: top !important;
+    }
+    .table-bordered {
+      border-width: 1.5px !important;
+    }
+    .devis-btn-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.3rem;
+    }
+    .btn-devis, .btn-devis-mailto {
+      font-size: 0.98rem !important;
+      padding: 0.45rem 1.1rem !important;
+      border-radius: 0.9rem !important;
+      min-width: 80px;
+    }
+    .highlight-bg, .arrow-red, .texte-rouge {
+      font-size: 1rem !important;
+    }
+    .vertical-top-fix {
+      vertical-align: top !important;
+    }
+    .table-fixed {
+      table-layout: auto !important;
+    }
+    /* Réduction des marges pour le titre de section */
+    #prestations .section-title {
+      font-size: 1.15rem !important;
+      margin-bottom: 0.7rem !important;
+    }
+    /* Réduction de la taille des flèches et du texte dans le tableau */
+    .arrow-red {
+      font-size: 1.1em !important;
+      color: #ff2d2d !important;
+    }
+    .texte-rouge {
+      font-size: 1em !important;
+    }
+    /* Ajustement du conteneur de la table */
+    .table-responsive {
+      padding-bottom: 0.5rem;
+    }
+    /* Permettre le scroll horizontal doux */
+    .table-responsive::-webkit-scrollbar {
+      height: 6px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+      background: #7c4dff44;
+      border-radius: 3px;
+    }
+    }
+    </style>
+    <style>
+    /* Centrage du titre principal en haut */
+    .magic-title {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 0 auto;
+    }
+    </style>
+ <div id="carouselPrestations" class="mt-5 carousel-prestations-fix">
+    <div id="carousel-track" class="carousel-inner carousel-track-fix">
+        <img src="https://i.pinimg.com/736x/a6/1b/52/a61b52c07066d079cdb260a90a1fbfbf.jpg" class="carousel-img rounded-3" alt="Prestation 1">
+        <img src="https://i.pinimg.com/736x/76/9d/97/769d97d4113cff2d401105a0736e5e13.jpg" class="carousel-img rounded-3" alt="Prestation 2">
+        <img src="https://i.pinimg.com/736x/f5/d5/28/f5d528d47b221fab98883d8b8fdc2d58.jpg" class="carousel-img rounded-3" alt="Prestation 3">
+        <img src="https://i.pinimg.com/736x/a3/28/5d/a3285d950deecdfc0cd47553de684af0.jpg" class="carousel-img rounded-3" alt="Prestation 4">
+        <img src="https://i.pinimg.com/736x/73/31/c0/7331c0cd6276934dac322ae1a60f67e6.jpg" class="carousel-img rounded-3" alt="Prestation 4">
+    </div>
+</div>
+<script>
+// Carrousel horizontal fluide et infini façon "vidéo"
+(function() {
+    const track = document.getElementById('carousel-track');
+    const images = Array.from(track.querySelectorAll('img'));
+    const imgCount = images.length;
+    // On duplique toutes les images pour la boucle infinie
+    images.forEach(img => {
+        track.appendChild(img.cloneNode(true));
+    });
+
+    // Calcul de la largeur totale des images originales + gap
+    function getTotalWidth() {
+        let total = 0;
+        images.forEach(img => {
+            total += img.offsetWidth;
+        });
+        // Ajouter les gaps (gap * (imgCount - 1))
+        const gap = 16;
+        total += gap * (imgCount - 1);
+        return total;
+    }
+
+    let position = 0;
+    const speed = 1.2; // pixels par frame
+
+    function animate() {
+        position += speed;
+        track.style.transform = `translateX(-${position}px)`;
+        const totalWidth = getTotalWidth();
+        if (position >= totalWidth) {
+            track.style.transition = 'none';
+            position = 0;
+            track.style.transform = `translateX(0)`;
+            // Forcer le reflow pour réactiver la transition
+            void track.offsetWidth;
+            track.style.transition = 'none';
+        }
+        requestAnimationFrame(animate);
+    }
+
+    // Désactive la transition CSS pour un effet vidéo parfaitement fluide
+    track.style.transition = 'none';
+    // Attendre que les images soient chargées pour avoir la bonne largeur
+    window.addEventListener('load', animate);
+})();
+// ...existing code...
+// Modale Informations légales
+document.getElementById('openLegalModalBtn').onclick = function() {
+  document.getElementById('legalModal').style.display = 'block';
+};
+document.getElementById('closeLegalModalBtn').onclick = function() {
+  document.getElementById('legalModal').style.display = 'none';
+};
+window.onclick = function(event) {
+  var modal = document.getElementById('legalModal');
+  if (event.target == modal) {
+    modal.style.display = 'none';
+  }
+};
+</script>
+    <section id="projets" class="section py-5 section-qui-sommes-nous">
+        <div class="container qui-sommes-nous-container">
+            <h2 class="section-title mb-4 qui-sommes-nous-title">Qui Sommes Nous ?</h2>
+            <p class="lead mb-4 qui-sommes-nous-text">
+                L’Association Magic PS Care est bien plus qu’un collectif artistique ; c’est une aventure humaine dédiée à l’éveil et à la stimulation des sens et des esprits. Ancrée dans la tradition associative loi 1901 et basée au Pradet (83220), notre dynamique repose sur une conviction profonde : la magie a le pouvoir de transformer des vies.<br> Notre vision, "Magic Effects On Spirit", s’adresse autant aux enfants hospitalisés, qu’aux jeunes évoluant dans les maisons de l’enfance ainsi qu’aux personnes âgées en domicile ou en EHPAD.<br> Nous utilisons le language universel de la magie pour insuffler sourires, curiosités et émerveillement.
+            </p>
+            <p class="qui-sommes-nous-text">
+                Nous proposons des interventions diversifiées (évènements bénévoles possibles selon les principes mêmes de l'association):<br> 1) des
+            </p>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card bg-dark bg-opacity-75 border-0 h-100">
+                        <div class="card-body">
+                            <!-- contenu éventuel -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prestations" class="section py-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Nos Prestations Magiques/possibilités de bénévolat</h2>
+            <!-- Ajout de la modale personnalisée -->
+            <!-- Modale Devis actualisée -->
+<div id="devisModal">
+    <div id="devisModalContent">
+        <div class="devisModal-inner">
+            <button id="closeDevisModal">&times;</button>
+            <div class="devis-prestation-label">Choisissez votre prestation :</div>
+            <label for="prestationSelect" class="visually-hidden">Choisissez votre prestation</label>
+            <select id="prestationSelect" title="Choisissez votre prestation">
+                <option
+                <option value="Atelier close up dans les services hospitaliers">Atelier close up dans les services hospitaliers (15-30min, apprentissage, plaisir, petits patients)</option>
+                <option value="Spectacle CREPUSCULE MAGIQUE 2025">Spectacle "CREPUSCULE MAGIQUE 2025" (10-15 pers, 1h-1h15, histoire, musique, univers magique)</option>
+                <option value="Spectacle magie EHPAD et +">Spectacle magie EHPAD et + (270€)</option>
+                <option value="Club magie EHPAD">Club magie EHPAD (150€)</option>
+                <option value="Spectacle magie Privé adulte/enfant">Spectacle magie Privé adulte/enfant (200€ minimum)</option>
+                <option value="Mariage et événements spéciaux">Mariage et événements spéciaux (prix sur devis)</option>
+            </select>
+            <div class="devis-send-label">Envoyer votre demande via :</div>
+            <a id="gmailDevisBtn" href="#" target="_blank" class="devis-btn-gmail">Gmail</a>
+            <a id="outlookDevisBtn" href="#" target="_blank" class="devis-btn-outlook">Outlook</a>
+        </div>
+    </div>
+    <div class="devisModal-bg"></div>
+</div>
+            <div class="table-responsive" id="prestations-accordion-table">
+                <div class="accordion-prestations-mobile">
+                  <div class="accordion-prestation-item">
+                    <button class="accordion-prestation-title" type="button" aria-expanded="false">⮕ Atelier Close-Up et Apprentissage</button>
+                    <div class="accordion-prestation-content" style="display:none;">
+                      <div class="accordion-prestation-inner">
+                        <span class="arrow-red">⮕</span> Groupe maximum de 10 personnes<br><br>
+                        <span class="arrow-red">⮕</span> 45 minutes à 1h00<br><br>
+                        <span class="arrow-red">⮕</span> Histoire de la magie / comment susciter l’intérêt d’un public<br><br>
+                        <span class="arrow-red">⮕</span> Close-up par le magicien Ted Winter pour éveiller l’intérêt<br><br>
+                        <span class="arrow-red">⮕</span> Apprentissage d’1 ou 2 tours<br><br>
+                        <span class="arrow-red">⮕</span> Plusieurs modules de tours en fonction du public<br><br>
+                        <span class="arrow-red">⮕</span> Suivi de l’apprentissage / répétition / club de magie<br><br>
+                        <span class="arrow-red">⮕</span> Petit cadeau du tour à chaque participant<br><br>
+                        <span class="arrow-red">⮕</span> Spectacle en fin d’année des participants<br><br>
+                        <div class="devis-btn-container mt-2">
+                          <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(1, '', event)">Devis</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-prestation-item">
+                    <button class="accordion-prestation-title" type="button" aria-expanded="false">⮕ Atelier close up dans les services hospitaliers</button>
+                    <div class="accordion-prestation-content" style="display:none;">
+                      <div class="accordion-prestation-inner">
+                        <span class="arrow-red">⮕</span> Chambres des petits patients ou dans les services<br><br>
+                        <span class="arrow-red">⮕</span> 15 à 30 minutes<br><br>
+                        <span class="arrow-red">⮕</span> close up par le magicien Ted Winter pour éveiller l’intérêt et apporter du plaisir<br><br>
+                        <span class="arrow-red">⮕</span> Apprentissage d’1 ou 2 tours<br><br>
+                        <div class="devis-btn-container mt-2">
+                          <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(2, '', event)">Devis</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-prestation-item">
+                    <button class="accordion-prestation-title" type="button" aria-expanded="false">⮕ Spectacle "CREPUSCULE MAGIQUE 2025"</button>
+                    <div class="accordion-prestation-content" style="display:none;">
+                      <div class="accordion-prestation-inner">
+                        <span class="arrow-red">⮕</span> Groupe 10-15 personnes<br><br>
+                        <span class="arrow-red">⮕</span> 1h00 à 1h15<br><br>
+                        <span class="arrow-red">⮕</span>créé par le magicien Ted Winter<br><br>
+                        <span class="arrow-red">⮕</span> histoire en préambule au tour / 2-3 tours sur la même histoire<br><br>
+                        <span class="arrow-red">⮕</span> fond musical pour éveiller l’intérêt du public !<br><br>
+                        <span class="arrow-red">⮕</span> rôle d’acteur et de conteur<br><br>
+                        <span class="arrow-red">⮕</span> le tour de magie devient un prétexte pour créer un univers magique<br><br>
+                        <span class="arrow-red">⮕</span> Plusieurs styles de spectacles en fonction du public (enfants/adultes)<br><br>
+                        <div class="devis-btn-container mt-2">
+                          <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(3, '', event)">Devis</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Version desktop/tablette : tableau classique -->
+                <table class="table table-bordered align-middle text-center bg-dark bg-opacity-75 text-light table-fixed">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="vertical-top-fix">
+                                <br><span class="highlight-bg"><span class="arrow-red">⮕</span> <span class="texte-rouge">Atelier Close-Up et Apprentissage</span></span>
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Groupe maximum de 10 personnes
+                                <br>
+                                <br><span class="arrow-red">⮕</span> 45 minutes à 1h00 
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Histoire de la magie / comment susciter l’intérêt d’un public
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Close-up par le magicien Ted Winter pour éveiller l’intérêt
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Apprentissage d’1 ou 2 tours
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Plusieurs modules de tours en fonction du public
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Suivi de l’apprentissage / répétition / club de magie
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Petit cadeau du tour à chaque participant
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Spectacle en fin d’année des participants
+                                <br>
+                                <div class="devis-btn-container">
+                                  <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(1, '', event)">Devis</a>
+                                </div>
+                            </td>
+                            <td class="vertical-top-fix">
+                                <br><span class="highlight-bg"><span class="arrow-red">⮕</span> <span class="texte-rouge">Atelier close up dans les services hospitaliers</span></span>
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Chambres des petits patients ou dans les services
+                                <br>
+                                <br><span class="arrow-red">⮕</span> 15 à 30 minutes
+                                <br>
+                                <br><span class="arrow-red">⮕</span> close up par le magicien Ted Winter pour éveiller l’intérêt et apporter du plaisir
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Apprentissage d’1 ou 2 tours
+                                <br>
+                                <div class="devis-btn-container">
+                                  <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(2, '', event)">Devis</a>
+                                </div>
+                            </td>
+                            <td class="vertical-top-fix">
+                                <br><span class="highlight-bg"><span class="arrow-red">⮕</span> <span class="texte-rouge">Spectacle "CREPUSCULE MAGIQUE 2025"</span></span>
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Groupe 10-15 personnes
+                                <br>
+                                <br><span class="arrow-red">⮕</span> 1h00 à 1h15
+                                <br>
+                                <br><span class="arrow-red">⮕</span>crée par le magicien Ted Winter
+                                <br>
+                                <br><span class="arrow-red">⮕</span> histoire en préambule au tour / 2-3 tours sur la même histoire
+                                <br>
+                                <br><span class="arrow-red">⮕</span> fond musical pour éveiller l’intérêt du public !
+                                <br>
+                                <br><span class="arrow-red">⮕</span> rôle d’acteur et de conteur
+                                <br>
+                                <br><span class="arrow-red">⮕</span> le tour de magie devient un prétexte pour créer un univers magique
+                                <br>
+                                <br><span class="arrow-red">⮕</span> Plusieurs styles de spectacles en fonction du public (enfants/adultes)
+                                <br>
+                                <div class="devis-btn-container">
+                                  <a href="#" class="btn btn-devis devis-btn-fix" type="button" onclick="openMailChoice(3, '', event)">Devis</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <link rel="stylesheet" href="css/devis-fix.css">
+    <style>
+      /* Modale avis professionnelle */
+      #avisModal {
+        display: none;
+        position: fixed;
+        z-index: 3000;
+        left: 0; top: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(24,20,44,0.92);
+        align-items: center;
+        justify-content: center;
+        animation: avis-fadein 0.3s;
+      }
+      @keyframes avis-fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .avis-modal-content {
+        background: linear-gradient(135deg, #fff 0%, #f7e7ff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px #7c4dff55, 0 2px 8px #0002;
+        max-width: 410px;
+        width: 96%;
+        margin: auto;
+        padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+        position: relative;
+        animation: avis-popin 0.4s cubic-bezier(.4,2,.6,1);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      @keyframes avis-popin {
+        0% { transform: scale(0.85); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .avis-modal-header {
+        text-align: center;
+        margin-bottom: 1.2rem;
+      }
+      .avis-modal-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 0.3rem;
+        filter: drop-shadow(0 2px 8px #ffd70088);
+      }
+      .avis-modal-header h2 {
+        font-size: 1.6rem;
+        color: #7c4dff;
+        font-family: 'Cinzel Decorative', serif;
+        margin-bottom: 0.2rem;
+        letter-spacing: 1px;
+      }
+      .avis-modal-subtitle {
+        font-size: 1.05rem;
+        color: #381a5a;
+        margin-bottom: 0.2rem;
+        font-weight: 500;
+      }
+      .avis-close-btn {
+        position: absolute;
+        top: 14px; right: 18px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #7c4dff;
+        cursor: pointer;
+        transition: color 0.2s;
+        z-index: 10;
+      }
+      .avis-close-btn:hover {
+        color: #ff2d2d;
+      }
+      .avis-form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        margin-bottom: 0.7rem;
+      }
+      .avis-label {
+        font-weight: bold;
+        color: #2d1a3a;
+        font-size: 1.08rem;
+        margin-bottom: 0.1rem;
+      }
+      .avis-input, .avis-textarea {
+        background: #f3eaff;
+        border: 1.5px solid #7c4dff;
+        color: #2d1a3a;
+        border-radius: 0.7rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 1.05rem;
+        margin-bottom: 0.1rem;
+        transition: border 0.2s, box-shadow 0.2s;
+        /* Ajout pour forcer la couleur du texte lors de la saisie */
+        caret-color: #181c2b;
+      }
+      .avis-input:focus, .avis-textarea:focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 0 2px #ffd70044;
+        outline: none;
+        background: #fff;
+        color: #181c2b; /* Texte noir lors de la saisie */
+      }
+      .avis-textarea {
+        min-height: 60px;
+        resize: vertical;
+      }
+      .avis-btn {
+        margin-top: 0.5rem;
+        width: 100%;
+        font-size: 1.15rem !important;
+        border-radius: 1.2rem;
+        box-shadow: 0 2px 12px #ffd70033;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .star-rating {
+        font-size: 2rem;
+        color: #ffd700;
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+        margin-bottom: 0.1rem;
+      }
+      .star-rating .star {
+        transition: color 0.2s, transform 0.15s;
+        display: inline-block;
+        margin-right: 2px;
+      }
+      .star-rating .star.inactive {
+        color: #e0dcdc;
+      }
+      .star-rating .star:hover,
+      .star-rating .star:focus {
+        color: #ff2d2d;
+        transform: scale(1.18);
+      }
+      #moyenneStars {
+        font-size: 1.3rem;
+        color: #ff9800;
+        font-weight: bold;
+        background: #fffbe7;
+        border-radius: 0.7rem;
+        padding: 0.7rem 0.5rem 0.5rem 0.5rem;
+        margin-top: 0.7rem;
+        box-shadow: 0 2px 8px #ffd70022;
+      }
+      @media (max-width: 575px) {
+        #devisModal {
+          display: none;
+          position: fixed !important;
+          left: 0; top: 0;
+          width: 100vw !important;
+          height: 100vh !important;
+          min-width: 100vw !important;
+          min-height: 100vh !important;
+          max-width: 100vw !important;
+          max-height: 100vh !important;
+          background: rgba(24,20,44,0.97) !important;
+          align-items: center !important;
+          justify-content: center !important;
+          z-index: 4000 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow-y: auto !important;
+        }
+        #devisModal.devis-zoom-in {
+          animation: devisZoomIn 0.35s cubic-bezier(.4,1.6,.6,1) both;
+        }
+        #devisModalContent {
+          width: 100vw !important;
+          min-width: 100vw !important;
+          max-width: 100vw !important;
+          height: 100vh !important;
+          min-height: 100vh !important;
+          max-height: 100vh !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          background: none !important;
+          box-shadow: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .devisModal-inner {
+          width: 94vw !important;
+          max-width: 98vw !important;
+          min-width: 0 !important;
+          border-radius: 1.2rem !important;
+          background: #1976d200 !important; /* bleu vif, modifiez si besoin */
+          box-shadow: none !important;
+          padding: 2.2rem 0.7rem 1.2rem 0.7rem !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          position: absolute !important;
+          left: 50% !important;
+          top: 50% !important;
+          transform: translate(-50%, -50%) !important;
+          min-height: 60vh !important;
+        }
+        /* Animation zoom pour la modale devis */
+        @keyframes devisZoomIn {
+          0% {
+            opacity: 0;
+            transform: scale(0.85);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        #closeDevisModal {
+          position: absolute !important;
+          top: 12px !important;
+          right: 18px !important;
+          font-size: 2.1rem !important;
+          color: #7c4dff !important;
+          background: none !important;
+          border: none !important;
+          z-index: 10 !important;
+          cursor: pointer !important;
+        }
+        #closeDevisModal:hover {
+          color: #ff2d2d !important;
+        }
+        .devis-prestation-label, .devis-send-label {
+          font-size: 1.08rem !important;
+          text-align: center !important;
+          margin-bottom: 0.7rem !important;
+          color: #7c4dff !important;
+          font-weight: 600 !important;
+        }
+        #prestationSelect {
+          width: 100% !important;
+          font-size: 1.01rem !important;
+          margin-bottom: 1.1rem !important;
+          border-radius: 0.8rem !important;
+          padding: 0.6rem 0.7rem !important;
+          border: 1.5px solid #7c4dff !important;
+          background: #f3eaff !important;
+          color: #2d1a3a !important;
+        }
+        .devis-btn-gmail, .devis-btn-outlook {
+          width: 100%;
+          font-size: 1.12rem !important;
+          padding: 0.7rem 0 !important;
+          margin-top: 0.5rem !important;
+          margin-bottom: 0.2rem !important;
+          border-radius: 1.1rem !important;
+          background: #7c4dff !important;
+          color: #fff !important;
+          font-weight: 600 !important;
+          box-shadow: 0 2px 8px #7c4dff33;
+          text-align: center !important;
+          display: block !important;
+          text-decoration: none !important;
+        }
+        .devis-btn-gmail:active, .devis-btn-outlook:active {
+          background: #5a2bbf !important;
+          color: #ffd700 !important;
+        }
+      }
+      @media (max-width: 575px) {
+        .avis-modal-content {
+          padding: 1.2rem 0.5rem 1rem 0.5rem;
+        }
+        .avis-modal-header h2 {
+          font-size: 1.15rem;
+        }
+        .avis-modal-icon {
+          width: 36px; height: 36px;
+        }
+      }
+    </style>
+<style>
+@media (max-width: 575px) {
+  .accordion-prestations-mobile {
+    width: 100%;
+    margin: 0 auto 1.2rem auto;
+    display: block !important;
+  }
+  .accordion-prestation-item {
+    margin-bottom: 0.7rem;
+    border-radius: 1.1rem;
+    background: #1a1333;
+    box-shadow: 0 2px 8px #7c4dff22;
+    overflow: hidden;
+  }
+  .accordion-prestation-title {
+    width: 100%;
+    background: #7c4dff;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.1rem;
+    font-size: 1.08rem;
+    font-weight: bold;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    border-radius: 1.1rem 1.1rem 0 0;
+    transition: background 0.2s;
+  }
+  .accordion-prestation-title[aria-expanded="true"] {
+    background: #5a2bbf;
+    color: #ffd700;
+  }
+  .accordion-prestation-content {
+    background: #2a1a44;
+    color: #fff;
+    padding: 0.7rem 1.1rem 0.7rem 1.1rem;
+    font-size: 0.97rem;
+    border-radius: 0 0 1.1rem 1.1rem;
+    animation: fadeInAccordion 0.25s;
+  }
+  @keyframes fadeInAccordion {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+</style>
+<style>
+@media (min-width: 576px) {
+  .accordion-prestations-mobile {
+    display: none !important;
+  }
+  #prestations-accordion-table .table {
+    display: table !important;
+  }
+}
+@media (max-width: 575px) {
+  #prestations-accordion-table .table {
+    display: none !important;
+  }
+}
+</style>
+<script>
+// Accordéon mobile pour Nos Prestations Magiques
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.matchMedia('(max-width: 575px)').matches) {
+    document.querySelectorAll('.accordion-prestation-title').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        // Ferme tous les autres
+        document.querySelectorAll('.accordion-prestation-title').forEach(function(otherBtn) {
+          otherBtn.setAttribute('aria-expanded', 'false');
+        });
+        document.querySelectorAll('.accordion-prestation-content').forEach(function(content) {
+          content.style.display = 'none';
+        });
+        // Ouvre si ce n'était pas déjà ouvert
+        if (!expanded) {
+          btn.setAttribute('aria-expanded', 'true');
+          btn.nextElementSibling.style.display = 'block';
+        }
+      });
+    });
+  }
+});
+</script>
+    <div class="container my-5" id="tarifs">
+        <h2 class="section-title mb-4 text-center">Tarifs des prestations de l'association année 2025</h2>
+        <div class="tarifs-border-fix">
+            <div class="row g-4">
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                Tarifs spectacle magie EHPAD <span class="card-title-red">à partir de 270€</span>
+                                <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
+                                    type="button"
+                                    data-mail-subject="Demande de devis pour spectacle magie EHPAD"
+                                    onclick="openMailChoice(3, this.getAttribute('data-mail-subject'), event)">
+                                    Devis
+                                </button>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                Tarifs club magie EHPAD <span class="card-title-red">à partir de 150€</span>
+                                <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
+                                    type="button"
+                                    data-mail-subject="Demande de devis pour club magie EHPAD"
+                                    onclick="openMailChoice(3, this.getAttribute('data-mail-subject'), event)">
+                                    Devis
+                                </button>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                Tarifs spectacle magie Privé adulte/enfant Minimum <span class="card-title-red">à partir de 200€</span>
+                                <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
+                                    type="button"
+                                    data-mail-subject="Demande de devis pour spectacle magie Privé adulte/enfant"
+                                    onclick="openMailChoice(3, this.getAttribute('data-mail-subject'), event)">
+                                    Devis
+                                </button>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <span class="card-title-white">Devis pour mariages, anniversaires et autres événements</span>
+                            <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
+                                type="button"
+                                data-mail-subject="Demande de devis pour mariage et événements spéciaux"
+                                onclick="openMailChoice(3, this.getAttribute('data-mail-subject'), event)">
+                                Devis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                        PS : * Déclaration SACEM faite/payée par l’association<span class="card-title-green"> 70€</span>
+                            </h3>
+                    </div>
+                    <div class="col-12 col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                        indemnité kilométrique pour les trajets dépassant les <span class="card-title-km">15 kilomètres</span> autour de Toulon
+                            </h3>
+                    </div>
+            <!-- Trois bandes horizontales rouges modifiables, même épaisseur -->
+            <!-- Bande noire 1 (ligne horizontale décorative) -->
+            <div id="bande-rouge-1" class="bande-rouge-fix"></div>
+            <!-- Bande noire 2 (ligne horizontale décorative) -->
+            <div id="bande-rouge-2" class="bande-rouge-fix"></div>
+            <!-- Bande noire 5 (ligne horizontale décorative) -->
+            <div id="bande-rouge-5" class="bande-rouge-fix"></div>
+        </div>
+    </div>
+    <div class="container my-5 tarifs-container-fix">
+        <h2 class="section-title mb-3 text-center">Membres de l'association</h2>
+        <ul class="list-group list-group-flush text-start membres-list">
+            <li class="list-group-item bg-transparent">Président: Franck VERCELLOTTI</li>
+            <br>
+            <li class="list-group-item bg-transparent">Secrétaire: Marion FROGER</li>
+            <br>
+            <li class="list-group-item bg-transparent">Trésorier: Pascal SIBOUR</li>
+        </ul>
+    </div>
+
+    <!-- ======= DÉBUT DU BLOC 'TOUS LES AVIS' ======= -->
+    <!-- Pour changer l'emplacement d'affichage des avis, déplacez ce bloc où vous le souhaitez dans la page -->
+    <!-- Bloc 'Tous les avis' : le tableau des commentaires avec pagination commence ici -->
+    <!-- Tableau des avis (commentaires) -->
+    <div class="container my-5" id="avisTableContainer">
+      <h2 class="section-title mb-4 text-center">Tous les avis</h2>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center bg-dark bg-opacity-75 text-light" id="avisTable">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Note</th>
+              <th>Commentaire</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Les avis seront insérés ici dynamiquement -->
+          </tbody>
+        </table>
+      </div>
+      <nav>
+        <ul class="pagination justify-content-center" id="avisPagination"></ul>
+      </nav>
+    </div>
+
+    <!-- ======= FIN DU BLOC 'TOUS LES AVIS' ======= -->
+<script>
+// --- Gestion du tableau des avis avec pagination via API Node.js ---
+document.addEventListener('DOMContentLoaded', function() {
+  const avisTableBody = document.querySelector('#avisTable tbody');
+  const avisPagination = document.getElementById('avisPagination');
+  const AVIS_PAR_PAGE = 10;
+  let avisList = [];
+  let totalPages = 1;
+  let currentPage = 1;
+
+  // Récupère la liste des avis depuis l'API
+  async function fetchAvisList() {
+    try {
+      const res = await fetch('/api/avis');
+      if (!res.ok) throw new Error('Erreur API');
+      avisList = await res.json();
+    } catch (e) {
+      avisList = [];
+    }
+    totalPages = Math.ceil(avisList.length / AVIS_PAR_PAGE) || 1;
+  }
+
+  function renderAvisTable(page = 1) {
+    const start = (page - 1) * AVIS_PAR_PAGE;
+    const end = start + AVIS_PAR_PAGE;
+    const avisToShow = avisList.slice(start, end);
+    avisTableBody.innerHTML = '';
+    if (avisToShow.length === 0) {
+      avisTableBody.innerHTML = '<tr><td colspan="3">Aucun avis pour le moment.</td></tr>';
+    } else {
+      avisToShow.forEach(avis => {
+        avisTableBody.innerHTML += `<tr><td>${escapeHtml(avis.nom)}</td><td>${renderStars(avis.note)}</td><td>${escapeHtml(avis.commentaire)}</td></tr>`;
+      });
+    }
+    renderPagination(page, totalPages);
+  }
+
+  function renderStars(note) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+      stars += `<span style="color:${i <= note ? '#ffd700' : '#e0dcdc'};font-size:1.2em;">★</span>`;
+    }
+    return stars;
+  }
+
+  function renderPagination(current, total) {
+    avisPagination.innerHTML = '';
+    if (total <= 1) return;
+    for (let i = 1; i <= total; i++) {
+      const li = document.createElement('li');
+      li.className = 'page-item' + (i === current ? ' active' : '');
+      const a = document.createElement('a');
+      a.className = 'page-link';
+      a.href = '#';
+      a.textContent = i;
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        currentPage = i;
+        renderAvisTable(i);
+      });
+      li.appendChild(a);
+      avisPagination.appendChild(li);
+    }
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c];
+    });
+  }
+
+  // Ajout d'un avis via l'API lors de la soumission du formulaire
+  const avisForm = document.getElementById('avisForm');
+  if (avisForm) {
+    avisForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      // Additionne les 3 notes si elles existent, sinon prend la première .star-rating
+      let note = 0;
+      const stars = document.querySelectorAll('.star-rating');
+      if (stars.length >= 3) {
+        note = 0;
+        stars.forEach(s => {
+          note += parseInt(s.dataset.selected || 0);
+        });
+        note = Math.round(note / 3); // Moyenne sur 5
+      } else {
+        note = parseInt(document.querySelector('.star-rating').dataset.selected || 0);
+      }
+      const nom = document.getElementById('avisNom') ? document.getElementById('avisNom').value : '';
+      const commentaire = document.getElementById('avisCommentaire') ? document.getElementById('avisCommentaire').value : '';
+      if (note < 1) {
+        alert('Merci de donner une note en étoiles.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/avis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom, note, commentaire })
+        });
+        if (!res.ok) throw new Error('Erreur lors de l\'envoi de l\'avis');
+        avisForm.reset();
+        document.querySelectorAll('.star-rating').forEach(s => s.dataset.selected = 0);
+        await refreshAvis();
+        document.getElementById('avisModal').style.display = 'none';
+        alert('Merci pour votre avis !');
+      } catch (err) {
+        alert('Erreur lors de l\'envoi de l\'avis. Merci de réessayer plus tard.');
+      }
+    });
+  }
+
+  // Rafraîchit la liste des avis depuis l'API et met à jour le tableau
+  async function refreshAvis() {
+    await fetchAvisList();
+    renderAvisTable(1);
+    currentPage = 1;
+  }
+
+  // Initialisation du tableau à l'ouverture de la page
+  (async function() {
+    await refreshAvis();
+  })();
+});
+</script>
+
+    <!-- Modale Avis -->
+    <div id="avisModal" class="avis-modal-bg-fix">
+      <div class="avis-modal-content">
+        <button id="closeAvisModal" class="avis-close-btn" aria-label="Fermer">&times;</button>
+        <div class="avis-modal-header">
+          <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="Avis" class="avis-modal-icon">
+          <h2 class="mb-2">Donnez votre avis</h2>
+          <div class="avis-modal-subtitle">Votre retour nous aide à progresser&nbsp;!</div>
+        </div>
+        <form id="avisForm">
+          <div class="mb-2 avis-form-row">
+            <input type="text" id="avisNom" name="avisNom" class="form-control avis-input" placeholder="Votre nom" required>
+            <input type="email" id="avisMail" name="avisMail" class="form-control avis-input" placeholder="Votre e-mail" required>
+          </div>
+          <div class="mb-2 avis-form-row">
+            <div class="avis-label">Qualité du spectacle</div>
+            <div class="star-rating" data-note="note1"></div>
+          </div>
+          <div class="mb-2 avis-form-row">
+            <div class="avis-label">Professionnalisme</div>
+            <div class="star-rating" data-note="note2"></div>
+          </div>
+          <div class="mb-2 avis-form-row">
+            <div class="avis-label">Réactivité</div>
+            <div class="star-rating" data-note="note3"></div>
+          </div>
+          <div class="mb-2 avis-form-row">
+            <textarea id="avisCommentaire" name="avisCommentaire" class="form-control avis-textarea" placeholder="Votre commentaire (optionnel)" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-magic btn-lg avis-btn">Envoyer</button>
+        </form>
+        <div class="moyenne text-center mt-3 moyenne-hidden" id="moyenneStars"></div>
+      </div>
+    </div>
+    <link rel="stylesheet" href="css/avis-fix.css">
+    <style>
+      /* Modale avis professionnelle */
+      #avisModal {
+        display: none;
+        position: fixed;
+        z-index: 3000;
+        left: 0; top: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(24,20,44,0.92);
+        align-items: center;
+        justify-content: center;
+        animation: avis-fadein 0.3s;
+      }
+      @keyframes avis-fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .avis-modal-content {
+        background: linear-gradient(135deg, #fff 0%, #f7e7ff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px #7c4dff55, 0 2px 8px #0002;
+        max-width: 410px;
+        width: 96%;
+        margin: auto;
+        padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+        position: relative;
+        animation: avis-popin 0.4s cubic-bezier(.4,2,.6,1);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      @keyframes avis-popin {
+        0% { transform: scale(0.85); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .avis-modal-header {
+        text-align: center;
+        margin-bottom: 1.2rem;
+      }
+      .avis-modal-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 0.3rem;
+        filter: drop-shadow(0 2px 8px #ffd70088);
+      }
+      .avis-modal-header h2 {
+        font-size: 1.6rem;
+        color: #7c4dff;
+        font-family: 'Cinzel Decorative', serif;
+        margin-bottom: 0.2rem;
+        letter-spacing: 1px;
+      }
+      .avis-modal-subtitle {
+        font-size: 1.05rem;
+        color: #381a5a;
+        margin-bottom: 0.2rem;
+        font-weight: 500;
+      }
+      .avis-close-btn {
+       
+        position: absolute;
+        top: 14px; right:  18px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #7c4dff;
+        cursor: pointer;
+        transition: color 0.2s;
+        z-index: 10;
+      }
+      .avis-close-btn:hover {
+        color: #ff2d2d;
+      }
+      .avis-form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        margin-bottom: 0.7rem;
+      }
+      .avis-label {
+        font-weight: bold;
+        color: #2d1a3a;
+        font-size: 1.08rem;
+        margin-bottom: 0.1rem;
+      }
+      .avis-input, .avis-textarea {
+        background: #f3eaff;
+        border: 1.5px solid #7c4dff;
+        color: #2d1a3a;
+        border-radius: 0.7rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 1.05rem;
+        margin-bottom: 0.1rem;
+        transition: border 0.2s, box-shadow 0.2s;
+        /* Ajout pour forcer la couleur du texte lors de la saisie */
+        caret-color: #181c2b;
+      }
+      .avis-input:focus, .avis-textarea:focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 0 2px #ffd70044;
+        outline: none;
+        background: #fff;
+        color: #181c2b; /* Texte noir lors de la saisie */
+      }
+      .avis-textarea {
+        min-height: 60px;
+        resize: vertical;
+      }
+      .avis-btn {
+        margin-top: 0.5rem;
+        width: 100%;
+        font-size: 1.15rem !important;
+        border-radius: 1.2rem;
+        box-shadow: 0 2px 12px #ffd70033;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .star-rating {
+        font-size: 2rem;
+        color: #ffd700;
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+        margin-bottom: 0.1rem;
+      }
+      .star-rating .star {
+        transition: color 0.2s, transform 0.15s;
+        display: inline-block;
+        margin-right: 2px;
+      }
+      .star-rating .star.inactive {
+        color: #e0dcdc;
+      }
+      .star-rating .star:hover,
+      .star-rating .star:focus {
+        color: #ff2d2d;
+        transform: scale(1.18);
+      }
+      #moyenneStars {
+        font-size: 1.3rem;
+        color: #ff9800;
+        font-weight: bold;
+        background: #fffbe7;
+        border-radius: 0.7rem;
+        padding: 0.7rem 0.5rem 0.5rem 0.5rem;
+        margin-top: 0.7rem;
+        box-shadow: 0 2px 8px #ffd70022;
+      }
+      @media (max-width: 575px) {
+        .avis-modal-content {
+          padding: 1.2rem 0.5rem 1rem 0.5rem;
+        }
+        .avis-modal-header h2 {
+          font-size: 1.15rem;
+        }
+        .avis-modal-icon {
+          width: 36px; height: 36px;
+        }
+      }
+    </style>
+    <script>
+// Variable qui indique si l'utilisateur est connecté (true = admin, false = spectateur)
+let isLoggedIn = false;
+let isAdmin = false;
+
+// Met à jour le bouton de connexion/déconnexion dans la navbar selon l'état de connexion
+function updateNavbarLogin() {
+    const navLoginBtn = document.getElementById('navLoginBtn');
+    if (isLoggedIn && isAdmin) {
+        navLoginBtn.textContent = 'Admin - Déconnexion'; // Change le texte du bouton
+        navLoginBtn.href = '#'; // Empêche la navigation
+        navLoginBtn.onclick = function(e) {
+            e.preventDefault();
+            // Utilise la fonction centralisée de déconnexion
+            if (typeof performLogout === 'function') {
+                performLogout();
+            } else {
+                // Fallback amélioré
+                console.log('⚠️ performLogout not found, using fallback');
+                fetch('/api/logout', { method: 'POST', credentials: 'include' })
+                    .then(() => {
+                        localStorage.removeItem('token');
+                        sessionStorage.clear();
+                        isLoggedIn = false;
+                        avatarTW.style.display = 'none';
+                        avatarMenu.style.display = 'none';
+                        updateNavbarLogin();
+                        window.location.href = 'index.html';
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la déconnexion:', error);
+                        // Force la déconnexion même en cas d'erreur
+                        localStorage.removeItem('token');
+                        window.location.href = 'index.html';
+                    });
+            }
+        };
+    } else {
+        navLoginBtn.textContent = 'Spectateur - Se connecter'; // Affiche "Spectateur" si non connecté
+        navLoginBtn.href = 'login.html'; // Redirige vers la page de connexion
+        navLoginBtn.onclick = null;
+    }
+}
+
+// Affichage du menu utilisateur (avatar) au survol ou au clic
+const avatarTW = document.getElementById('avatarTW'); // Le rond "TW" en haut de la page
+const avatarMenu = document.getElementById('avatarMenu'); // Le menu qui s'affiche au survol ou au clic
+let avatarMenuTimeout = null; // Timer pour masquer le menu après 5 secondes
+
+// Affiche le menu quand la souris passe sur le rond
+avatarTW.addEventListener('mouseenter', () => {
+    avatarMenu.style.display = 'flex';
+});
+// Masque le menu quand la souris quitte le rond (sauf si elle va sur le menu)
+avatarTW.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+        if (!avatarMenu.matches(':hover')) avatarMenu.style.display = 'none';
+    }, 100);
+});
+// Masque le menu quand la souris quitte le menu
+avatarMenu.addEventListener('mouseleave', () => {
+    avatarMenu.style.display = 'none';
+});
+// Garde le menu affiché si la souris est dessus
+avatarMenu.addEventListener('mouseenter', () => {
+    avatarMenu.style.display = 'flex';
+});
+
+// Affiche le menu pendant 5 secondes si on clique sur le rond
+avatarTW.addEventListener('click', () => {
+    avatarMenu.style.display = 'flex';
+    if (avatarMenuTimeout) clearTimeout(avatarMenuTimeout);
+    avatarMenuTimeout = setTimeout(() => {
+        avatarMenu.style.display = 'none';
+    }, 5000);
+});
+
+// Déconnexion via le bouton du menu utilisateur : utilise la fonction centralisée
+document.getElementById('btnLogout').addEventListener('click', function() {
+    if (typeof performLogout === 'function') {
+        performLogout();
+    } else {
+        // Fallback amélioré
+        console.log('⚠️ performLogout not found, using fallback');
+        fetch('/api/logout', { method: 'POST', credentials: 'include' })
+            .then(() => {
+                localStorage.removeItem('token');
+                sessionStorage.clear();
+                isLoggedIn = false;
+                avatarTW.style.display = 'none';
+                avatarMenu.style.display = 'none';
+                updateNavbarLogin();
+                window.location.href = 'index.html';
+            })
+            .catch(error => {
+                console.error('Erreur lors de la déconnexion:', error);
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            });
+    }
+});
+
+// Au chargement de la page, vérifie la session pour déterminer le rôle (admin/spectateur)
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('🔍 Vérification du statut utilisateur...');
+    
+    // 1. Vérifie le localStorage pour la session
+    const sessionToken = localStorage.getItem('sessionToken');
+    const storedIsAdmin = localStorage.getItem('is_admin');
+    const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
+    
+    if (sessionToken && storedIsLoggedIn === 'true') {
+        // Utilisateur connecté = Administrateur
+        isLoggedIn = true;
+        isAdmin = storedIsAdmin === 'true';
+        console.log('✅ Session administrateur détectée');
+        
+        // Affiche l'interface admin
+        avatarTW.style.display = 'block';
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+        
+        // Met à jour le nom d'utilisateur si disponible
+        const userName = localStorage.getItem('user_nom');
+        if (userName) {
+            console.log(`👤 Connecté en tant que: ${userName}`);
+        }
+    } else {
+        // Utilisateur non connecté = Spectateur
+        isLoggedIn = false;
+        isAdmin = false;
+        console.log('👁️ Mode spectateur activé');
+        
+        // Cache l'interface admin
+        avatarTW.style.display = 'none';
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+    }
+    
+    // Met à jour l'interface
+    updateNavbarLogin();
+    avatarMenu.style.display = 'none';
+    
+    console.log(`📊 État final: isLoggedIn=${isLoggedIn}, isAdmin=${isAdmin}`);
+});
+
+// Gestion modale Devis pour tous les boutons "Devis"
+function openDevisModal(event) {
+    event.preventDefault();
+    const modal = document.getElementById('devisModal');
+    if (window.matchMedia('(max-width: 575px)').matches) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        modal.style.display = 'flex';
+        modal.classList.remove('devis-zoom-in');
+        void modal.offsetWidth;
+        modal.classList.add('devis-zoom-in');
+    } else {
+        modal.style.display = 'block';
+        modal.classList.remove('devis-zoom-in');
+    }
+    updateDevisLinks();
+}
+function closeDevisModal() {
+    const modal = document.getElementById('devisModal');
+    if (window.matchMedia('(max-width: 575px)').matches) {
+        modal.style.display = 'none';
+        modal.classList.remove('devis-zoom-in');
+    } else {
+        modal.style.display = 'none';
+        modal.classList.remove('devis-zoom-in');
+    }
+}
+document.getElementById('closeDevisModal').onclick = closeDevisModal;
+
+function updateDevisLinks() {
+    const prestation = document.getElementById('prestationSelect').options[document.getElementById('prestationSelect').selectedIndex].text;
+    const subject = encodeURIComponent('Demande de devis : ' + prestation);
+    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=magicpscare@sfr.fr&su=${subject}`;
+    const outlookLink = `https://outlook.live.com/mail/0/deeplink/compose?to=magicpscare@sfr.fr&subject=${subject}`;
+    document.getElementById('gmailDevisBtn').href = gmailLink;
+    document.getElementById('outlookDevisBtn').href = outlookLink;
+}
+document.getElementById('prestationSelect').addEventListener('change', updateDevisLinks);
+
+document.querySelectorAll('.btn-devis, .btn-devis-mailto').forEach(btn => {
+    btn.addEventListener('click', openDevisModal);
+});
+
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('devisModal');
+    const modalContent = document.getElementById('devisModalContent');
+    if (modal.style.display === 'block' && !modalContent.contains(e.target) && e.target.className.indexOf('btn-devis') === -1 && e.target.className.indexOf('btn-devis-mailto') === -1) {
+        modal.style.display = 'none';
+    }
+});
+    </script>
+    <!-- Script principal pour la déconnexion centralisée -->
+    <script src="script.js"></script>
+    <!-- Scripts de configuration API et monitoring -->
+    <script src="js/api-config.js"></script>
+    <script src="js/deployment-monitor.js"></script>
+    
+    <footer class="footer text-center py-4 footer-fix">
+        <div class="container">
+            <small>&copy; 2025 PS Care – Association de Magie. Tous droits réservés.
+            </small>
+        </div>
+    </footer>
+    
+  </div>
+</body>
+</html>

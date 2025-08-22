@@ -1,0 +1,89 @@
+[33mcommit 6e6ad4e58cb80aadf4da5f48a2cd3b93cad5725c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sun Jul 27 01:07:05 2025 +0200
+
+    Initial commit
+
+[33mcommit 06e53cd11781469cc37e2f05d93bfcd01494e5b0[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 23:42:13 2025 +0200
+
+    Déploiement initial
+
+[33mcommit 8e481e1238d520e658fc7633f23e11e78e6976b9[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 13:28:49 2025 +0200
+
+    Correctif Express routeur statsDevis
+
+[33mcommit 73c25c5e316820c9d96afd25e80ebc19438266a8[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 13:03:14 2025 +0200
+
+    Suppression des doublons d'images
+
+[33mcommit 15e071715c0510f15f94a18aa0a91fcb896c4ae2[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 04:51:48 2025 +0200
+
+    Correction affichage galerie : suppression des doublons par nom de fichier
+
+[33mcommit 830db8787b25092de830578dc42d60d4d12c8df7[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 04:34:27 2025 +0200
+
+    Ajout du script de suppression des doublons d'images
+
+[33mcommit 02908ec5195396c37974522b9940499f649b3fbb[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 04:23:04 2025 +0200
+
+    Déploiement manuel : suppression des images et mises à jour
+
+[33mcommit b6694e799f7d49529f6f697d8a888592ef1d8b26[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 04:09:22 2025 +0200
+
+    Suppression des images de photographie.html et ajout du script d'extraction
+
+[33mcommit 563f6f72ee2d0c736199f7c98d236ba4c782c20d[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 03:38:04 2025 +0200
+
+    Affichage direct du bouton Statistiques si connecté, hors menu déroulant
+
+[33mcommit 84a01445e36d3b035211987220f117fc165e3853[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 03:27:34 2025 +0200
+
+    CORS global pour toutes les routes API
+
+[33mcommit d11d54e9448b201f5e35eeeff5ec485ba9b6a79d[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 03:21:56 2025 +0200
+
+    Ajout CORS sur /api/proxy
+
+[33mcommit a7e6199cb809b6fffc5c08100dc03060ef523cf6[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 03:11:36 2025 +0200
+
+    Ajout route proxy /api/proxy pour login
+
+[33mcommit 4952e89e8fef4e5b22764049d0cf0edc6774b53f[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 03:08:58 2025 +0200
+
+    Déploiement complet : corrections et mise à jour
+
+[33mcommit c7ca36aaa533157ae1381d0a9557c2304fdd4e75[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 02:53:27 2025 +0200
+
+    Correction API router Express
+
+[33mcommit 12c99691ba7c6ddc15745400eebc0aeec2a29871[m
+Author: OsWooD83 <enzovercellotti@hotmail.com>
+Date:   Sat Jul 26 00:48:09 2025 +0200
+
+    Déploiement manuel 2025-07-26-00:48

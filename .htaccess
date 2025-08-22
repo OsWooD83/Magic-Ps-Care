@@ -1,0 +1,12 @@
+# Autoriser l'accès aux fichiers statiques
+<FilesMatch "\.(css|js|jpg|jpeg|png|gif|svg|woff|woff2|ttf|eot)$">
+    Require all granted
+</FilesMatch>
+Options -Indexes
+
+# Rediriger les requêtes /api/* vers le backend Node.js sur le port 3000
+<IfModule mod_proxy.c>
+    ProxyPreserveHost On
+    ProxyPass /api/ http://localhost:3000/api/
+    ProxyPassReverse /api/ http://localhost:3000/api/
+</IfModule>
