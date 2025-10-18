@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galerie Photos - Magic PS Care</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-wrapper {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .image-wrapper:hover {
+            transform: scale(1.05);
+        }
+        .image-wrapper img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .image-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        h1 { 
+            text-align: center; 
+            color: white; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎭 Galerie Photos - Magic PS Care</h1>
+    <div class="gallery" id="gallery"></div>
+
+    <script>
+        const photos = [
+            { filename: '1751921535345-magic_1.jpg', title: 'Spectacle de Magie 1', id: 1 },
+            { filename: '1751921551416-magic_3.jpg', title: 'Spectacle de Magie 3', id: 2 },
+            { filename: '1751921578686-table_2.jpg', title: 'Table de Magie', id: 3 },
+            { filename: '1751921566296-parapluit.jpg', title: 'Tour du Parapluie', id: 4 },
+            { filename: '1751921616369-tble_3.jpg', title: 'Table de Magie 3', id: 5 },
+            { filename: '1751921416230-nnnn.jpg', title: 'Photo NNNN', id: 6 }
+        ];
+
+        const gallery = document.getElementById('gallery');
+
+        photos.forEach(photo => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'image-wrapper';
+            
+            const img = document.createElement('img');
+            img.src = `images/${photo.filename}`;
+            img.alt = photo.title;
+            img.loading = 'lazy';
+            
+            const title = document.createElement('div');
+            title.className = 'image-title';
+            title.textContent = photo.title;
+            
+            wrapper.appendChild(img);
+            wrapper.appendChild(title);
+            gallery.appendChild(wrapper);
+
+            // Gestion des erreurs d'image
+            img.onerror = function() {
+                console.error('Erreur de chargement:', photo.filename);
+                wrapper.style.backgroundColor = '#ff4444';
+                wrapper.innerHTML = `<div style="color: white; padding: 20px; text-align: center;">
+                    ❌ Erreur: ${photo.filename}<br>
+                    <small>Image non trouvée</small>
+                </div>`;
+            };
+            
+            img.onload = function() {
+                console.log('✅ Image chargée:', photo.filename);
+            };
+        });
+    </script>
+</body>
+</html>

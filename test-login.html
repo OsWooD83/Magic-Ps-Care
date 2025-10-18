@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login APIs - Magic PS Care</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        button {
+            background: #7c4dff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #6200ff; }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { border-color: #28a745; background: #d4edda; }
+        .error { border-color: #dc3545; background: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Login APIs - Magic PS Care</h1>
+    
+    <div class="test-card">
+        <h3>Test Login Direct</h3>
+        <button onclick="testDirectLogin()">Test /api/login</button>
+        <div id="directResult" class="result"></div>
+    </div>
+    
+    <div class="test-card">
+        <h3>Test Login Proxy</h3>
+        <button onclick="testProxyLogin()">Test /api/proxy?endpoint=login</button>
+        <div id="proxyResult" class="result"></div>
+    </div>
+    
+    <div class="test-card">
+        <h3>Test API Fallback</h3>
+        <button onclick="testFallbackLogin()">Test API_CONFIG.login</button>
+        <div id="fallbackResult" class="result"></div>
+    </div>
+    
+    <div class="test-card">
+        <h3>Test Session</h3>
+        <button onclick="testSession()">Test /api/session</button>
+        <div id="sessionResult" class="result"></div>
+    </div>
+
+    <!-- Inclure le script API fallback -->
+    <script src="js/api-fallback.js"></script>
+    
+    <script>
+        const testData = {
+            email: 'admin@magicpscare.com',
+            password: 'admin123'
+        };
+        
+        async function testDirectLogin() {
+            const resultDiv = document.getElementById('directResult');
+            resultDiv.textContent = 'Test en cours...';
+            resultDiv.className = 'result';
+            
+            try {
+                console.log('🔄 Test direct login...');
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.className = response.ok ? 'result success' : 'result error';
+                
+                console.log('✅ Direct login result:', data);
+            } catch (error) {
+                resultDiv.textContent = `Erreur: ${error.message}`;
+                resultDiv.className = 'result error';
+                console.log('❌ Direct login error:', error);
+            }
+        }
+        
+        async function testProxyLogin() {
+            const resultDiv = document.getElementById('proxyResult');
+            resultDiv.textContent = 'Test en cours...';
+            resultDiv.className = 'result';
+            
+            try {
+                console.log('🔄 Test proxy login...');
+                const response = await fetch('/api/proxy?endpoint=login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.className = response.ok ? 'result success' : 'result error';
+                
+                console.log('✅ Proxy login result:', data);
+            } catch (error) {
+                resultDiv.textContent = `Erreur: ${error.message}`;
+                resultDiv.className = 'result error';
+                console.log('❌ Proxy login error:', error);
+            }
+        }
+        
+        async function testFallbackLogin() {
+            const resultDiv = document.getElementById('fallbackResult');
+            resultDiv.textContent = 'Test en cours...';
+            resultDiv.className = 'result';
+            
+            try {
+                console.log('🔄 Test fallback login...');
+                
+                if (!window.API_CONFIG) {
+                    throw new Error('API_CONFIG non disponible');
+                }
+                
+                const data = await window.API_CONFIG.login(testData);
+                
+                resultDiv.textContent = `Response: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.className = 'result success';
+                
+                console.log('✅ Fallback login result:', data);
+            } catch (error) {
+                resultDiv.textContent = `Erreur: ${error.message}`;
+                resultDiv.className = 'result error';
+                console.log('❌ Fallback login error:', error);
+            }
+        }
+        
+        async function testSession() {
+            const resultDiv = document.getElementById('sessionResult');
+            resultDiv.textContent = 'Test en cours...';
+            resultDiv.className = 'result';
+            
+            try {
+                console.log('🔄 Test session...');
+                const response = await fetch('/api/session', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.className = response.ok ? 'result success' : 'result error';
+                
+                console.log('✅ Session result:', data);
+            } catch (error) {
+                resultDiv.textContent = `Erreur: ${error.message}`;
+                resultDiv.className = 'result error';
+                console.log('❌ Session error:', error);
+            }
+        }
+        
+        // Auto-test au chargement
+        window.addEventListener('load', () => {
+            console.log('🎯 Page de test chargée');
+        });
+    </script>
+</body>
+</html>
