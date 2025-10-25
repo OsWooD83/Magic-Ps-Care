@@ -1,0 +1,113 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Démarrer MongoDB",
+			"type": "shell",
+			"command": "start mongod",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Démarrer le serveur Node.js",
+			"command": "node server.js",
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": [],
+			"runOn": "folderOpen"
+		},
+		{
+			"label": "🚀 Deploy to Hostinger VPS",
+			"type": "shell",
+			"command": "powershell",
+			"args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}\\deploy-hostinger.ps1"],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "📤 Git Push + Deploy",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-Command",
+				"git add .; git commit -m 'Auto deploy $(Get-Date -Format yyyy-MM-dd-HH:mm)'; git push origin main; .\\deploy-hostinger.ps1"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🔗 Connect to VPS SSH",
+			"type": "shell",
+			"command": "ssh",
+			"args": ["${input:vpsUser}@${input:vpsHost}"],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			}
+		},
+		{
+			"label": "📸 Deploy with Images to VPS",
+			"type": "shell",
+			"command": "powershell",
+			"args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}\\deploy-with-images.ps1"],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🔍 Diagnostic Images VPS",
+			"type": "shell",
+			"command": "powershell",
+			"args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}\\diagnostic-images-vps.ps1"],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		}
+	],
+	"inputs": [
+		{
+			"id": "vpsHost",
+			"description": "VPS Hostname or IP",
+			"default": "votre-domaine.com",
+			"type": "promptString"
+		},
+		{
+			"id": "vpsUser",
+			"description": "VPS Username", 
+			"default": "votre-username",
+			"type": "promptString"
+		}
+	]
+}

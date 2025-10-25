@@ -1,0 +1,476 @@
+/* Styles spécifiques pour index.html */
+
+/* Carrousel */
+#carouselPrestations {
+    overflow: hidden;
+    width: 100%;
+}
+
+#carousel-track {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 16px;
+}
+
+.carousel-img {
+    width: 100%;
+    height: 450px;
+    object-fit: contain;
+    background: #0d47a1;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.4s cubic-bezier(.4,2,.6,1), box-shadow 0.4s;
+}
+
+/* Header hero section */
+.hero-section {
+    min-height: 45vh;
+    padding-top: 60px;
+}
+
+.magic-title {
+    margin-top: -1px;
+    font-size: 4rem;
+}
+
+.hero-lead {
+    font-size: 2rem;
+    color: #ffd700;
+    font-family: 'Cinzel Decorative', cursive, serif;
+    font-weight: bold;
+    text-shadow: 2px 2px 8px #000;
+}
+
+.btn-scroll-prestations {
+    font-size: 1.1rem;
+    padding: 0.7rem 2rem;
+}
+
+/* Prestations table */
+.prestations-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.prestations-table th {
+    width: 33%;
+}
+
+.prestations-table td {
+    vertical-align: top;
+}
+
+.highlight-bg {
+    background-color: rgba(255, 215, 0, 0.2);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.arrow-red {
+    color: #ff2d2d;
+}
+
+/* Boutons devis */
+.btn-devis {
+    border: 2px solid #28a745;
+    color: #28a745;
+    font-weight: bold;
+    border-radius: 8px;
+    background: #fff;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-devis-mailto {
+    margin-top: 10px;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+}
+
+/* Tarifs section */
+.tarifs-container {
+    border: 3px solid #000000;
+    border-radius: 18px;
+    padding: 28px 18px;
+    background: #38101000;
+}
+
+.tarif-price {
+    color: #ff2d2d;
+}
+
+.tarif-note {
+    color: #00ff40;
+}
+
+.tarif-warning {
+    color: #ff0000;
+}
+
+/* Bandes horizontales */
+#bande-rouge-1 {
+    height: 4px;
+    background: #000000;
+    border-radius: 2px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    top: -305px;
+}
+
+#bande-rouge-2 {
+    height: 4px;
+    background: #000000;
+    border-radius: 2px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    top: -262px;
+}
+
+#bande-rouge-3 {
+    height: 4px;
+    background: #000000;
+    border-radius: 2px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    top: -225px;
+}
+
+#bande-rouge-4 {
+    height: 4px;
+    background: #000000;
+    border-radius: 2px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    top: -185px;
+}
+
+#bande-rouge-5 {
+    height: 4px;
+    background: #000000;
+    border-radius: 2px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    top: -118px;
+}
+
+/* Membres section */
+.membres-container {
+    position: relative;
+    top: -120px;
+}
+
+.membres-list {
+    max-width: 300px;
+    margin: -20px;
+}
+
+/* Modale devis */
+#devisModal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2000;
+}
+
+#devisModalContent {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 340px;
+    background: #181c2b;
+    color: #fff;
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 32px #0005;
+    text-align: center;
+}
+
+.devis-modal-padding {
+    padding: 1.5rem 1rem 1.2rem 1rem;
+    position: relative;
+}
+
+#closeDevisModal {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #ffd700;
+    cursor: pointer;
+}
+
+.devis-modal-title {
+    margin-bottom: 1.2rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+#prestationSelect {
+    width: 95%;
+    margin-bottom: 1.3rem;
+    padding: 0.6rem;
+    border-radius: 0.7rem;
+    border: 1.5px solid #7c4dff;
+    background: #2d1a3a;
+    color: #ffd700;
+    font-size: 1.05rem;
+}
+
+.devis-modal-subtitle {
+    margin-bottom: 1.1rem;
+    font-weight: bold;
+}
+
+#gmailDevisBtn {
+    display: inline-block;
+    margin: 8px 8px 0 0;
+    padding: 9px 18px;
+    background: #ea4335;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.08rem;
+    transition: background 0.2s;
+}
+
+#outlookDevisBtn {
+    display: inline-block;
+    margin: 8px 0 0 0;
+    padding: 9px 18px;
+    background: #0072c6;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.08rem;
+    transition: background 0.2s;
+}
+
+.devis-modal-backdrop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(24, 20, 44, 0.92);
+    z-index: -1;
+}
+
+/* Modale avis professionnelle */
+#avisModal {
+    display: none;
+    position: fixed;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(24, 20, 44, 0.92);
+    align-items: center;
+    justify-content: center;
+    animation: avis-fadein 0.3s;
+}
+
+@keyframes avis-fadein {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.avis-modal-content {
+    background: linear-gradient(135deg, #fff 0%, #f7e7ff 100%);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px #7c4dff55, 0 2px 8px #0002;
+    max-width: 410px;
+    width: 96%;
+    margin: auto;
+    padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+    position: relative;
+    animation: avis-popin 0.4s cubic-bezier(.4, 2, .6, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+@keyframes avis-popin {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.avis-modal-header {
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+.avis-modal-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0.3rem;
+    filter: drop-shadow(0 2px 8px #ffd70088);
+}
+
+.avis-modal-header h2 {
+    font-size: 1.6rem;
+    color: #7c4dff;
+    font-family: 'Cinzel Decorative', serif;
+    margin-bottom: 0.2rem;
+    letter-spacing: 1px;
+}
+
+.avis-modal-subtitle {
+    font-size: 1.05rem;
+    color: #381a5a;
+    margin-bottom: 0.2rem;
+    font-weight: 500;
+}
+
+.avis-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #7c4dff;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 10;
+}
+
+.avis-close-btn:hover {
+    color: #ff2d2d;
+}
+
+.avis-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-bottom: 0.7rem;
+}
+
+.avis-label {
+    font-weight: bold;
+    color: #2d1a3a;
+    font-size: 1.08rem;
+    margin-bottom: 0.1rem;
+}
+
+.avis-input, .avis-textarea {
+    background: #f3eaff;
+    border: 1.5px solid #7c4dff;
+    color: #2d1a3a;
+    border-radius: 0.7rem;
+    padding: 0.5rem 0.9rem;
+    font-size: 1.05rem;
+    margin-bottom: 0.1rem;
+    transition: border 0.2s, box-shadow 0.2s;
+    caret-color: #181c2b;
+}
+
+.avis-input:focus, .avis-textarea:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 2px #ffd70044;
+    outline: none;
+    background: #fff;
+    color: #181c2b;
+}
+
+.avis-textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+.avis-btn {
+    margin-top: 0.5rem;
+    width: 100%;
+    font-size: 1.15rem !important;
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 12px #ffd70033;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.star-rating {
+    font-size: 2rem;
+    color: #ffd700;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    margin-bottom: 0.1rem;
+}
+
+.star-rating .star {
+    transition: color 0.2s, transform 0.15s;
+    display: inline-block;
+    margin-right: 2px;
+}
+
+.star-rating .star.inactive {
+    color: #e0dcdc;
+}
+
+.star-rating .star:hover,
+.star-rating .star:focus {
+    color: #ff2d2d;
+    transform: scale(1.18);
+}
+
+#moyenneStars {
+    font-size: 1.3rem;
+    color: #ff9800;
+    font-weight: bold;
+    background: #fffbe7;
+    border-radius: 0.7rem;
+    padding: 0.7rem 0.5rem 0.5rem 0.5rem;
+    margin-top: 0.7rem;
+    box-shadow: 0 2px 8px #ffd70022;
+}
+
+/* Footer */
+.footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    background: #181c2b;
+    color: #fff;
+    z-index: 9999;
+}
+
+/* Responsive */
+@media (max-width: 575px) {
+    .avis-modal-content {
+        padding: 1.2rem 0.5rem 1rem 0.5rem;
+    }
+    
+    .avis-modal-header h2 {
+        font-size: 1.15rem;
+    }
+    
+    .avis-modal-icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Corrections compatibilité Safari */
+.modal-close {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.modal-arrow {
+    user-select: none;
+    -webkit-user-select: none;
+}

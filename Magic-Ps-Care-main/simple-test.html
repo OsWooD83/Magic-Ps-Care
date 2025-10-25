@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Simple - Image Magic</title>
+</head>
+<body style="padding: 20px; background: #333; color: white;">
+    <h1>Test d'une seule image</h1>
+    <div id="status">Chargement...</div>
+    <br>
+    <img id="testImg" src="images/1751921535345-magic_1.jpg" style="max-width: 400px;" 
+         onload="document.getElementById('status').innerHTML = '✅ Image chargée avec succès!'; document.getElementById('status').style.color = 'green';"
+         onerror="document.getElementById('status').innerHTML = '❌ Erreur 404 - Image non trouvée'; document.getElementById('status').style.color = 'red';">
+    
+    <script>
+        console.log('Test de chargement de:', 'images/1751921535345-magic_1.jpg');
+        setTimeout(() => {
+            if (document.getElementById('status').innerHTML === 'Chargement...') {
+                document.getElementById('status').innerHTML = '⏳ Chargement très lent...';
+                document.getElementById('status').style.color = 'orange';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Images - Magic PS Care</title>
+</head>
+<body>
+    <h1>Test des Images</h1>
+    <div id="results"></div>
+    
+    <script>
+        const imageNames = [
+            '1751921535345-magic_1.jpg',
+            '1751921551416-magic_3.jpg', 
+            '1751921578686-table_2.jpg',
+            '1751921566296-parapluit.jpg',
+            '1751921616369-tble_3.jpg',
+            '1751921416230-nnnn.jpg'
+        ];
+        
+        const results = document.getElementById('results');
+        
+        imageNames.forEach(imageName => {
+            const imageUrl = `images/${imageName}`;
+            const img = new Image();
+            
+            img.onload = function() {
+                results.innerHTML += `<p style="color: green;">✅ ${imageName} - Chargée avec succès</p>`;
+            };
+            
+            img.onerror = function() {
+                results.innerHTML += `<p style="color: red;">❌ ${imageName} - Erreur 404</p>`;
+            };
+            
+            img.src = imageUrl;
+        });
+        
+        // Test aussi les anciens noms pour comparaison
+        const oldNames = ['magic_1.jpg', 'magic_3.jpg', 'table_2.jpg', 'parapluit.jpg', 'tble_3.jpg'];
+        
+        results.innerHTML += '<hr><h2>Test des anciens noms (devraient échouer):</h2>';
+        
+        oldNames.forEach(imageName => {
+            const imageUrl = `images/${imageName}`;
+            const img = new Image();
+            
+            img.onload = function() {
+                results.innerHTML += `<p style="color: orange;">⚠️ ${imageName} - Ancien nom encore accessible</p>`;
+            };
+            
+            img.onerror = function() {
+                results.innerHTML += `<p style="color: blue;">ℹ️ ${imageName} - Ancien nom bien supprimé (normal)</p>`;
+            };
+            
+            img.src = imageUrl;
+        });
+    </script>
+</body>
+</html>
