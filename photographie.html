@@ -598,7 +598,6 @@
 </head>
 <body>
     <div id="navbar-placeholder"></div>
-    
     <main>
         <div class="container">
             <!-- Bouton Accueil magique -->
@@ -608,43 +607,81 @@
                     <span class="home-text">Accueil</span>
                 </a>
             </div>
-            
             <h1 class="main-title">
                 <span class="emoji">🎭</span>Galerie Magic Ps Care
             </h1>
-            
             <!-- Navigation par catégories -->
             <div class="category-nav">
-                <button class="category-btn active" data-category="tout" onclick="filterByCategory('tout')">
-                    🌟 Tout
-                </button>
-                <button class="category-btn" data-category="photo" onclick="filterByCategory('photo')">
-                    📸 Photos
-                </button>
-                <button class="category-btn" data-category="video" onclick="filterByCategory('video')">
-                    🎬 Vidéos
-                </button>
+                <button class="category-btn active" data-category="tout" onclick="filterByCategory('tout')">🌟 Tout</button>
+                <button class="category-btn" data-category="photo" onclick="filterByCategory('photo')">📸 Photos</button>
+                <button class="category-btn" data-category="video" onclick="filterByCategory('video')">🎬 Vidéos</button>
             </div>
-            
             <!-- Panneau d'administration (visible uniquement pour les admins) -->
             <div id="admin-panel" class="admin-panel hidden">
                 <h2>🔧 Panneau d'Administration</h2>
                 <div class="admin-actions">
-                    <button id="add-photo-btn" class="btn btn-primary">
-                        ➕ Ajouter une photo
-                    </button>
-                    <button id="toggle-delete-mode" class="btn btn-danger">
-                        🗑️ Mode suppression
-                    </button>
-                    <button id="logout-btn" class="btn btn-secondary">
-                        🚪 Déconnexion
-                    </button>
+                    <button id="add-photo-btn" class="btn btn-primary">➕ Ajouter une photo</button>
+                    <button id="toggle-delete-mode" class="btn btn-danger">🗑️ Mode suppression</button>
+                    <button id="logout-btn" class="btn btn-secondary">🚪 Déconnexion</button>
                 </div>
                 <input type="file" id="photo-upload" accept="image/*,video/mp4,video/mov" class="hidden">
             </div>
-            
             <div class="gallery-v2" id="gallery">
                 <!-- Images chargées par JavaScript avec vrais noms -->
+            </div>
+            <div class="gallery-v2" id="gallery-img-photographie">
+                <!-- Images du dossier img-photographie -->
+                <script>
+                // Affichage automatique des images .jpg du dossier img-photographie uniquement pour la catégorie 'photo' ou 'tout'
+                const imgPhotographieList = [
+                    "603850563_122160611930920424_5347683808985466686_n.jpg",
+                    "605215080_122160611690920424_2861968257194560149_n.jpg",
+                    "605395737_122160611210920424_4325160580581063199_n.jpg",
+                    "605440673_122159885444920424_3845850302427970403_n.jpg",
+                    "605531466_122160611888920424_5863184809550851378_n.jpg",
+                    "605661248_122160611396920424_2432724529879584419_n.jpg",
+                    "605722239_122159885402920424_864220842584929494_n.jpg",
+                    "605764482_122160611972920424_3611895203405795111_n.jpg",
+                    "606404346_122160611354920424_4148763559766683041_n.jpg",
+                    "607078106_122160611762920424_4905359434524309165_n.jpg",
+                    "622362206_122166693866920424_1148626964817872899_n.jpg",
+                    "622801706_122166693908920424_3009593164974380032_n.jpg",
+                    "622801709_122166693950920424_3122677717730590461_n.jpg",
+                    "623657618_122166693998920424_6752779528568223326_n.jpg",
+                    "625127983_122166694046920424_3490026866238873336_n.jpg"
+                ];
+                const galleryImgPhotographie = document.getElementById('gallery-img-photographie');
+                function showImgPhotographieGallery() {
+                    galleryImgPhotographie.innerHTML = '';
+                    imgPhotographieList.forEach(filename => {
+                        const div = document.createElement('div');
+                        div.className = 'gallery-item-v2';
+                        const img = document.createElement('img');
+                        img.src = 'img-photographie/' + filename;
+                        img.alt = filename;
+                        img.loading = 'lazy';
+                        div.appendChild(img);
+                        galleryImgPhotographie.appendChild(div);
+                    });
+                }
+                // Affiche seulement si catégorie 'photo' ou 'tout'
+                function updateImgPhotographieGallery() {
+                    const activeCategory = document.querySelector('.category-btn.active').getAttribute('data-category');
+                    if (activeCategory === 'photo' || activeCategory === 'tout') {
+                        showImgPhotographieGallery();
+                        galleryImgPhotographie.style.display = '';
+                    } else {
+                        galleryImgPhotographie.innerHTML = '';
+                        galleryImgPhotographie.style.display = 'none';
+                    }
+                }
+                // Met à jour lors du clic sur les boutons catégorie
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.addEventListener('click', updateImgPhotographieGallery);
+                });
+                // Initialisation
+                updateImgPhotographieGallery();
+                </script>
             </div>
         </div>
     </main>
@@ -954,16 +991,7 @@ let selectedPhotos = [];
             selectedPhotos = [];
 
             if (uniquePhotos.length === 0) {
-                // Afficher un message si aucune photo dans cette catégorie
-                const emptyDiv = document.createElement('div');
-                emptyDiv.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: white;">
-                        <h3>📂 Aucun contenu dans cette catégorie</h3>
-                        <p>Il n'y a pas encore de ${currentFilter === 'photo' ? 'photos' : 'vidéos'} à afficher.</p>
-                        ${isAdmin ? '<p>Utilisez le bouton "📸 Ajouter Photo" pour ajouter du contenu.</p>' : ''}
-                    </div>
-                `;
-                gallery.appendChild(emptyDiv);
+                // Ne rien afficher si aucune photo/vidéo
                 return;
             }
 
