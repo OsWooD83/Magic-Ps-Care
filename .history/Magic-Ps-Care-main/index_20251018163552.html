@@ -334,6 +334,19 @@ document.addEventListener('DOMContentLoaded', function() {
 </head>
 <body>
   <div class="responsive-scale-wrapper">
+    <div style="position:fixed; top:8px; left:18px; z-index:1200; font-size:0.92em; color:#7c4dff; background:rgba(255,255,255,0.85); padding:2px 10px; border-radius:12px; box-shadow:0 2px 8px #7c4dff22; font-family:sans-serif;">
+      <a href="#" id="openMailModal" style="color:#7c4dff; text-decoration:none; cursor:pointer;"></a>magicpscare@sfr.fr</a>
+    </div>
+
+    <!-- Modale choix email -->
+    <div id="mailModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(44,62,80,0.85); z-index:9999; justify-content:center; align-items:center;">
+      <div style="background:#fff; color:#222; border-radius:16px; box-shadow:0 8px 32px rgba(44,62,80,0.25); padding:32px 24px 24px 24px; max-width:320px; width:90%; text-align:center; position:relative;">
+        <button id="closeMailModal" style="position:absolute; top:14px; right:14px; background:transparent; border:none; font-size:1.7rem; color:#7c4dff; cursor:pointer;">&times;</button>
+        <h3 style="color:#7c4dff; margin-bottom:1.2em; font-size:1.2rem;">Ouvrir avec :</h3>
+        <a href="https://outlook.live.com/mail/0/inbox" target="_blank" style="display:block; margin-bottom:1em; font-size:1.08em; color:#0072c6; text-decoration:none; font-weight:600;">Outlook</a>
+        <a href="https://mail.google.com/" target="_blank" style="display:block; font-size:1.08em; color:#d93025; text-decoration:none; font-weight:600;">Gmail</a>
+      </div>
+    </div>
     <div class="avatar-tw" id="avatarTW">TW</div>
     <div class="avatar-menu" id="avatarMenu">
         <button id="btnLogout">Déconnexion</button>
@@ -347,13 +360,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <li><a href="#prestations">Prestations</a></li>
                 <li><a href="photographie.html">Photographie</a></li>
 
-                <li><a href="https://www.facebook.com/profile.php?id=61577612734844" target="_blank" rel="noopener">Facebook</a></li>
+                <li><a href="https://www.facebook.com/profile.php?id=61577612734844" target="_blank">Facebook</a></li>
 
                 <li><a href="#tarifs" id="navDevisLink">Devis</a></li>
                 <li><a href="#" id="openAvisModalBtn">Avis</a></li>
                   <li><a href="statistiques/" id="navStatsBtn" style="display:none"><span style="color: red; font-weight: bold;">Statistiques</span></a></li>
                 <li><a href="login/" id="navLoginBtn">Spectateur - Se connecter</a></li>
-                  <li><a href="https://www.fr.freelancer.com/u/enzov5?frm=enzov5&sb=t" target="_blank" rel="noopener">Créateur</a></li>
+                  <li><a href="https://www.fr.freelancer.com/u/enzov5?frm=enzov5&sb=t" target="_blank">Créateur</a></li>
 
                 <li><a href="#" id="openLegalModalBtn">Information légales</a></li>
 </ul>
@@ -370,6 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <p><strong>N° de SIREN:</strong> <span style="color:#ffd700;">990 225 252</span></p>
       <p><strong>CODE APE:</strong> <span style="color:#ffd700;">90.01Z</span></p>
       <p><strong>N° RNA:</strong> <span style="color:#ffd700;">W 832 022 161</span></p>
+      <p><strong>Licence:</strong> <span style="color:#ffd700;">catégorie 2 : 2-004533</span></p>
     </div>
   </div>
 </div>
@@ -822,9 +836,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <option
                 <option value="Atelier close up dans les services hospitaliers">Atelier close up dans les services hospitaliers (15-30min, apprentissage, plaisir, petits patients)</option>
                 <option value="Spectacle CREPUSCULE MAGIQUE 2025">Spectacle "CREPUSCULE MAGIQUE 2025" (10-15 pers, 1h-1h15, histoire, musique, univers magique)</option>
-                <option value="Spectacle magie EHPAD et +">Spectacle magie EHPAD et + (270€)</option>
+                <option value="Spectacle magie EHPAD et +">Spectacle magie EHPAD et + (300€)</option>
                 <option value="Club magie EHPAD">Club magie EHPAD (150€)</option>
-                <option value="Spectacle magie Privé adulte/enfant">Spectacle magie Privé adulte/enfant (200€ minimum)</option>
+                <option value="Spectacle magie Privé adulte/enfant">Spectacle magie Privé adulte/enfant (300€ minimum)</option>
                 <option value="Mariage et événements spéciaux">Mariage et événements spéciaux (prix sur devis)</option>
             </select>
             <div class="devis-send-label">Envoyer votre demande via :</div>
@@ -1339,7 +1353,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card h-100 text-center">
                         <div class="card-body">
                             <h3 class="card-title">
-                                Tarifs spectacle magie EHPAD <span class="card-title-red">à partir de 270€</span>
+                                Tarifs spectacle magie EHPAD <span class="card-title-red">à partir de 300€</span>
                                 <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
                                     type="button"
                                     data-mail-subject="Demande de devis pour spectacle magie EHPAD"
@@ -1369,7 +1383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card h-100 text-center">
                         <div class="card-body">
                             <h3 class="card-title">
-                                Tarifs spectacle magie Privé adulte/enfant Minimum <span class="card-title-red">à partir de 200€</span>
+                                Tarifs spectacle magie Privé adulte/enfant Minimum <span class="card-title-red">à partir de 300€</span>
                                 <button class="btn btn-devis-mailto btn-zoom-anim btn-devis-fix"
                                     type="button"
                                     data-mail-subject="Demande de devis pour spectacle magie Privé adulte/enfant"
