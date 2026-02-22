@@ -10,8 +10,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const sqlite3 = require('sqlite3');
-const db = sqlite3.verbose();
 
 
 const app = express();
@@ -60,49 +58,8 @@ app.get('/api/devis-stats', (req, res) => {
 
 // Fonction d'initialisation de la base de données photos
 function initPhotoDatabase() {
-    const dbPath = path.join(__dirname, 'photos.db');
-    const photoDb = new sqlite3.Database(dbPath, (err) => {
-        if (err) {
-            console.error('❌ Erreur connexion SQLite:', err);
-            return;
-        }
-        console.log('🗄️ Connexion SQLite établie');
-    });
-    
-    photoDb.serialize(() => {
-        // Supprimer l'ancienne table si elle existe
-        photoDb.run(`DROP TABLE IF EXISTS photos`, (err) => {
-            if (err) {
-                console.error('❌ Erreur suppression ancienne table:', err);
-            } else {
-                console.log('🗑️ Ancienne table photos supprimée');
-            }
-        });
-        
-        // Créer la nouvelle table avec la bonne structure
-        photoDb.run(`CREATE TABLE photos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            filename TEXT NOT NULL,
-            title TEXT NOT NULL,
-            category TEXT DEFAULT 'upload',
-            uploadDate TEXT DEFAULT CURRENT_TIMESTAMP,
-            fileType TEXT DEFAULT 'image'
-        )`, (err) => {
-            if (err) {
-                console.error('❌ Erreur création table photos:', err);
-            } else {
-                console.log('✅ Nouvelle table photos créée avec succès');
-            }
-        });
-    });
-    
-    photoDb.close((err) => {
-        if (err) {
-            console.error('❌ Erreur fermeture base:', err);
-        } else {
-            console.log('🗄️ Base de données photos initialisée avec succès');
-        }
-    });
+    // Base de données SQLite supprimée : aucune opération
+    console.log('🗄️ Base de données photos désactivée (sqlite3 supprimé)');
 }
 
 // Initialiser la base de données photos au démarrage
@@ -659,8 +616,3 @@ app.use((req, res) => {
 
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => console.log(`Serveur principal sur le port ${PORT}`));
-
-
-
-
-// ...existing code...
